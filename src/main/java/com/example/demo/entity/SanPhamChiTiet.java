@@ -1,10 +1,14 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
 @Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "san_pham_chi_tiet")
 public class SanPhamChiTiet {
     @Id
@@ -21,7 +25,7 @@ public class SanPhamChiTiet {
 
     String trang_thai;
 
-    @ManyToOne
-    @JoinColumn(name = "id_san_pham_chi_tiet")
-    HoaDonChiTiet hoa_don_chi_tiet;
+//    @ManyToOne
+//    @JoinColumn(name = "id_san_pham_chi_tiet")
+//    HoaDonChiTiet hoa_don_chi_tiet;
 }
