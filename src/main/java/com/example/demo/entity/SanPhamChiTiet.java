@@ -26,6 +26,18 @@ public class SanPhamChiTiet {
     String trang_thai;
 
     @ManyToOne
-    @JoinColumn(name = "id_san_pham_chi_tiet")
-    HoaDonCT hoaDonCT;
+    @JoinColumn(name = "id_chat_lieu")
+    ChatLieu chatLieu;
+
+    @ManyToOne
+    @JoinColumn(name = "id_kich_thuoc")
+    KichThuoc kichThuoc;
+
+    @ManyToOne
+    @JoinColumn(name = "id_san_pham")
+    SanPham sanPham;
+
+    @ManyToOne
+    @JoinColumn(name = "id_mau_sac")
+    MauSac mauSac;
 }
