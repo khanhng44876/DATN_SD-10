@@ -17,8 +17,6 @@ public class HoaDonCT {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     private Integer id;
-    private Integer id_hoa_don;
-    private Integer id_san_pham_chi_tiet;
     private Integer so_luong;
     private float don_gia;
     private float tong_tien;

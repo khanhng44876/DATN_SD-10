@@ -12,25 +12,38 @@ import java.sql.Date;
 @Getter
 @Setter
 @Entity
-@Table("hoa_don")
+@Table(name = "hoa_don")
 public class HoaDon {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
 
     @DateTimeFormat(pattern = "yyyy/MM/dd")
     @Temporal(TemporalType.DATE)
     private Date ngay_tao;
+
+    @DateTimeFormat(pattern = "yyyy/MM/dd")
+    @Temporal(TemporalType.DATE)
     private Date ngay_sua;
+
     private Float don_gia;
+
     private Float tong_tien;
+
     private String trang_thai_thanh_toan;
+
     private String hinh_thuc_thanh_toan;
+
     private String dia_chi_giao_hang;
+
     private String ghi_chu;
-//    @ManyToOne @JoinColumn(name = "id_khach_hang")
-//    private KhachHang khachHang;
-//    @ManyToOne @JoinColumn("nhan_vien")
-//    private NhanVien nhanVien;
+
+    @ManyToOne
+    @JoinColumn(name = "id_khach_hang")
+    private KhachHang khachHang;
+
+    @ManyToOne
+    @JoinColumn("id_nhan_vien")
+    private NhanVien nhanVien;
 
 
 
