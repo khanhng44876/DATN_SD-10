@@ -21,8 +21,6 @@ public class HoaDon {
     @Temporal(TemporalType.DATE)
     private Date ngay_tao;
 
-    @DateTimeFormat(pattern = "yyyy/MM/dd")
-    @Temporal(TemporalType.DATE)
     private Date ngay_sua;
 
     private Float don_gia;

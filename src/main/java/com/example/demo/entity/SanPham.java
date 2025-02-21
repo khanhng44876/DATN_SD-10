@@ -13,19 +13,19 @@ import java.util.Date;
 @AllArgsConstructor
 @Table(name = "san_pham")
 public class SanPham {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    String ma_san_pham;
+    private String ma_san_pham;
 
-    String ten_san_pham;
+    private String ten_san_pham;
 
-    Date ngay_nhap;
+    private Date ngay_nhap;
 
-    Date ngay_sua;
+    private Date ngay_sua;
 
-    String trang_thai;
-
+    private String trang_thai;
 
 
     @ManyToOne

@@ -13,31 +13,31 @@ import lombok.*;
 public class SanPhamChiTiet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
 
-    Double don_gia;
+    private Double don_gia;
 
-    Integer so_luong;
+    private Integer so_luong;
 
-    String mo_ta;
+    private String mo_ta;
 
-    String hinh_anh;
+    private String hinh_anh;
 
-    String trang_thai;
+    private String trang_thai;
 
     @ManyToOne
     @JoinColumn(name = "id_chat_lieu")
-    ChatLieu chatLieu;
+    private ChatLieu chatLieu;
 
     @ManyToOne
     @JoinColumn(name = "id_kich_thuoc")
-    KichThuoc kichThuoc;
+    private KichThuoc kichThuoc;
 
     @ManyToOne
     @JoinColumn(name = "id_san_pham")
-    SanPham sanPham;
+    private SanPham sanPham;
 
     @ManyToOne
     @JoinColumn(name = "id_mau_sac")
-    MauSac mauSac;
+    private MauSac mauSac;
 }

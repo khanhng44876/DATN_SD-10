@@ -15,17 +15,17 @@ import java.util.Date;
 public class KhuyenMai {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+   private Integer id;
 
-    String ten_khuyen_mai;
+   private String ten_khuyen_mai;
 
-    String mo_ta;
+   private String mo_ta;
 
-    Double ma_giam;
+   private Double ma_giam;
 
-    Double muc_giam;
+   private Double muc_giam;
 
-    Date ngay_bat_dau;
+   private Date ngay_bat_dau;
 
     Date ngay_ket_thuc;
 

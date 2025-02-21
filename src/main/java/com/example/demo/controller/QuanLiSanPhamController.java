@@ -29,6 +29,6 @@ public class QuanLiSanPhamController {
         ds.forEach(sp -> System.out.println(sp.getDanhMuc()));
         ds.forEach(sp -> System.out.println(sp.getHang()));
         model.addAttribute("dataSP", ds);
-        return "san_pham/index";
+        return "san_pham/qlsp";
     }
 }
