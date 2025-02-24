@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!--<div th:if="${session.nhanVien != null}">-->
+
+
+<head>
+    <title>Quan Ly Hang</title>
+    <meta charset="utf-8">
+    <head th:replace="giao_dien_chinh/libAdmin :: libheaderadmin"></head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+<div>
+    <div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
+    <div class="d-flex">
+        <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
+        <div class="pt-3" style="width: calc(100% - 250px);">
+            <div class="container">
+                <h2 style="text-align: center;">Quản Lý Hãng Sản Phẩm</h2>
+                <table id="example" class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên hãng</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="d : ${listhang}">
+                        <td th:text="${d.id}"></td>
+                        <td th:text="${d.ten_hang}"></td>
+                        <td th:text="${d.trangthai}"></td>
+                        <td>
+                            <button th:onclick="'loadMSData(' + ${d.id} + ')'" class="btn btn-warning">
+                                <i class="fa fa-pencil-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="col-sm-13">
+                        <label class="lb-form">Tên hãng sản phẩm</label>
+                        <input id="tenSize" class="form-control" required>
+                        <span id="errorTenSize" class="text-danger"></span>
+
+                        <label class="lb-form">Trạng thái</label>
+                        <input id="moTa" class="form-control" required>
+                        <span id="errorMoTa" class="text-danger"></span>
+                        <br>
+                        <button onclick="validateForm('add')" class="btn btn-primary">Add</button>
+                        <button onclick="validateForm('update')" class="btn btn-warning">Update</button>
+                        <br><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    $('#example').DataTable();
+</script>
+<script th:inline="javascript">
+
+    function validateForm(action) {
+        // Clear error messages
+        document.getElementById("errorTenSize").innerText = "";
+        document.getElementById("errorMoTa").innerText = "";
+
+
+
+        // Get values
+        const tenSize = document.getElementById("tenSize").value;
+        const moTa = document.getElementById("moTa").value;
+
+        let isValid = true;
+
+        // Validate fields
+        if (tenSize.trim() === "") {
+            document.getElementById("errorTenSize").innerText = "Kích thước không được để trống.";
+            isValid = false;
+        } else if (!isNaN(tenSize) && parseInt(tenSize, 10) < 0) {
+            document.getElementById("errorTenSize").innerText = "Không được là số âm.";
+            isValid = false;
+        }
+        if (moTa.trim() === "") {
+            document.getElementById("errorMoTa").innerText = "Không được để trống.";
+            isValid = false;
+        }
+
+
+
+        // If all fields are valid, proceed with action
+        if (isValid) {
+            if (action === 'add') {
+                themMS();
+            } else if (action === 'update') {
+                capNhatS(window.currentMsId);
+            }
+        }
+    }
+
+    async function loadMSData(idkt) {
+        console.log("ID Kích thước nhận được:", idkt);
+        try {
+            const id = parseInt(idkt, 10);
+            if (isNaN(id)) {
+                console.error("ID Kích thước không hợp lệ:", idkt);
+                alert("ID Kích thước không hợp lệ.");
+                return;
+            }
+            // Gửi yêu cầu GET đến server để lấy dữ liệu
+            const response = await fetch(`/san-pham/danh-sach-kich-thuoc/${id}`);
+
+            if (!response.ok) {
+                console.error("Lỗi khi tải dữ liệu kích thước:", response.statusText);
+                alert(`Không thể tải dữ liệu kích thước. Mã lỗi: ${response.status}`);
+                return;
+            }
+
+            const size = await response.json();
+
+            // Kiểm tra dữ liệu trả về
+            if (!kichthuoc.tenSize || !kichthuoc.moTa) {
+                console.error("Dữ liệu trả về không hợp lệ:", kichthuoc);
+                alert("Không thể tải dữ liệu kích thước. Vui lòng kiểm tra lại.");
+                return;
+            }
+
+            // Điền dữ liệu vào form
+            document.getElementById("tenSize").value = kichthuoc.tenSize;
+            document.getElementById("moTa").value = kichthuoc.moTa;
+
+            window.currentMsId = idkt; // Lưu lại ID màu sắc hiện tại
+        } catch (error) {
+            console.error("Đã có lỗi xảy ra khi tải dữ liệu kích thước:", error);
+            alert("Không thể tải dữ liệu kích thước.");
+        }
+    }
+
+    async function themMS() {
+        var con = window.confirm("Bạn có chắc chắn muốn thêm kích thước?");
+        if (con == false) {
+            return;
+        }
+
+        // Thu thập dữ liệu từ form
+        var payload = {
+            "tenSize": document.getElementById("tenSize").value,
+            "moTa": document.getElementById("moTa").value,
+
+        };
+
+        // Gửi dữ liệu đến server (POST request)
+        const response = await fetch("/san-pham/them-kich-thuoc", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload) // Chuyển dữ liệu thành JSON
+        });
+
+        // Kiểm tra phản hồi từ server
+        if (response.ok) {
+            alert("Kích thước đã được thêm thành công!");
+            // Chuyển hướng về trang hiển thị danh sách sản phẩm
+            window.location.href = "/san-pham/kich-thuoc";
+        } else {
+            alert("Đã có lỗi xảy ra khi thêm kích thước.");
+        }
+    }
+
+    async function capNhatS(idms) {
+        var con = window.confirm("Bạn có chắc chắn muốn cập nhật kích thước?");
+        if (con == false) {
+            return;
+        }
+
+        // Thu thập dữ liệu từ form
+        var payload = {
+            "tenSize": document.getElementById("tenSize").value,
+            "moTa": document.getElementById("moTa").value,
+
+        };
+
+        // Gửi dữ liệu đến server (PUT request)
+        const response = await fetch(`/san-pham/cap-nhat-kich-thuoc/${idms}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload) // Chuyển dữ liệu thành JSON
+        });
+
+        // Kiểm tra phản hồi từ server
+        if (response.ok) {
+            alert("Kích thước đã được cập nhật thành công!");
+            // Chuyển hướng về trang hiển thị danh sách sản phẩm
+            window.location.href = "/san-pham/kich-thuoc";
+        } else {
+            alert("Đã có lỗi xảy ra khi cập nhật kích thước.");
+        }
+    }
+
+
+</script>
+
+
+
+<!--</div>-->
+<div th:if="${session.nhanVien == null}">
+    <p>Vui lòng <a th:href="@{/dang-nhap/login}">đăng nhập</a>.</p>
+</div>
+
+</html>
