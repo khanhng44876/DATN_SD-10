@@ -8,7 +8,7 @@
     <div class="container-fluid">
         <!-- logo -->
         <a href="#">
-            <img src="/images/logo.png" alt="" style="max-height: 80px;">
+            <img src="https://makan.vn/wp-content/uploads/2022/11/logo-da-banh-vector-1.jpg" alt="" style="max-height: 80px;">
         </a>
         <!-- Thong tin user -->
         <ul class="navbar-nav">
@@ -16,9 +16,7 @@
                 <p style="color: azure" class="nav-link btn btn-light" th:text="${nhanVien}">Hello</p>
             </li>
             <li class="nav-item">
-                <a class="nav-link btn btn-primary text-light" href="/dang-nhap/login">
-                    <i class="bi bi-box-arrow-right"></i> Đăng xuất
-                </a>
+                <a class="nav-link btn btn-primary" style="color: #dee2e6" href="/dang-nhap/login">Đăng xuất</a>
             </li>
         </ul>
     </div>
@@ -26,42 +24,31 @@
 
 <div th:fragment="sidenavAdmin">
     <div class="bg-light pt-3" style="width: 250px; min-height: calc(100vh - 66px);">
-        <ul class="nav flex-column">
+        <ul class="nav flex-column ">
             <br>
             <li class="nav-item">
-                <a class="nav-link btn text-black" href="/san-pham/hien-thi" style="text-align: start">
-                    <i class="bi bi-box-seam"></i> Quản Lý Sản Phẩm
-                </a>
+                <a class="nav-link btn btn-success text-white" href="/san-pham/hien-thi">Quản Lý Sản Phẩm</a>
+
             </li>
             <br>
             <li class="nav-item">
-                <a class="nav-link btn text-black" href="/ban-hang-online/don-hang" style="text-align: start">
-                    <i class="bi bi-cart4"></i> Bán Hàng Online
-                </a>
+                <a class="nav-link btn btn-success text-white" href="/ban-hang-online/don-hang">Bán Hàng Online</a>
             </li>
             <br>
             <li class="nav-item">
-                <a class="nav-link btn text-black" href="/ban-hang/tao-don-hang" style="text-align: start">
-                    <i class="bi bi-shop"></i> Bán Hàng Tại Quầy
-                </a>
+                <a class="nav-link btn btn-success text-white" href="/ban-hang/tao-don-hang">Bán Hàng Tại Quầy</a>
             </li>
             <br>
             <li class="nav-item">
-                <a class="nav-link btn text-black" href="/hoa-don/hien-thi" style="text-align: start">
-                    <i class="bi bi-receipt"></i> Quản Lý Hóa Đơn
-                </a>
+                <a class="nav-link btn btn-success text-white" href="/hoa-don/hien-thi"> Quản Lý Hóa Đơn</a>
             </li>
             <br>
             <li class="nav-item">
-                <a class="nav-link btn text-black" href="/nhan-vien/hien-thi" style="text-align: start">
-                    <i class="bi bi-people"></i> Quản Lý Nhân Viên
-                </a>
+                <a class="nav-link btn btn-success text-white" href="/nhan-vien/hien-thi">Quản Lý Nhân Viên</a>
             </li>
             <br>
             <li class="nav-item">
-                <a class="nav-link btn text-black" href="/hoa-don/doanh-thu" style="text-align: start">
-                    <i class="bi bi-bar-chart-line"></i> Thống Kê
-                </a>
+                <a class="nav-link btn btn-success text-white" href="/hoa-don/doanh-thu">Thống Kê</a>
             </li>
         </ul>
     </div>
