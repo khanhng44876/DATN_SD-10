@@ -19,5 +19,6 @@ public class KichThuoc {
     private String tenKichThuoc;
     @Column(name = "mo_ta")
     private String moTa;
+
 }
 

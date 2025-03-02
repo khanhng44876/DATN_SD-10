@@ -2,7 +2,9 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -17,19 +19,25 @@ public class KhuyenMai {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Integer id;
 
-   private String ten_khuyen_mai;
+    Integer so_luong;
 
-   private String mo_ta;
+    String ten_khuyen_mai;
 
-   private Double ma_giam;
+    String mo_ta;
 
-   private Double muc_giam;
+    String ma_khuyen_mai;
 
-   private Date ngay_bat_dau;
+    Integer muc_giam;
 
-    Date ngay_ket_thuc;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate ngay_bat_dau;
 
-    String trang_thai;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate ngay_ket_thuc;
 
     Double dieu_kien;
+
+    Double giam_toi_da;
+
+    String trang_thai;
 }

@@ -26,17 +26,18 @@ CREATE TABLE san_pham_chi_tiet (
 
 );
 CREATE TABLE khuyen_mai (
-    
     id INT IDENTITY(1,1) PRIMARY KEY,
+    so_luong int not null,
     ten_khuyen_mai NVARCHAR(100) NOT NULL,
     mo_ta NVARCHAR(255),
-    ma_giam DECIMAL(10, 2) NOT NULL,
-	muc_giam float,
-	dieu_kien float,
-    ngay_bat_dau DATE NOT NULL, 
+    ma_khuyen_mai NVARCHAR(255) NOT NULL,
+    muc_giam int not null,
+    ngay_bat_dau DATE NOT NULL,
     ngay_ket_thuc DATE NOT NULL,
-	id_hoa_don INT,
-    trang_thai INT not null 
+    dieu_kien float NOT NULL,
+    giam_toi_da float NOT NULL,
+    id_hoa_don int,
+    trang_thai NVARCHAR(50) not null
 );
 
 CREATE TABLE danh_muc (
@@ -290,9 +291,9 @@ values ('khanhok123','khanh','SA12342',1,'jdk1234@gmail.com','0987654321','2025-
 
 
 insert into khuyen_mai(ten_khuyen_mai, mo_ta, ma_giam, muc_giam, ngay_bat_dau,ngay_ket_thuc,id_hoa_don,trang_thai)
-values('Monday','abc',10,1.2,'2025-02-14','2025-02-14',1,0),
-('friday','abc',10,1.2,'2025-02-14','2025-02-14',1,0),
-('sunday','abc',10,1.2,'2025-02-14','2025-02-14',1,0)
+values(10,'Monday','abc','SP012345',10,'2025-02-14','2025-03-01',100,30,1,'Đang kích hoạt'),
+    (20,'friday','abc','SP015645',10,'2025-02-14','2025-03-01',200,50,1,'Đang kích hoạt'),
+    (30,'sunday','abc','SP23415',15,'2025-02-14','2025-03-01',150,40,1,'Đang kích hoạt')
 
 insert into hoa_don(id_khuyen_mai,id_nhan_vien, id_khach_hang, ngay_tao,ngay_sua, tong_tien, trang_thai_thanh_toan, hinh_thuc_thanh_toan)
 values (1,3,1,'2025-02-14','2025-02-14',22222222,'Da thanh toan','Chuyen Khoan'),

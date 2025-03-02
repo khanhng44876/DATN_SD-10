@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quan Ly Khuyen Mai</title>
+  <head th:replace="giao_dien_chinh/libAdmin :: libheaderadmin"></head>
+  <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+<div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
+<div class="d-flex">
+  <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
+  <div class="pt-3" style="width: calc(100% - 250px);">
+    <div class="container">
+      <h2 style="text-align: center;">Quản Lý Khuyến Mãi</h2>
+<!--      Bảng khuyến mãi-->
+      <table class="table table-bordered" id="kmTable">
+        <tr>
+          <th>STT</th>
+          <th>Mã khuyến mãi</th>
+          <th>Tên khuyến mãi</th>
+          <th>Số lượng</th>
+          <th>Mô tả</th>
+          <th>Mức giảm</th>
+          <th>GIảm tối đa</th>
+          <th>Điều kiện áp dụng</th>
+          <th>Ngày bắt đầu</th>
+          <th>Ngày kết thúc</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+        <tbody>
+        <tr th:each="k : ${listkm}">
+          <td></td>
+          <td th:text="${k.ma_khuyen_mai}"></td>
+          <td th:text="${k.ten_khuyen_mai}"></td>
+          <td th:text="${k.so_luong}"></td>
+          <td th:text="${k.mo_ta}"></td>
+          <td th:text="${k.muc_giam}"></td>
+          <td th:text="${k.giam_toi_da}"></td>
+          <td th:text="${k.dieu_kien}"></td>
+          <td th:text="${k.ngay_bat_dau}"></td>
+          <td th:text="${k.ngay_ket_thuc}"></td>
+          <td th:text="${k.trang_thai}"></td>
+          <td>
+            <!-- Button Cập nhật -->
+            <button type="button" th:attr="data-id = ${k.id}" value="update" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kmModal" onclick="openModal(this)">
+              <i class="fa fa-pencil-alt"></i>
+            </button>
+
+          </td>
+        </tr>
+        </tbody>
+
+        <button type="button" value="create" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#kmModal" onclick="openModal(this)">
+          Thêm
+        </button>
+
+        <!-- Modal Form thêm khuyến mãi-->
+        <div class="modal fade" id="kmModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg ">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalTitle"></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form id="kmForm" >
+                  <div class="row">
+                    <div class="col-md-6">
+                      <input id="km_id" type="hidden">
+                      <label class="lb-form">Mã khuyến mãi</label>
+                      <input id="ma_khuyen_mai" class="form-control" required>
+
+                      <label class="lb-form">Tên khuyến mãi</label>
+                      <input id="ten_khuyen_mai" class="form-control" required>
+
+
+                      <label class="lb-form">Số lượng</label>
+                      <input id="so_luong" class="form-control" type="number" required>
+
+
+                      <label class="lb-form">Mức giảm</label>
+                      <input id="muc_giam" class="form-control" type="number" required>
+
+
+                      <label class="lb-form">Giảm tối đa</label>
+                      <input type="number" id="giam_toi_da" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="lb-form">Điều kiện áp dụng</label>
+                      <input type="number" id="dieu_kien" class="form-control" required>
+
+                      <label class="lb-form">Mô tả</label>
+                      <input type="text" id="mo_ta" class="form-control">
+
+                      <label class="lb-form">Ngày bắt đầu</label>
+                      <input type="date" id="ngay_bat_dau" class="form-control" required>
+
+                      <label class="lb-form">Ngày kết thúc</label>
+                      <input type="date" id="ngay_ket_thuc" class="form-control" required>
+
+                      <label class="lb-form">Trạng thái</label>
+                      <select id="trang_thai" class="form-control">
+                        <option value="">Chọn trạng thái</option>
+                        <option value="Đang kích hoạt">Đang kích hoạt</option>
+                        <option value="Ngừng kích hoạt">Ngừng kích hoạt</option>
+                      </select>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="save" class="btn btn-primary" >Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </table>
+      <script src="/js/khuyen_mai/kmJs.js"></script>
+    </div>
+  </div>
+</div>
+</body>
+</html>
