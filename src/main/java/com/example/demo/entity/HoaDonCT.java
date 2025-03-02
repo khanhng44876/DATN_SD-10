@@ -25,5 +25,5 @@ public class HoaDonCT {
     @ManyToOne @JoinColumn(name ="id_san_pham_chi_tiet", insertable = false, updatable = false )
     private SanPhamChiTiet sanPhamChiTiet;
     @ManyToOne @JoinColumn(name = "id_hoa_don", insertable = false, updatable = false)
-    private HoaDonCT hoaDonCT;
+    private HoaDon hoaDon;
 }

@@ -36,11 +36,11 @@
 
               <!-- Cột thông tin hóa đơn -->
               <td th:text="${hoaDon.id}"></td>
-              <td th:text="${hoaDon.nhanVien.tai_khoan}"></td>
-              <td th:text="${hoaDon.ngay_tao}"></td>
-              <td th:text="${hoaDon.trang_thai_thanh_toan}"></td>
-              <td th:text="${hoaDon.hinh_thuc_thanh_toan}"></td>
-              <td><span th:inline="text">[[${#numbers.formatDecimal(hoaDon.tong_tien, 0, 'COMMA', 0, 'POINT')}]]</span></td>
+              <td th:text="${hoaDon.nhanVien.ten_nhan_vien}"></td>
+              <td th:text="${hoaDon.ngayTao}"></td>
+              <td th:text="${hoaDon.trangThaiThanhToan}"></td>
+              <td th:text="${hoaDon.hinhThucThanhToan}"></td>
+              <td><span th:inline="text">[[${#numbers.formatDecimal(hoaDon.tongTien, 0, 'COMMA', 0, 'POINT')}]]</span></td>
 
               <!-- Cột nút thao tác -->
               <td>
@@ -75,11 +75,11 @@
 
       // Hiển thị thông tin hóa đơn vào modal
       document.querySelector('#hoadonchitiet .modal-title').innerText = `Thông Tin Hóa Đơn #${hoaDon.id}`;
-      document.querySelector('#hoadonchitiet .form-control-plaintext.ten-nhan-vien').innerText = hoaDon.taiKhoan.tenDangNhap;
-      document.querySelector('#hoadonchitiet .form-control-plaintext.ngay-tao').innerText = hoaDon.ngayLap;
+      document.querySelector('#hoadonchitiet .form-control-plaintext.ten-nhan-vien').innerText = hoaDon.nhanVien.ten_nhan_vien;
+      document.querySelector('#hoadonchitiet .form-control-plaintext.ngay-tao').innerText = hoaDon.ngayTao;
       document.querySelector('#hoadonchitiet .form-control-plaintext.hinh-thuc-thanh-toan').innerText = hoaDon.hinhThucThanhToan;
-      document.querySelector('#hoadonchitiet .form-control-plaintext.ho-ten').innerText = hoaDon.hoTen;
-      document.querySelector('#hoadonchitiet .form-control-plaintext.s-d-t').innerText = hoaDon.soDienThoai;
+      document.querySelector('#hoadonchitiet .form-control-plaintext.ho-ten').innerText = hoaDon.khachHang.ten_khach_hang;
+      document.querySelector('#hoadonchitiet .form-control-plaintext.s-d-t').innerText = hoaDon.khachHang.so_dien_thoai;
       document.querySelector('#hoadonchitiet .form-control-plaintext.ghi-chu').innerText = hoaDon.ghiChu;
       document.querySelector('#hoadonchitiet .form-control-plaintext.tong-tien').innerText = formatmoney(hoaDon.tongTien);
 
@@ -100,9 +100,9 @@
           main += `
                     <tr>
                         <td>${result[i].id}</td>
-                        <td>${result[i].ctsp.sanPham.tenSanPham}</td>
-                        <td>${result[i].soLuong}</td>
-                        <td>${formatmoney(result[i].donGia)}</td>
+                        <td>${result[i].SanPhamChitiet.SanPham.ten_san_pham}</td>
+                        <td>${result[i].so_luong}</td>
+                        <td>${formatmoney(result[i].don_gia)}</td>
                         <td>${formatmoney(result[i].thanhTien)}</td>
                     </tr>
                 `;
