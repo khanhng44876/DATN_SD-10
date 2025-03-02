@@ -14,9 +14,9 @@ public class Hang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    private String ten_hang;
+    @Column(name = "ten_hang")
+    private String tenHang;
     @Column(name = "trang_thai")
-    private String trangthai;
+    private String trangThai;
 
 }
