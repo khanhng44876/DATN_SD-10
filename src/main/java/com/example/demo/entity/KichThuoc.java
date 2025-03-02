@@ -9,12 +9,16 @@ import lombok.*;
 @NoArgsConstructor
 @Entity
 @Data
-@Table(name = "kch_thuoc")
+@Table(name = "kich_thuoc")
 public class KichThuoc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    private String ten_kick_thuoc;
-    private String mo_ta;
+    @Column(name = "ten_kich_thuoc")
+    private String tenKichThuoc;
+    @Column(name = "mo_ta")
+    private String moTa;
+
 }
 

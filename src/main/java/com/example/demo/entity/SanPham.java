@@ -2,7 +2,9 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -20,10 +22,10 @@ public class SanPham {
     private String ma_san_pham;
 
     private String ten_san_pham;
-
-    private Date ngay_nhap;
-
-    private Date ngay_sua;
+    @DateTimeFormat(pattern = "yyyy/MM/dd")
+    private LocalDate ngay_nhap;
+    @DateTimeFormat(pattern = "yyyy/MM/dd")
+    private LocalDate ngay_sua;
 
     private String trang_thai;
 

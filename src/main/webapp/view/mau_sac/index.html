@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quan Ly Khuyen Mai</title>
+    <head th:replace="giao_dien_chinh/libAdmin :: libheaderadmin"></head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+<div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
+<div class="d-flex">
+    <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
+    <div class="pt-3" style="width: calc(100% - 250px);">
+        <div class="container">
+            <h2 style="text-align: center;">Quản lý màu sắc</h2>
+            <table class="table table-bordered" id="msTable">
+                <thead>
+                <tr>
+                    <th>Tên màu</th>
+                    <th>Mô tả</th>
+                    <th>Hành động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="m : ${msList}">
+
+                    <td th:text="${m.ten_mau_sac}"></td>
+                    <td th:text="${m.mo_ta}"></td>
+                    <td>
+                        <!-- Button Cập nhật -->
+                        <button type="button" th:attr="data-id = ${m.id}" value="update" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#msModal" onclick="openModal(this)">
+                            <i class="fa fa-pencil-alt"></i>
+                        </button>
+
+                    </td>
+                </tr>
+                </tbody>
+
+                <button type="button" value="create" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#msModal" onclick="openModal(this)">
+                    Thêm
+                </button>
+
+                <!-- Modal Form màu săc-->
+                <div class="modal fade" id="msModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg ">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="modalTitle"></h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="msForm" >
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <input id="km_id" type="hidden">
+                                            <label class="lb-form">Tên màu</label>
+                                            <input id="ten_mau_sac" class="form-control" required>
+
+                                            <label class="lb-form">Mô tả</label>
+                                            <input id="mo_ta" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" id="save" class="btn btn-primary" >Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </table>
+            <script>
+                $('#msTable').DataTable();
+            </script>
+            <script src="/js/mau_sac/msJs.js"></script>
+        </div>
+    </div>
+</div>
+</body>
+</html>

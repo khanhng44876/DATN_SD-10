@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quản Lý Hãng Sản Phẩm</title>
+    <meta charset="utf-8">
+    <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+<div>
+    <div th:replace="~{giao_dien_chinh/navbarAdmin :: headerAdmin}"></div>
+    <div class="d-flex">
+        <div th:replace="~{giao_dien_chinh/navbarAdmin :: sidenavAdmin}"></div>
+        <div class="pt-3" style="width: calc(100% - 250px);">
+            <div class="container">
+                <h2 style="text-align: center;">Quản Lý Hãng Sản Phẩm</h2>
+
+                <!-- Ô tìm kiếm -->
+                <div class="row mb-3">
+                    <div class="col-md-6 offset-md-6">
+                        <div class="input-group">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Nhập tên hãng để tìm kiếm..." onkeydown="if (event.key === 'Enter') searchHang();">
+                            <button class="btn btn-primary" onclick="searchHang()">Tìm kiếm</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dropdown chọn số lượng -->
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label for="pageSize">Hiển thị số lượng:</label>
+                        <select id="pageSize" class="form-control" onchange="updatePageSize()">
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Bảng dữ liệu -->
+                <table id="example" class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên hãng sản phẩm</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                    <tr th:each="d : ${listHang}">
+                        <td th:text="${d.id}"></td>
+                        <td th:text="${d.tenHang}"></td>
+                        <td th:text="${d.trangThai}"></td>
+                        <td>
+                            <button th:onclick="'loadHangData(' + ${d.id} + ')'" class="btn btn-warning">
+                                <i class="fa fa-pencil-alt"></i>
+                            </button>
+                            <button th:onclick="'loadHangData(' + ${d.id} + ')'" class="btn btn-success">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- Form thêm/cập nhật -->
+                <div class="row">
+                    <div class="col-sm-13">
+                        <form>
+                            <label class="lb-form">Tên hãng sản phẩm</label>
+                            <input id="tenHang" class="form-control" required>
+                            <span id="errorTenHang" class="text-danger"></span>
+
+                            <label class="lb-form">Trạng thái</label>
+                            <select id="trangThai" class="form-control" required>
+                                <option value="" disabled selected>Chọn trạng thái</option>
+                                <option value="Hoạt động">Hoạt động</option>
+                                <option value="Không hoạt động">Không hoạt động</option>
+                            </select>
+                            <span id="errorTrangThai" class="text-danger"></span>
+                            <br>
+                            <button type="button" onclick="validateForm('add')" class="btn btn-primary">Add</button>
+                            <button type="button" onclick="validateForm('update')" class="btn btn-warning">Update</button>
+                            <br><br>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    // Hàm validate form
+    function validateForm(action) {
+        document.getElementById("errorTenHang").innerText = "";
+        document.getElementById("errorTrangThai").innerText = "";
+        const tenHang = document.getElementById("tenHang").value.trim();
+        const trangThai = document.getElementById("trangThai").value.trim();
+        let isValid = true;
+
+        if (tenHang === "") {
+            document.getElementById("errorTenHang").innerText = "Tên hãng sản phẩm không được để trống.";
+            isValid = false;
+        } else if (trangThai === "") {
+            document.getElementById("errorTrangThai").innerText = "Trạng thái không được để trống.";
+            isValid = false;
+        }
+
+        if (isValid) {
+            if (action === 'add') {
+                themHang();
+            } else if (action === 'update') {
+                capNhatHang(window.currentHangId);
+            }
+        }
+    }
+
+    // Hàm tải dữ liệu hãng
+    async function loadHangData(idhang) {
+        console.log("ID hãng nhận được:", idhang);
+        try {
+            const id = parseInt(idhang, 10);
+            if (isNaN(id)) {
+                console.error("ID hãng không hợp lệ:", idhang);
+                alert("ID hãng không hợp lệ.");
+                return;
+            }
+            const response = await fetch(`/san-pham/danh-sach-hang/${id}`);
+            if (!response.ok) {
+                console.error("Lỗi khi tải dữ liệu hãng:", response.statusText);
+                alert(`Không thể tải dữ liệu hãng. Mã lỗi: ${response.status}`);
+                return;
+            }
+            const hang = await response.json();
+            if (!hang.tenHang || !hang.trangThai) {
+                console.error("Dữ liệu trả về không hợp lệ:", hang);
+                alert("Không thể tải dữ liệu hãng. Vui lòng kiểm tra lại.");
+                return;
+            }
+            document.getElementById("tenHang").value = hang.tenHang;
+            document.getElementById("trangThai").value = hang.trangThai;
+            window.currentHangId = idhang;
+        } catch (error) {
+            console.error("Đã có lỗi xảy ra khi tải dữ liệu hãng:", error);
+            alert("Không thể tải dữ liệu hãng.");
+        }
+    }
+
+    // Hàm thêm hãng
+    async function themHang() {
+        var con = window.confirm("Bạn có chắc chắn muốn thêm hãng sản phẩm?");
+        if (!con) return;
+        var payload = {
+            "tenHang": document.getElementById("tenHang").value.trim(),
+            "trangThai": document.getElementById("trangThai").value.trim()
+        };
+        console.log("Dữ liệu gửi lên:", payload);
+        const response = await fetch("/san-pham/them-hang", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (response.ok) {
+            alert("Hãng sản phẩm đã được thêm thành công!");
+            window.location.href = "/san-pham/hang";
+        } else {
+            const errorText = await response.text();
+            console.error("Lỗi từ server:", errorText);
+            alert(`Đã có lỗi xảy ra khi thêm hãng: ${errorText}`);
+        }
+    }
+
+    // Hàm cập nhật hãng
+    async function capNhatHang(id) {
+        var con = window.confirm("Bạn có chắc chắn muốn cập nhật hãng sản phẩm?");
+        if (!con) return;
+        var payload = {
+            "tenHang": document.getElementById("tenHang").value.trim(),
+            "trangThai": document.getElementById("trangThai").value.trim()
+        };
+        console.log("Dữ liệu gửi lên:", payload);
+        const response = await fetch(`/san-pham/cap-nhat-hang/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (response.ok) {
+            alert("Hãng sản phẩm đã được cập nhật thành công!");
+            window.location.href = "/san-pham/hang";
+        } else {
+            const errorText = await response.text();
+            console.error("Lỗi từ server:", errorText);
+            alert(`Đã có lỗi xảy ra khi cập nhật hãng: ${errorText}`);
+        }
+    }
+
+    // Hàm hiển thị số lượng hàng
+    function displayRows(rows, pageSize) {
+        rows.forEach((row, index) => {
+            if (index < pageSize) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+
+    // Hàm xử lý tìm kiếm
+    function searchHang() {
+        const searchValue = document.getElementById("searchInput").value.trim().toLowerCase();
+        const rows = document.querySelectorAll("#tableBody tr");
+        const pageSize = parseInt(document.getElementById("pageSize").value) || 10;
+        const filteredRows = [];
+
+        // Lọc dữ liệu theo tìm kiếm
+        rows.forEach(row => {
+            const tenHang = row.cells[1].textContent.trim().toLowerCase();
+            if (tenHang.startsWith(searchValue)) {
+                filteredRows.push(row);
+            }
+        });
+
+        // Ẩn tất cả hàng trước khi hiển thị
+        rows.forEach(row => row.style.display = "none");
+
+        // Hiển thị số lượng hàng theo pageSize từ kết quả lọc
+        if (filteredRows.length > 0) {
+            displayRows(filteredRows, pageSize);
+        } else if (searchValue !== "") {
+            alert("Hãng bạn tìm không tồn tại!");
+            updatePageSize(); // Khôi phục bảng theo pageSize
+        } else {
+            updatePageSize(); // Hiển thị theo pageSize khi ô tìm kiếm rỗng
+        }
+    }
+
+    // Hàm cập nhật số lượng hiển thị
+    function updatePageSize() {
+        const pageSize = parseInt(document.getElementById("pageSize").value) || 10;
+        const rows = document.querySelectorAll("#tableBody tr");
+
+        // Ẩn tất cả hàng trước khi hiển thị
+        rows.forEach(row => row.style.display = "none");
+
+        // Hiển thị đúng số lượng hàng theo pageSize
+        displayRows(rows, pageSize);
+    }
+
+    // Khởi tạo hiển thị ban đầu
+    document.addEventListener("DOMContentLoaded", function() {
+        updatePageSize(); // Hiển thị chính xác 10 hàng khi tải trang
+    });
+</script>
+</body>
+</html>
