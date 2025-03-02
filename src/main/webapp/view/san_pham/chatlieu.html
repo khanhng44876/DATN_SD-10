@@ -30,8 +30,8 @@
                         <tbody>
                         <tr th:each="d : ${listct}">
                             <td th:text="${d.id}"></td>
-                            <td th:text="${d.ten_chat_lieu}"></td>
-                            <td th:text="${d.mo_ta}"></td>
+                            <td th:text="${d.tenChatLieu}"></td>
+                            <td th:text="${d.moTa}"></td>
                             <td>
                                 <button th:onclick="'loadMSData(' + ${d.id} + ')'" class="btn btn-warning">
                                     <i class="fa fa-pencil-alt"></i>
