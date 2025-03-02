@@ -38,7 +38,7 @@
                             <td th:text="${d.ngay_nhap}"></td>
                             <td th:text="${d.ngay_sua}"></td>
                             <td th:text="${d.danhMuc != null ? d.danhMuc.tendanhmuc : 'Chưa có danh mục'}"></td>
-                            <td th:text="${d.hang != null ? d.hang.ten_hang : 'Chưa có hãng'}"></td>
+                            <td th:text="${d.hang != null ? d.hang.tenHang : 'Chưa có hãng'}"></td>
                             <td th:text="${d.trang_thai}"></td>
                             <td>
                                 <!--                            <button th:attr="onclick=|openChiTietModal('${d.id}')|" data-bs-toggle="modal" data-bs-target="#hoadonchitiet" class="edit-btn"><i class="fa fa-eye"></i></button>-->
@@ -86,7 +86,7 @@
                                 <option th:each="hang : ${dshang}" th:value="${hang.id}" th:text="${hang.ten_hang}"></option>
                             </select>
                             <span id="errorDanhMuc" class="text-danger"></span>
-                            <a th:href="@{/san-pham/danh-muc}">Thêm hãng</a>
+                            <a th:href="@{/san-pham/hang}">Thêm hãng</a>
                             <br>
                             <label class="lb-form">Trạng Thái</label>
                             <select id="trang_thai" class="form-control">
