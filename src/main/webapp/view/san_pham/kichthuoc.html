@@ -1,217 +1,241 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<!--<div th:if="${session.nhanVien != null}">-->
+<head>
+    <title>Quản Lý Kích Thước</title>
+    <meta charset="utf-8">
+    <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+<div>
+    <div th:replace="~{giao_dien_chinh/navbarAdmin :: headerAdmin}"></div>
+    <div class="d-flex">
+        <div th:replace="~{giao_dien_chinh/navbarAdmin :: sidenavAdmin}"></div>
+        <div class="pt-3" style="width: calc(100% - 250px);">
+            <div class="container">
+                <h2 style="text-align: center;">Quản Lý Kích Thước</h2>
 
+                <!-- Ô tìm kiếm -->
+                <div class="row mb-3">
+                    <div class="col-md-6 offset-md-6">
+                        <div class="input-group">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Nhập tên kích thước để tìm kiếm..." onkeydown="if (event.key === 'Enter') searchKichThuoc();">
+                            <button class="btn btn-primary" onclick="searchKichThuoc()">Tìm kiếm</button>
+                        </div>
+                    </div>
+                </div>
 
-    <head>
-        <title>Quan Ly Kich Thuoc</title>
-        <meta charset="utf-8">
-        <head th:replace="giao_dien_chinh/libAdmin :: libheaderadmin"></head>
-        <link rel="stylesheet" type="text/css" href="/css/style.css">
-    </head>
-    <body>
-    <div>
-        <div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
-        <div class="d-flex">
-            <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
-            <div class="pt-3" style="width: calc(100% - 250px);">
-                <div class="container">
-                    <h2 style="text-align: center;">Quản Lý Kích Thước</h2>
-                    <table id="example" class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tên kích thước</th>
-                            <th>Mô tả</th>
-                            <th>Thao tác</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="d : ${listsize}">
-                            <td th:text="${d.id}"></td>
-                            <td th:text="${d.ten_kich_thuoc}"></td>
-                            <td th:text="${d.mo_ta}"></td>
-                            <td>
-                                <button th:onclick="'loadMSData(' + ${d.id} + ')'" class="btn btn-warning">
-                                    <i class="fa fa-pencil-alt"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <div class="row">
-                        <div class="col-sm-13">
-                            <label class="lb-form">Tên Kích thước</label>
-                            <input id="tenSize" class="form-control" required>
-                            <span id="errorTenSize" class="text-danger"></span>
+                <!-- Dropdown chọn số lượng -->
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label for="pageSize">Hiển thị số lượng:</label>
+                        <select id="pageSize" class="form-control" onchange="updatePageSize()">
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                </div>
 
-                            <label class="lb-form">Ghi chú</label>
+                <!-- Bảng dữ liệu -->
+                <table id="example" class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên kích thước</th>
+                        <th>Mô tả</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                    <tr th:each="d : ${listKichThuoc}">
+                        <td th:text="${d.id}"></td>
+                        <td th:text="${d.tenKichThuoc}"></td>
+                        <td th:text="${d.moTa}"></td>
+                        <td>
+                            <button th:onclick="'loadHangData(' + ${d.id} + ')'" class="btn btn-warning">
+                                <i class="fa fa-pencil-alt"></i>
+                            </button>
+                            <button th:onclick="'loadHangData(' + ${d.id} + ')'" class="btn btn-success">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- Form thêm/cập nhật -->
+                <div class="row">
+                    <div class="col-sm-13">
+                        <form>
+                            <label class="lb-form">Tên kích thước</label>
+                            <input id="tenKichThuoc" class="form-control" required>
+                            <span id="errorTenKichThuoc" class="text-danger"></span>
+                            <label class="lb-form">Mô tả</label>
                             <input id="moTa" class="form-control" required>
                             <span id="errorMoTa" class="text-danger"></span>
                             <br>
-                            <button onclick="validateForm('add')" class="btn btn-primary">Add</button>
-                            <button onclick="validateForm('update')" class="btn btn-warning">Update</button>
+                            <button type="button" onclick="validateForm('add')" class="btn btn-primary">Add</button>
+                            <button type="button" onclick="validateForm('update')" class="btn btn-warning">Update</button>
                             <br><br>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    </body>
-    <script>
-        $('#example').DataTable();
-    </script>
-    <script th:inline="javascript">
-
-        function validateForm(action) {
-            // Clear error messages
-            document.getElementById("errorTenSize").innerText = "";
-            document.getElementById("errorMoTa").innerText = "";
-
-
-
-            // Get values
-            const tenSize = document.getElementById("tenSize").value;
-            const moTa = document.getElementById("moTa").value;
-
-            let isValid = true;
-
-            // Validate fields
-            if (tenSize.trim() === "") {
-                document.getElementById("errorTenSize").innerText = "Kích thước không được để trống.";
-                isValid = false;
-            } else if (!isNaN(tenSize) && parseInt(tenSize, 10) < 0) {
-                document.getElementById("errorTenSize").innerText = "Không được là số âm.";
-                isValid = false;
-            }
-            if (moTa.trim() === "") {
-                document.getElementById("errorMoTa").innerText = "Không được để trống.";
-                isValid = false;
-            }
-
-
-
-            // If all fields are valid, proceed with action
-            if (isValid) {
-                if (action === 'add') {
-                    themMS();
-                } else if (action === 'update') {
-                    capNhatS(window.currentMsId);
-                }
-            }
-        }
-
-        async function loadMSData(idkt) {
-            console.log("ID Kích thước nhận được:", idkt);
-            try {
-                const id = parseInt(idkt, 10);
-                if (isNaN(id)) {
-                    console.error("ID Kích thước không hợp lệ:", idkt);
-                    alert("ID Kích thước không hợp lệ.");
-                    return;
-                }
-                // Gửi yêu cầu GET đến server để lấy dữ liệu
-                const response = await fetch(`/san-pham/danh-sach-kich-thuoc/${id}`);
-
-                if (!response.ok) {
-                    console.error("Lỗi khi tải dữ liệu kích thước:", response.statusText);
-                    alert(`Không thể tải dữ liệu kích thước. Mã lỗi: ${response.status}`);
-                    return;
-                }
-
-                const size = await response.json();
-
-                // Kiểm tra dữ liệu trả về
-                if (!kichthuoc.tenSize || !kichthuoc.moTa) {
-                    console.error("Dữ liệu trả về không hợp lệ:", kichthuoc);
-                    alert("Không thể tải dữ liệu kích thước. Vui lòng kiểm tra lại.");
-                    return;
-                }
-
-                // Điền dữ liệu vào form
-                document.getElementById("tenSize").value = kichthuoc.tenSize;
-                document.getElementById("moTa").value = kichthuoc.moTa;
-
-                window.currentMsId = idkt; // Lưu lại ID màu sắc hiện tại
-            } catch (error) {
-                console.error("Đã có lỗi xảy ra khi tải dữ liệu kích thước:", error);
-                alert("Không thể tải dữ liệu kích thước.");
-            }
-        }
-
-        async function themMS() {
-            var con = window.confirm("Bạn có chắc chắn muốn thêm kích thước?");
-            if (con == false) {
-                return;
-            }
-
-            // Thu thập dữ liệu từ form
-            var payload = {
-                "tenSize": document.getElementById("tenSize").value,
-                "moTa": document.getElementById("moTa").value,
-
-            };
-
-            // Gửi dữ liệu đến server (POST request)
-            const response = await fetch("/san-pham/them-kich-thuoc", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload) // Chuyển dữ liệu thành JSON
-            });
-
-            // Kiểm tra phản hồi từ server
-            if (response.ok) {
-                alert("Kích thước đã được thêm thành công!");
-                // Chuyển hướng về trang hiển thị danh sách sản phẩm
-                window.location.href = "/san-pham/kich-thuoc";
-            } else {
-                alert("Đã có lỗi xảy ra khi thêm kích thước.");
-            }
-        }
-
-        async function capNhatS(idms) {
-            var con = window.confirm("Bạn có chắc chắn muốn cập nhật kích thước?");
-            if (con == false) {
-                return;
-            }
-
-            // Thu thập dữ liệu từ form
-            var payload = {
-                "tenSize": document.getElementById("tenSize").value,
-                "moTa": document.getElementById("moTa").value,
-
-            };
-
-            // Gửi dữ liệu đến server (PUT request)
-            const response = await fetch(`/san-pham/cap-nhat-kich-thuoc/${idms}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload) // Chuyển dữ liệu thành JSON
-            });
-
-            // Kiểm tra phản hồi từ server
-            if (response.ok) {
-                alert("Kích thước đã được cập nhật thành công!");
-                // Chuyển hướng về trang hiển thị danh sách sản phẩm
-                window.location.href = "/san-pham/kich-thuoc";
-            } else {
-                alert("Đã có lỗi xảy ra khi cập nhật kích thước.");
-            }
-        }
-
-
-    </script>
-
-
-
-<!--</div>-->
-<div th:if="${session.nhanVien == null}">
-    <p>Vui lòng <a th:href="@{/dang-nhap/login}">đăng nhập</a>.</p>
 </div>
 
+<script th:inline="javascript">
+    // Hàm validate form
+    function validateForm(action) {
+        document.getElementById("errorTenKichThuoc").innerText = "";
+        document.getElementById("errorMoTa").innerText = "";
+        const tenKichThuoc = document.getElementById("tenKichThuoc").value.trim();
+        const moTa = document.getElementById("moTa").value.trim();
+        let isValid = true;
+
+        if (tenKichThuoc === "") {
+            document.getElementById("errorTenKichThuoc").innerText = "Tên kích thước không được để trống.";
+            isValid = false;
+        } else if (moTa === "") {
+            document.getElementById("errorMoTa").innerText = "Mô tả không được để trống.";
+            isValid = false;
+        }
+
+        if (isValid) {
+            if (action === 'add') {
+                themKichThuoc();
+            } else if (action === 'update') {
+                capNhatKichThuoc(window.currentHangId);
+            }
+        }
+    }
+
+    // Hàm tải dữ liệu kích thước
+    async function loadHangData(idkichthuoc) {
+        console.log("ID kích thước nhận được:", idkichthuoc);
+        try {
+            const id = parseInt(idkichthuoc, 10);
+            if (isNaN(id)) {
+                console.error("ID kích thước không hợp lệ:", idkichthuoc);
+                alert("ID kích thước không hợp lệ.");
+                return;
+            }
+            const response = await fetch(`/san-pham/danh-sach-kich-thuoc/${id}`);
+            if (!response.ok) {
+                console.error("Lỗi khi tải dữ liệu kích thước:", response.statusText);
+                alert(`Không thể tải dữ liệu kích thước. Mã lỗi: ${response.status}`);
+                return;
+            }
+            const kichthuoc = await response.json();
+            if (!kichthuoc.tenKichThuoc || !kichthuoc.moTa) {
+                console.error("Dữ liệu trả về không hợp lệ:", kichthuoc);
+                alert("Không thể tải dữ liệu kích thước. Vui lòng kiểm tra lại.");
+                return;
+            }
+            document.getElementById("tenKichThuoc").value = kichthuoc.tenKichThuoc;
+            document.getElementById("moTa").value = kichthuoc.moTa;
+            window.currentHangId = idkichthuoc;
+        } catch (error) {
+            console.error("Đã có lỗi xảy ra khi tải dữ liệu kích thước:", error);
+            alert("Không thể tải dữ liệu kích thước.");
+        }
+    }
+
+    // Hàm thêm kích thước
+    async function themKichThuoc() {
+        var con = window.confirm("Bạn có chắc chắn muốn thêm kích thước sản phẩm?");
+        if (!con) return;
+        var payload = {
+            "tenKichThuoc": document.getElementById("tenKichThuoc").value.trim(),
+            "moTa": document.getElementById("moTa").value.trim()
+        };
+        console.log("Dữ liệu gửi lên:", payload);
+        const response = await fetch("/san-pham/them-kich-thuoc", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (response.ok) {
+            alert("Kích thước đã được thêm thành công!");
+            window.location.href = "/san-pham/kich-thuoc";
+        } else {
+            const errorText = await response.text();
+            console.error("Lỗi từ server:", errorText);
+            alert(`Đã có lỗi xảy ra khi thêm kích thước: ${errorText}`);
+        }
+    }
+
+    // Hàm cập nhật kích thước (sửa lỗi)
+    async function capNhatKichThuoc(id) {
+        var con = window.confirm("Bạn có chắc chắn muốn cập nhật kích thước sản phẩm?");
+        if (!con) return;
+        var payload = {
+            "tenKichThuoc": document.getElementById("tenKichThuoc").value.trim(),
+            "moTa": document.getElementById("moTa").value.trim()
+        };
+        console.log("Dữ liệu gửi lên:", payload);
+        const response = await fetch(`/san-pham/cap-nhat-kich-thuoc/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (response.ok) {
+            alert("Kích thước đã được cập nhật thành công!");
+            window.location.href = "/san-pham/kich-thuoc";
+        } else {
+            const errorText = await response.text();
+            console.error("Lỗi từ server:", errorText);
+            alert(`Đã có lỗi xảy ra khi cập nhật kích thước: ${errorText}`);
+        }
+    }
+
+    // Hàm hiển thị số lượng hàng
+    function displayRows(rows, pageSize) {
+        rows.forEach((row, index) => {
+            row.style.display = index < pageSize ? "" : "none";
+        });
+    }
+
+    // Hàm xử lý tìm kiếm
+    function searchKichThuoc() {
+        const searchValue = document.getElementById("searchInput").value.trim().toLowerCase();
+        const rows = document.querySelectorAll("#tableBody tr");
+        const pageSize = parseInt(document.getElementById("pageSize").value) || 10;
+        const filteredRows = [];
+
+        rows.forEach(row => {
+            const tenKichThuoc = row.cells[1].textContent.trim().toLowerCase();
+            if (tenKichThuoc.startsWith(searchValue)) {
+                filteredRows.push(row);
+            }
+        });
+
+        rows.forEach(row => row.style.display = "none");
+        if (filteredRows.length > 0) {
+            displayRows(filteredRows, pageSize);
+        } else if (searchValue !== "") {
+            alert("Kích thước bạn tìm không tồn tại!");
+            updatePageSize();
+        } else {
+            updatePageSize();
+        }
+    }
+
+    // Hàm cập nhật số lượng hiển thị
+    function updatePageSize() {
+        const pageSize = parseInt(document.getElementById("pageSize").value) || 10;
+        const rows = document.querySelectorAll("#tableBody tr");
+        displayRows(rows, pageSize);
+    }
+
+    // Khởi tạo hiển thị ban đầu
+    document.addEventListener("DOMContentLoaded", function() {
+        updatePageSize(); // Hiển thị 10 hàng mặc định khi tải trang
+    });
+</script>
+</body>
 </html>
