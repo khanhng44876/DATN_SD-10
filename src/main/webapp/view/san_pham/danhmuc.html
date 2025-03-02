@@ -127,15 +127,15 @@
                 const danhMuc = await response.json();
 
                 // Kiểm tra dữ liệu trả về
-                if (!danhMuc.tenDanhMuc || !danhMuc.moTa) {
+                if (!danhMuc.tendanhmuc || !danhMuc.mota) {
                     console.error("Dữ liệu trả về không hợp lệ:", danhMuc);
                     alert("Không thể tải dữ liệu danh mục. Vui lòng kiểm tra lại.");
                     return;
                 }
 
                 // Điền dữ liệu vào form
-                document.getElementById("tenDanhMuc").value = danhMuc.tenDanhMuc;
-                document.getElementById("moTa").value = danhMuc.moTa;
+                document.getElementById("tenDanhMuc").value = danhMuc.tendanhmuc;
+                document.getElementById("moTa").value = danhMuc.mota;
 
                 window.currentMsId = iddm; // Lưu lại ID màu sắc hiện tại
             } catch (error) {
