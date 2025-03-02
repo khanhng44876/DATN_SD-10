@@ -30,7 +30,7 @@
                         <tbody>
                         <tr th:each="d : ${listct}">
                             <td th:text="${d.id}"></td>
-                            <td th:text="${d.tenChatLieu}"></td>
+                            <td th:text="${d.ten_chat_lieu}"></td>
                             <td th:text="${d.mo_ta}"></td>
                             <td>
                                 <button th:onclick="'loadMSData(' + ${d.id} + ')'" class="btn btn-warning">
@@ -124,7 +124,7 @@
                 const chatLieu = await response.json();
 
                 // Kiểm tra dữ liệu trả về
-                if (!chatLieu.tenChatLieu || !chatLieu.mo_ta) {
+                if (!chatLieu.tenChatLieu || !chatLieu.moTa) {
                     console.error("Dữ liệu trả về không hợp lệ:", chatLieu);
                     alert("Không thể tải dữ liệu chất liệu. Vui lòng kiểm tra lại.");
                     return;
@@ -132,7 +132,7 @@
 
                 // Điền dữ liệu vào form
                 document.getElementById("tenChatLieu").value = chatLieu.tenChatLieu;
-                document.getElementById("moTa").value = chatLieu.mo_ta;
+                document.getElementById("moTa").value = chatLieu.moTa;
 
                 window.currentMsId = idct; // Lưu lại ID màu sắc hiện tại
             } catch (error) {
