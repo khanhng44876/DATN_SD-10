@@ -51,4 +51,10 @@ public class HoaDonController {
         List<HoaDonCT> result = hoaDonCTRepo.findByHoaDonId(hoaDonId);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+//    doanh thu=================================================
+    @GetMapping("/doanh-thu")
+    public String doanhThu(){
+        return "/hoa_don/doanhThu";
+    }
 }
