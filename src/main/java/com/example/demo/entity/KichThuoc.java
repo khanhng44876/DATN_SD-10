@@ -13,8 +13,12 @@ import lombok.*;
 public class KichThuoc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
-    private String ten_kich_thuoc;
-    private String mo_ta;
+    @Column(name = "ten_kich_thuoc")
+    private String tenKichThuoc;
+    @Column(name = "mo_ta")
+    private String moTa;
+
 }
 
