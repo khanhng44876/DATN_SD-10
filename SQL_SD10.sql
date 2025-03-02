@@ -290,7 +290,7 @@ values ('khanhok123','khanh','SA12342',1,'jdk1234@gmail.com','0987654321','2025-
 
 
 
-insert into khuyen_mai(ten_khuyen_mai, mo_ta, ma_giam, muc_giam, ngay_bat_dau,ngay_ket_thuc,id_hoa_don,trang_thai)
+insert into khuyen_mai(so_luong,ten_khuyen_mai, mo_ta, ma_khuyen_mai, muc_giam, ngay_bat_dau,ngay_ket_thuc,dieu_kien,giam_toi_da,id_hoa_don,trang_thai)
 values(10,'Monday','abc','SP012345',10,'2025-02-14','2025-03-01',100,30,1,'Đang kích hoạt'),
     (20,'friday','abc','SP015645',10,'2025-02-14','2025-03-01',200,50,1,'Đang kích hoạt'),
     (30,'sunday','abc','SP23415',15,'2025-02-14','2025-03-01',150,40,1,'Đang kích hoạt')

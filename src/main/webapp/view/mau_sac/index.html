@@ -14,15 +14,16 @@
         <div class="container">
             <h2 style="text-align: center;">Quản lý màu sắc</h2>
             <table class="table table-bordered" id="msTable">
+                <thead>
                 <tr>
-                    <th>STT</th>
                     <th>Tên màu</th>
                     <th>Mô tả</th>
                     <th>Hành động</th>
                 </tr>
+                </thead>
                 <tbody>
                 <tr th:each="m : ${msList}">
-                    <td></td>
+
                     <td th:text="${m.ten_mau_sac}"></td>
                     <td th:text="${m.mo_ta}"></td>
                     <td>
@@ -69,6 +70,9 @@
                     </div>
                 </div>
             </table>
+            <script>
+                $('#msTable').DataTable();
+            </script>
             <script src="/js/mau_sac/msJs.js"></script>
         </div>
     </div>
