@@ -6,7 +6,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Date;
 
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -14,26 +13,35 @@ import java.sql.Date;
 @Entity
 @Table(name = "hoa_don")
 public class HoaDon {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "ngay_tao")
     @DateTimeFormat(pattern = "yyyy/MM/dd")
     @Temporal(TemporalType.DATE)
-    private Date ngay_tao;
+    private Date ngayTao;
 
-    private Date ngay_sua;
+    @Column(name = "ngay_sua")
+    private Date ngaySua;
 
-    private Float don_gia;
+    @Column(name = "don_gia")
+    private Float donGia;
 
-    private Float tong_tien;
+    @Column(name = "tong_tien")
+    private Float tongTien;
 
-    private String trang_thai_thanh_toan;
+    @Column(name = "trang_thai_thanh_toan")
+    private String trangThaiThanhToan;
 
-    private String hinh_thuc_thanh_toan;
+    @Column(name = "hinh_thuc_thanh_toan")
+    private String hinhThucThanhToan;
 
-    private String dia_chi_giao_hang;
+    @Column(name = "dia_chi_giao_hang")
+    private String diaChiGiaoHang;
 
-    private String ghi_chu;
+    @Column(name = "ghi_chu")
+    private String ghiChu;
 
     @ManyToOne
     @JoinColumn(name = "id_khach_hang")
@@ -42,7 +50,4 @@ public class HoaDon {
     @ManyToOne
     @JoinColumn(name = "id_nhan_vien")
     private NhanVien nhanVien;
-
-
-
 }
