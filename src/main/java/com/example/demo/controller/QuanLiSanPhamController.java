@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -60,17 +62,25 @@ public class QuanLiSanPhamController {
         return "san_pham/qlsp";
     }
 
+    @GetMapping("/danh-sach-san-pham/{id}")
+    @ResponseBody
+    public ResponseEntity<SanPham> dssan(@PathVariable("id") Integer idsp) {
+        Optional<SanPham> result = sanPhamRepository.findByIdSP(idsp);
+        return result.map(sanPham -> new ResponseEntity<>(sanPham, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
 
     // Thêm sản phẩm
     @PostMapping("/them-san-pham")
-    public ResponseEntity<?> themSanPham(@RequestBody SanPhamDto spDto) {
+    public ResponseEntity<?> themSanPham(@RequestBody SanPhamDto spDto, RedirectAttributes redirectAttributes) {
         try {
             SanPham sanPham = new SanPham();
-            sanPham.setMa_san_pham(spDto.getMa_san_pham());
-            sanPham.setTen_san_pham(spDto.getTen_san_pham());
-            sanPham.setNgay_nhap(spDto.getNgay_nhap());
-            sanPham.setNgay_sua(spDto.getNgay_sua());
-            sanPham.setTrang_thai(spDto.getTrang_thai());
+            sanPham.setMaSanPham(spDto.getMaSanPham());
+            sanPham.setTenSanPham(spDto.getTenSanPham());
+            sanPham.setNgayNhap(spDto.getNgayNhap());
+            sanPham.setNgaySua(spDto.getNgayNhap());
+            sanPham.setTrangThai(spDto.getTrangThai());
 
             // Gán danh mục (DanhMuc)
             if (spDto.getIddanhMuc() != null) {
@@ -93,6 +103,92 @@ public class QuanLiSanPhamController {
                     .body("Lỗi: " + e.getMessage());
         }
     }
+
+    @GetMapping("/check-ma-san-pham")
+    @ResponseBody
+    public boolean checkMaSanPham(@RequestParam String maSanPham) {
+        return sanPhamRepository.findByMaSanPham(maSanPham).isPresent();
+    }
+
+    @PutMapping("/cap-nhat-san-pham/{id}")
+    public ResponseEntity<?> updateSanPham(@PathVariable Integer id, @RequestBody Map<String, Object> payload) {
+        // Tìm sản phẩm cần cập nhật dựa trên ID
+        SanPham sanPham = sanPhamRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+
+        // Cập nhật các trường của sản phẩm
+        sanPham.setMaSanPham((String) payload.get("maSanPham"));
+        sanPham.setTenSanPham((String) payload.get("tenSanPham"));
+
+        // Cập nhật trường ngày nhập, kiểm tra lỗi định dạng
+        try {
+            sanPham.setNgayNhap(LocalDate.parse((String) payload.get("ngayNhap")));
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest().body("Định dạng ngày nhập không hợp lệ");
+        }
+
+        // Cập nhật trường ngày sửa, kiểm tra lỗi định dạng
+        try {
+            sanPham.setNgaySua(LocalDate.parse((String) payload.get("ngaySua")));
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest().body("Định dạng ngày nhập không hợp lệ");
+        }
+
+        // Kiểm tra và cập nhật danh mục
+        Object danhMucObj = payload.get("iddanhMuc");
+        if (danhMucObj == null || danhMucObj.toString().isEmpty()) {
+            return ResponseEntity.badRequest().body("Danh mục không được để trống");
+        }
+
+        Integer iddanhMuc;
+        try {
+            iddanhMuc = Integer.parseInt(danhMucObj.toString());
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("ID danh mục không hợp lệ");
+        }
+
+        DanhMuc danhMuc = danhMucRepository.findById(iddanhMuc)
+                .orElseThrow(() -> new RuntimeException("Danh mục không tồn tại"));
+        sanPham.setDanhMuc(danhMuc);
+
+        // Kiểm tra và cập nhật hãng
+        Object hangObj = payload.get("idhang");
+        if (hangObj == null || hangObj.toString().isEmpty()) {
+            return ResponseEntity.badRequest().body("Hãng không được để trống");
+        }
+
+        Integer idhang;
+        try {
+            idhang = Integer.parseInt(hangObj.toString());
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("ID hãng không hợp lệ");
+        }
+
+        Hang hang = hangRepository.findById(idhang)
+                .orElseThrow(() -> new RuntimeException("Hãng không tồn tại"));
+        sanPham.setHang(hang);
+
+
+        // Cập nhật trạng thái
+        sanPham.setTrangThai((String) payload.get("trangThai"));
+
+        // Lưu sản phẩm đã cập nhật vào cơ sở dữ liệu
+        sanPhamRepository.save(sanPham);
+
+        return ResponseEntity.ok("Sản phẩm đã được cập nhật thành công!");
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 //    danhMuc===============================================================
     @GetMapping("chat-lieu")
     public String chatlieu(Model model) {

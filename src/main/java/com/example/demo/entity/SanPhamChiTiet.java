@@ -14,16 +14,16 @@ public class SanPhamChiTiet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    private Double don_gia;
-
-    private Integer so_luong;
-
-    private String mo_ta;
-
-    private String hinh_anh;
-
-    private String trang_thai;
+    @Column(name = "don_gia")
+    private Double donGia;
+    @Column(name = "so_luong")
+    private Integer soLuong;
+    @Column(name = "mo_ta")
+    private String moTa;
+    @Column(name = "hinh_anh")
+    private String anhSanPham;
+    @Column(name = "trang_thai")
+    private String trangThai;
 
     @ManyToOne
     @JoinColumn(name = "id_chat_lieu")
