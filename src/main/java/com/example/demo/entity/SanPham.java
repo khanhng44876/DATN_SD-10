@@ -18,16 +18,22 @@ public class SanPham {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name = "ma_san_pham")
+    private String maSanPham;
 
-    private String ma_san_pham;
+    @Column (name = "ten_san_pham")
+    private String tenSanPham;
 
-    private String ten_san_pham;
     @DateTimeFormat(pattern = "yyyy/MM/dd")
-    private LocalDate ngay_nhap;
-    @DateTimeFormat(pattern = "yyyy/MM/dd")
-    private LocalDate ngay_sua;
+    @Column(name = "ngay_nhap")
+    private LocalDate ngayNhap;
 
-    private String trang_thai;
+    @DateTimeFormat(pattern = "yyyy/MM/dd")
+    @Column(name = "ngay_sua")
+    private LocalDate ngaySua;
+
+    @Column(name = "trang_thai")
+    private String trangThai;
 
 
     @ManyToOne

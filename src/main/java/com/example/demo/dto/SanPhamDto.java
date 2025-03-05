@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -9,16 +10,21 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class SanPhamDto {
-    private String ma_san_pham;
+    @Column(name = "ma_san_pham")
+    private String maSanPham;
 
-    private String ten_san_pham;
+    @Column(name = "ten_san_pham")
+    private String tenSanPham;
 
     @DateTimeFormat(pattern = "yyyy/MM/dd")
-    private LocalDate ngay_nhap;
-    @DateTimeFormat(pattern = "yyyy/MM/dd")
-    private LocalDate ngay_sua;
+    @Column(name = "ngay_nhap")
+    private LocalDate ngayNhap;
 
-    private String trang_thai;
+    @DateTimeFormat(pattern = "yyyy/MM/dd")
+    @Column(name = "ngay_sua")
+    private LocalDate ngaySua;
+    @Column(name = "trang_thai")
+    private String trangThai;
 
     private Integer iddanhMuc;
 

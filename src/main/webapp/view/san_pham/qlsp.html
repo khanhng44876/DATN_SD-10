@@ -5,7 +5,7 @@
         <title>Quan Ly San Pham</title>
         <meta charset="utf-8">
         <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
-        <link rel="stylesheet" type="text/css" href="/css/style.css">
+        <link rel="stylesheet" href="css/styles.css" />
     </head>
     <body>
     <div>
@@ -33,13 +33,13 @@
                         </thead>
                         <tbody>
                         <tr th:each="d : ${dataSP}">
-                            <td th:text="${d.ma_san_pham}"></td>
-                            <td th:text="${d.ten_san_pham}"></td>
-                            <td th:text="${d.ngay_nhap}"></td>
-                            <td th:text="${d.ngay_sua}"></td>
+                            <td th:text="${d.maSanPham}"></td>
+                            <td th:text="${d.tenSanPham}"></td>
+                            <td th:text="${d.ngayNhap}"></td>
+                            <td th:text="${d.ngaySua}"></td>
                             <td th:text="${d.danhMuc != null ? d.danhMuc.tendanhmuc : 'Chưa có danh mục'}"></td>
-                            <td th:text="${d.hang != null ? d.hang.ten_hang : 'Chưa có hãng'}"></td>
-                            <td th:text="${d.trang_thai}"></td>
+                            <td th:text="${d.hang != null ? d.hang.tenHang : 'Chưa có hãng'}"></td>
+                            <td th:text="${d.trangThai}"></td>
                             <td>
                                 <!--                            <button th:attr="onclick=|openChiTietModal('${d.id}')|" data-bs-toggle="modal" data-bs-target="#hoadonchitiet" class="edit-btn"><i class="fa fa-eye"></i></button>-->
                                 <button th:onclick="'loadSanPhamData(' + ${d.id} + ')'" class="btn btn-success">
@@ -57,20 +57,24 @@
                     <div class="row">
                         <div class="col-sm-13">
                             <label class="lb-form">Mã Sản Phẩm</label>
-                            <input id="ma_san_pham" class="form-control" required>
+                            <input id="maSanPham" class="form-control" required>
                             <span id="errorMaSanPham" class="text-danger"></span>
+                            <br>
 
                             <label class="lb-form">Tên Sản Phẩm</label>
-                            <input id="ten_san_pham" class="form-control" required>
+                            <input id="tenSanPham" class="form-control" required>
                             <span id="errorTenSanPham" class="text-danger"></span>
+                            <br>
 
                             <label class="lb-form">Ngày Nhập</label>
-                            <input id="ngay_nhap" class="form-control" type="date" required>
+                            <input id="ngayNhap" class="form-control" type="date" required>
                             <span id="errorNgayNhap" class="text-danger"></span>
+                            <br>
 
                             <label class="lb-form">Ngày Sửa</label>
-                            <input id="ngay_sua" class="form-control" type="date" required>
+                            <input id="ngaySua" class="form-control" type="date" required>
                             <span id="errorNgaySua" class="text-danger"></span>
+                            <br>
 
                             <label class="lb-form">Danh Mục</label>
                             <select id="danhMuc" class="form-control">
@@ -78,26 +82,29 @@
                                 <option th:each="danhMuc : ${dsDanhMuc}" th:value="${danhMuc.id}" th:text="${danhMuc.tendanhmuc}"></option>
                             </select>
                             <span id="errorDanhMuc" class="text-danger"></span>
+                            <br>
                             <a th:href="@{/san-pham/danh-muc}">Thêm danh mục</a>
+                            <br>
 
                             <br><label class="lb-form">Hãng</label>
                             <select id="hang" class="form-control">
                                 <option value="">Chọn hãng</option>
-                                <option th:each="hang : ${dsHang}" th:value="${hang.id}" th:text="${hang.ten_hang}"></option>
+                                <option th:each="hang : ${dsHang}" th:value="${hang.id}" th:text="${hang.tenHang}"></option>
                             </select>
                             <span id="errorHang" class="text-danger"></span>
-                            <a th:href="@{/san-pham/hang}">Thêm hãng</a>
-
                             <br>
+                            <a th:href="@{/san-pham/hang}">Thêm hãng</a>
+                            <br>
+
                             <label class="lb-form">Trạng Thái</label>
-                            <select id="trang_thai" class="form-control">
+                            <select id="trangThai" class="form-control">
                                 <option value="">Chọn trạng thái</option>
-                                <option value="Con hang">Còn Hàng</option>
-                                <option value="Het hang">Hết Hàng</option>
+                                <option value="Còn hàng">Còn Hàng</option>
+                                <option value="Hết hàng">Hết Hàng</option>
                             </select>
                             <span id="errorTrangThai" class="text-danger"></span>
-
                             <br>
+
                             <button onclick="validateForm('ADD')" class="btn btn-primary">Add</button>
                             <button onclick="validateForm('update')" class="btn btn-warning">Update</button>
                             <br><br>
@@ -135,52 +142,53 @@
         document.getElementById("errorTrangThai").innerText = "";
 
         // Get values
-        const ma_san_pham = document.getElementById("ma_san_pham").value;
-        const ten_san_pham = document.getElementById("ten_san_pham").value;
-        const ngay_nhap = document.getElementById("ngay_nhap").value;
-        const ngay_sua = document.getElementById("ngay_sua").value;
-        const hang = document.getElementById("hang").value;
+        const maSanPham = document.getElementById("maSanPham").value;
+        const tenSanPham = document.getElementById("tenSanPham").value;
+        const ngayNhap = document.getElementById("ngayNhap").value;
+        const ngaySua = document.getElementById("ngaySua").value;
         const danhMuc = document.getElementById("danhMuc").value;
-        const trang_thai = document.getElementById("trang_thai").value;
+        const hang = document.getElementById("hang").value;
+        const trangThai = document.getElementById("trangThai").value;
 
         let isValid = true;
 
         // Validate mã sản phẩm (bỏ qua khi hành động là update)
-        if (ma_san_pham.trim() === "") {
+        if (maSanPham.trim() === "") {
             document.getElementById("errorMaSanPham").innerText = "Mã sản phẩm không được để trống.";
             isValid = false;
-        } else if (hasNegativeNumber(ma_san_pham)) {
+        } else if (hasNegativeNumber(maSanPham)) {
             document.getElementById("errorMaSanPham").innerText = "Mã sản phẩm không được chứa số âm.";
             isValid = false;
-        } // else if (action !== 'update') {
-        //     // Check mã sản phẩm trùng chỉ khi không phải hành động update
-        //     const isDuplicate = await checkMaSanPham(ma_san_pham);
-        //     if (isDuplicate) {
-        //         document.getElementById("errorMaSanPham").innerText = "Mã sản phẩm đã tồn tại.";
-        //         isValid = false;
-        //     }
-        // }
+        }
+        else if (action !== 'update') {
+            // Check mã sản phẩm trùng chỉ khi không phải hành động update
+            const isDuplicate = await checkMaSanPham(maSanPham);
+            if (isDuplicate) {
+                document.getElementById("errorMaSanPham").innerText = "Mã sản phẩm đã tồn tại.";
+                isValid = false;
+            }
+        }
 
         // Validate tên sản phẩm
-        if (ten_san_pham.trim() === "") {
+        if (tenSanPham.trim() === "") {
             document.getElementById("errorTenSanPham").innerText = "Tên sản phẩm không được để trống.";
             isValid = false;
-        } else if (hasNegativeNumber(ten_san_pham)) {
+        } else if (hasNegativeNumber(tenSanPham)) {
             document.getElementById("errorTenSanPham").innerText = "Tên sản phẩm không được chứa số âm.";
             isValid = false;
         }
 
         // Validate ngày nhập
 
-        if (ngay_nhap === "") {
+        if (ngayNhap === "") {
             document.getElementById("errorNgayNhap").innerText = "Ngày nhập không được để trống.";
             isValid = false;
-        } else if (isNaN(Date.parse(ngay_nhap))) {
+        } else if (isNaN(Date.parse(ngayNhap))) {
             document.getElementById("errorNgayNhap").innerText = "Ngày nhập không hợp lệ.";
             isValid = false;
         } else {
             const today = new Date().toISOString().split("T")[0]; // Lấy ngày hiện tại theo định dạng YYYY-MM-DD
-            if (ngay_nhap > today) {
+            if (ngayNhap > today) {
                 document.getElementById("errorNgayNhap").innerText = "Ngày nhập không được là ngày trong tương lai.";
                 isValid = false;
             }
@@ -188,15 +196,15 @@
         // Validate ngày sửa
 
 
-        if (ngay_sua === "") {
+        if (ngaySua === "") {
             document.getElementById("errorNgaySua").innerText = "Ngày sửa không được để trống.";
             isValid = false;
-        } else if (isNaN(Date.parse(ngay_nhap))) {
+        } else if (isNaN(Date.parse(ngaySua))) {
             document.getElementById("errorNgaySua").innerText = "Ngày sửa không hợp lệ.";
             isValid = false;
         } else {
             const today = new Date().toISOString().split("T")[0]; // Lấy ngày hiện tại theo định dạng YYYY-MM-DD
-            if (ngay_sua > today) {
+            if (ngaySua > today) {
                 document.getElementById("errorNgaySua").innerText = "Ngày sửa không được là ngày trong tương lai.";
                 isValid = false;
             }
@@ -210,8 +218,13 @@
             isValid = false;
         }
 
+        if (hang === "") {
+            document.getElementById("errorHang").innerText = "Vui lòng chọn hãng.";
+            isValid = false;
+        }
+
         // Validate trạng thái
-        if (trang_thai === "") {
+        if (trangThai === "") {
             document.getElementById("errorTrangThai").innerText = "Vui lòng chọn trạng thái.";
             isValid = false;
         }
@@ -243,13 +256,13 @@
         const idhang = hangValue === "" ? null : parseInt(hangValue);
 
         const payload = {
-            ma_san_pham: document.getElementById("ma_san_pham").value,
-            ten_san_pham: document.getElementById("ten_san_pham").value,
-            ngay_nhap: document.getElementById("ngay_nhap").value,
-            ngay_sua: document.getElementById("ngay_sua").value,
+            maSanPham: document.getElementById("maSanPham").value,
+            tenSanPham: document.getElementById("tenSanPham").value,
+            ngayNhap: document.getElementById("ngayNhap").value,
+            ngaySua: document.getElementById("ngaySua").value,
             iddanhMuc: iddanhMuc,
             idhang: idhang,
-            trang_thai: document.getElementById("trang_thai").value
+            trangThai: document.getElementById("trangThai").value
         };
 
         const response = await fetch("/san-pham/them-san-pham", {
@@ -266,138 +279,129 @@
         }
     }
 
+    async function loadSanPhamData(idsp) {
+        console.log("ID sản phẩm nhận được:", idsp); // In ra để kiểm tra idsp
+        try {
+            const id = parseInt(idsp, 10);
+            if (isNaN(id)) {
+                console.error("ID sản phẩm không hợp lệ:", idsp);
+                alert("ID sản phẩm không hợp lệ.");
+                return;
+            }
+            // Gửi yêu cầu GET đến server để lấy dữ liệu sản phẩm
+            const response = await fetch(`/san-pham/danh-sach-san-pham/${id}`);
 
-    // // Hàm gọi API kiểm tra mã sản phẩm trùng
-    // async function checkMaSanPham(maSanPham) {
-    //     try {
-    //         const response = await fetch(`/san-pham/check-ma-san-pham?maSanPham=${encodeURIComponent(maSanPham)}`);
-    //         if (response.ok) {
-    //             return await response.json(); // Trả về true nếu mã trùng
-    //         }
-    //         console.error("Failed to check mã sản phẩm.");
-    //         return false;
-    //     } catch (error) {
-    //         console.error("Error checking mã sản phẩm:", error);
-    //         return false;
-    //     }
-    // }
+            // Kiểm tra nếu phản hồi không thành công
+            if (!response.ok) {
+                console.error("Lỗi khi tải dữ liệu sản phẩm:", response.statusText);
+                alert("Không thể tải dữ liệu sản phẩm.");
+                return;
+            }
 
 
+            const sanPham = await response.json();
+
+            // Điền dữ liệu vào form
+            document.getElementById("maSanPham").value = sanPham.maSanPham;
+            document.getElementById("tenSanPham").value = sanPham.tenSanPham;
+            document.getElementById("ngayNhap").value = sanPham.ngayNhap;
+            document.getElementById("ngaySua").value = sanPham.ngaySua;
+            document.getElementById("danhMuc").value = sanPham.danhMuc.id;
+            document.getElementById("hang").value = sanPham.hang.id;
+            document.getElementById("trangThai").value = sanPham.trangThai;
+
+            window.currentSanPhamId = idsp;
+        } catch (error) {
+            console.error("Đã có lỗi xảy ra khi tải dữ liệu sản phẩm:", error);
+            alert("Không thể tải dữ liệu sản phẩm.");
+        }
+    }
 
 
-    // async function openChiTietModal(sanPhamId){
-    //     var url = '/san-pham/ctsp?idctsp='+sanPhamId
-    //     const response = await fetch(url, {
-    //         method: 'GET'
-    //     });
-    //     var result = await response.json();
-    //     console.log(result)
-    //     var main = '';
-    //     for(var i=0; i< result.length; i++){
-    //         main += `
-    //             <tr>
-    //                 <td>${result[i].id}</td>
-    //                 <td>${result[i].sanPham.tenSanPham}</td>
-    //                 <td>${result[i].mauSac.tenMau}</td>
-    //                 <td>${result[i].size.tenSize}</td>
-    //                 <td>${result[i].chatLieu.tenChatLieu}</td>
-    //                 <td>${result[i].soLuong}</td>
-    //                 <td>${formatmoney(result[i].donGia)}</td>
-    //                 <td>${result[i].moTa}</td>
-    //                 <td><img th:src="${result[i].anhSanPham}" style="width: 100px; height: 100px; object-fit: cover;"></td>
-    //
-    //             </tr>
-    //         `
-    //     }
-    //     document.getElementById("listctsp").innerHTML = main
-    // }
-    // Make sure sanPhamId is an integer
-    // async function loadSanPhamData(idsp) {
-    //     console.log("ID sản phẩm nhận được:", idsp); // In ra để kiểm tra idsp
-    //     try {
-    //         const id = parseInt(idsp, 10);
-    //         if (isNaN(id)) {
-    //             console.error("ID sản phẩm không hợp lệ:", idsp);
-    //             alert("ID sản phẩm không hợp lệ.");
-    //             return;
-    //         }
-    //         // Gửi yêu cầu GET đến server để lấy dữ liệu sản phẩm
-    //         const response = await fetch(`/san-pham/danh-sach-san-pham/${id}`);
-    //
-    //         // Kiểm tra nếu phản hồi không thành công
-    //         if (!response.ok) {
-    //             console.error("Lỗi khi tải dữ liệu sản phẩm:", response.statusText);
-    //             alert("Không thể tải dữ liệu sản phẩm.");
-    //             return;
-    //         }
-    //
-    //         const sanPham = await response.json();
-    //
-    //         // Điền dữ liệu vào form
-    //         document.getElementById("maSanPham").value = sanPham.maSanPham;
-    //         document.getElementById("tenSanPham").value = sanPham.tenSanPham;
-    //         document.getElementById("ngayNhap").value = sanPham.ngayNhap;
-    //         document.getElementById("danhMuc").value = sanPham.danhMuc.id;
-    //         document.getElementById("trangThai").value = sanPham.trangThai;
-    //
-    //         window.currentSanPhamId = idsp;
-    //     } catch (error) {
-    //         console.error("Đã có lỗi xảy ra khi tải dữ liệu sản phẩm:", error);
-    //         alert("Không thể tải dữ liệu sản phẩm.");
-    //     }
-    // }
+    // Hàm gọi API kiểm tra mã sản phẩm trùng
+    async function checkMaSanPham(maSanPham) {
+        try {
+            const response = await fetch(`/san-pham/check-ma-san-pham?maSanPham=${encodeURIComponent(maSanPham)}`);
+            if (response.ok) {
+                return await response.json(); // Trả về true nếu mã trùng
+            }
+            console.error("Failed to check mã sản phẩm.");
+            return false;
+        } catch (error) {
+            console.error("Error checking mã sản phẩm:", error);
+            return false;
+        }
+    }
 
 
 
 
+    async function openChiTietModal(sanPhamId){
+        var url = '/san-pham/ctsp?idctsp='+sanPhamId
+        const response = await fetch(url, {
+            method: 'GET'
+        });
+        var result = await response.json();
+        console.log(result)
+        var main = '';
+        for(var i=0; i< result.length; i++){
+            main += `
+                <tr>
+                    <td>${result[i].id}</td>
+                    <td>${result[i].sanPham.tenSanPham}</td>
+                    <td>${result[i].mauSac.tenMau}</td>
+                    <td>${result[i].kichThuoc.tenKichThuoc}</td>
+                    <td>${result[i].chatLieu.tenChatLieu}</td>
+                    <td>${result[i].soLuong}</td>
+                    <td>${formatmoney(result[i].donGia)}</td>
+                    <td>${result[i].moTa}</td>
+                    <td><img th:src="${result[i].anhSanPham}" style="width: 100px; height: 100px; object-fit: cover;"></td>
 
+                </tr>
+            `
+        }
+        document.getElementById("listctsp").innerHTML = main
+    }
 
 
 
 
 
+    async function capNhatSP(idsp) {
+        var con = window.confirm("Bạn có chắc chắn muốn cập nhật sản phẩm?");
+        if (con == false) {
+            return;
+        }
 
+        // Thu thập dữ liệu từ form
+        const payload = {
+            maSanPham :document.getElementById("maSanPham").value,
+            tenSanPham :document.getElementById("tenSanPham").value,
+            ngayNhap :document.getElementById("ngayNhap").value,
+            ngaySua: document.getElementById("ngaySua").value,
+            iddanhMuc: document.getElementById("danhMuc").value,
+            idhang: document.getElementById("hang").value,
+            trangThai: document.getElementById("trangThai").value,
+        };
 
+        // Gửi dữ liệu đến server (PUT request)
+        const response = await fetch(`/san-pham/cap-nhat-san-pham/${idsp}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload) // Chuyển dữ liệu thành JSON
+        });
 
-
-
-
-
-
-
-    // async function capNhatSP(idsp) {
-    //     var con = window.confirm("Bạn có chắc chắn muốn cập nhật sản phẩm?");
-    //     if (con == false) {
-    //         return;
-    //     }
-    //
-    //     // Thu thập dữ liệu từ form
-    //     const payload = {
-    //         maSanPham : document.getElementById("maSanPham").value,
-    //         tenSanPham : document.getElementById("tenSanPham").value,
-    //         ngayNhap : document.getElementById("ngayNhap").value,
-    //         danhMucId : document.getElementById("danhMuc").value, // Đổi key thành danhMucId
-    //         trangThai : document.getElementById("trangThai").value,
-    //     };
-    //
-    //     // Gửi dữ liệu đến server (PUT request)
-    //     const response = await fetch(`/san-pham/cap-nhat-san-pham/${idsp}`, {
-    //         method: 'PUT',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify(payload) // Chuyển dữ liệu thành JSON
-    //     });
-    //
-    //     // Kiểm tra phản hồi từ server
-    //     if (response.ok) {
-    //         alert("Sản phẩm đã được cập nhật thành công!");
-    //         // Chuyển hướng về trang hiển thị danh sách sản phẩm
-    //         window.location.href = "/san-pham/hien-thi";
-    //     } else {
-    //         alert("Đã có lỗi xảy ra khi cập nhật sản phẩm.");
-    //     }
-    // }
+        // Kiểm tra phản hồi từ server
+        if (response.ok) {
+            alert("Sản phẩm đã được cập nhật thành công!");
+            // Chuyển hướng về trang hiển thị danh sách sản phẩm
+            window.location.href = "/san-pham/hien-thi";
+        } else {
+            alert("Đã có lỗi xảy ra khi cập nhật sản phẩm.");
+        }
+    }
 
 
 

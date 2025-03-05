@@ -14,8 +14,8 @@ public class ChatLieu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    private String ten_chat_lieu;
-
-    private String mo_ta;
+    @Column(name = "ten_chat_lieu")
+    private String tenChatLieu;
+    @Column(name = "mo_ta")
+    private String moTa;
 }
