@@ -15,7 +15,7 @@ public class SanPhamChiTiet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "don_gia")
-    private Double donGia;
+    private Float donGia;
     @Column(name = "so_luong")
     private Integer soLuong;
     @Column(name = "mo_ta")

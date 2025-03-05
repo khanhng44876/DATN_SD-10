@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.ChiTietSanPhamDto;
 import com.example.demo.dto.SanPhamDto;
 import com.example.demo.entity.*;
 import com.example.demo.repository.*;
@@ -23,6 +24,9 @@ public class QuanLiSanPhamController {
 
     @Autowired
      private SanPhamRepository sanPhamRepository;
+
+    @Autowired
+    private SanPhamCTRepository sanPhamCTRepository;
     @Autowired
     private DanhMucRepository danhMucRepository;
     @Autowired
@@ -51,7 +55,7 @@ public class QuanLiSanPhamController {
     @ModelAttribute("dsHang")
     public List<Hang> gethang(){return hangRepository.findAll();}
 
-
+    // Hiển thị danh danh sách sản phẩm
     @GetMapping("/hien-thi")
     public String index(Model model){
         List<SanPham> ds = this.sanPhamRepository.findAll();
@@ -62,6 +66,7 @@ public class QuanLiSanPhamController {
         return "san_pham/qlsp";
     }
 
+    // Lấy danh sách sản phẩm
     @GetMapping("/danh-sach-san-pham/{id}")
     @ResponseBody
     public ResponseEntity<SanPham> dssan(@PathVariable("id") Integer idsp) {
@@ -69,6 +74,7 @@ public class QuanLiSanPhamController {
         return result.map(sanPham -> new ResponseEntity<>(sanPham, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
 
 
     // Thêm sản phẩm
@@ -179,6 +185,89 @@ public class QuanLiSanPhamController {
     }
 
 
+    // Hiển thị danh sách chi tiết sản phẩm
+    @GetMapping("ds-ctsp/{id}")
+    public String HienThi (@PathVariable("id") Integer id, Model model){
+        List<SanPhamChiTiet> ctsps = this.sanPhamCTRepository.findBySanPhamId(id);
+        model.addAttribute("listctsp", ctsps);
+        return "san_pham/ctsp";
+    }
+
+    @GetMapping("/danh-sach-ctsp/{id}")
+    @ResponseBody
+    public ResponseEntity<SanPhamChiTiet> dsctsp(@PathVariable("id") Integer idctsp) {
+        Optional<SanPhamChiTiet> result = sanPhamCTRepository.findById(idctsp);
+        return result.map(ctsp -> new ResponseEntity<>(ctsp, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+
+    @PostMapping("/them-ctsp")
+    public String themCtsp(@RequestBody ChiTietSanPhamDto ctspDto) {
+        try {
+            SanPhamChiTiet ctsp = new SanPhamChiTiet();
+            SanPham sanPham = sanPhamRepository.findById(ctspDto.getIdsanPham())
+                    .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại!"));
+
+            MauSac mauSac = mauSacRepository.findById(ctspDto.getIdmauSac())
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy màu sắc với ID: " + ctspDto.getIdmauSac()));
+            KichThuoc kichThuoc = kichThuocRepository.findById(ctspDto.getIdkichThuoc())
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy kích thước với ID: " + ctspDto.getIdkichThuoc()));
+            ChatLieu chatLieu = chatLieuRepository.findById(ctspDto.getIdchatLieu())
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy chất liệu với ID: " + ctspDto.getIdchatLieu()));
+
+            ctsp.setSanPham(sanPham);
+            ctsp.setMauSac(mauSac);
+            ctsp.setKichThuoc(kichThuoc);
+            ctsp.setChatLieu(chatLieu);
+            ctsp.setSoLuong(ctspDto.getSoLuong());
+            ctsp.setDonGia(ctspDto.getDonGia());
+            ctsp.setMoTa(ctspDto.getMoTa());
+            ctsp.setAnhSanPham(ctspDto.getAnhSanPham());
+
+            sanPhamCTRepository.save(ctsp);
+            return "san_pham/ctsp";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "san_pham/ctsp?error=true";
+        }
+    }
+
+    // Cập nhật sản phẩm
+    @PutMapping("/cap-nhat-ctsp/{id}")
+    public ResponseEntity<?> updateCTSP(@PathVariable Integer id, @RequestBody Map<String, Object> payload) {
+        // Tìm sản phẩm cần cập nhật dựa trên ID
+        SanPhamChiTiet ctsp = sanPhamCTRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+
+        // Cập nhật các trường của sản phẩm với dữ liệu từ payload
+        ctsp.setSoLuong(Integer.parseInt((String)payload.get("soLuong")));
+        ctsp.setDonGia(Float.parseFloat((String)payload.get("donGia")));
+        ctsp.setAnhSanPham((String) payload.get("anhSanPham"));
+        ctsp.setMoTa((String) payload.get("moTa"));
+
+        Integer idmauSac = Integer.parseInt((String) payload.get("mauSac"));
+        MauSac mauSac = mauSacRepository.findById(idmauSac)
+                .orElseThrow(() -> new RuntimeException("Màu sắc không tồn tại"));
+        ctsp.setMauSac(mauSac);
+
+        Integer idkichThuoc = Integer.parseInt((String) payload.get("kichThuoc"));
+        KichThuoc size = kichThuocRepository.findById(idkichThuoc)
+                .orElseThrow(() -> new RuntimeException("Kích thước không tồn tại"));
+        ctsp.setKichThuoc(size);
+
+        Integer idchatLieu = Integer.parseInt((String) payload.get("chatLieu"));
+        ChatLieu chatLieu = chatLieuRepository.findById(idchatLieu)
+                .orElseThrow(() -> new RuntimeException("Chất liệu không tồn tại"));
+        ctsp.setChatLieu(chatLieu);
+
+
+
+        // Lưu sản phẩm đã cập nhật vào cơ sở dữ liệu
+        sanPhamCTRepository.save(ctsp);
+
+        return ResponseEntity.ok("Sản phẩm đã được cập nhật thành công!");
+    }
 
 
 
@@ -188,8 +277,7 @@ public class QuanLiSanPhamController {
 
 
 
-
-//    danhMuc===============================================================
+    //    danhMuc===============================================================
     @GetMapping("chat-lieu")
     public String chatlieu(Model model) {
         List<ChatLieu> ds = this.chatLieuRepository.findAll();

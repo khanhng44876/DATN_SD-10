@@ -59,18 +59,22 @@
                             <label class="lb-form">Mã Sản Phẩm</label>
                             <input id="maSanPham" class="form-control" required>
                             <span id="errorMaSanPham" class="text-danger"></span>
+                            <br>
 
                             <label class="lb-form">Tên Sản Phẩm</label>
                             <input id="tenSanPham" class="form-control" required>
                             <span id="errorTenSanPham" class="text-danger"></span>
+                            <br>
 
                             <label class="lb-form">Ngày Nhập</label>
                             <input id="ngayNhap" class="form-control" type="date" required>
                             <span id="errorNgayNhap" class="text-danger"></span>
+                            <br>
 
                             <label class="lb-form">Ngày Sửa</label>
                             <input id="ngaySua" class="form-control" type="date" required>
                             <span id="errorNgaySua" class="text-danger"></span>
+                            <br>
 
                             <label class="lb-form">Danh Mục</label>
                             <select id="danhMuc" class="form-control">
@@ -78,7 +82,9 @@
                                 <option th:each="danhMuc : ${dsDanhMuc}" th:value="${danhMuc.id}" th:text="${danhMuc.tendanhmuc}"></option>
                             </select>
                             <span id="errorDanhMuc" class="text-danger"></span>
+                            <br>
                             <a th:href="@{/san-pham/danh-muc}">Thêm danh mục</a>
+                            <br>
 
                             <br><label class="lb-form">Hãng</label>
                             <select id="hang" class="form-control">
@@ -86,9 +92,10 @@
                                 <option th:each="hang : ${dsHang}" th:value="${hang.id}" th:text="${hang.tenHang}"></option>
                             </select>
                             <span id="errorHang" class="text-danger"></span>
-                            <a th:href="@{/san-pham/hang}">Thêm hãng</a>
-
                             <br>
+                            <a th:href="@{/san-pham/hang}">Thêm hãng</a>
+                            <br>
+
                             <label class="lb-form">Trạng Thái</label>
                             <select id="trangThai" class="form-control">
                                 <option value="">Chọn trạng thái</option>
@@ -96,8 +103,8 @@
                                 <option value="Hết hàng">Hết Hàng</option>
                             </select>
                             <span id="errorTrangThai" class="text-danger"></span>
-
                             <br>
+
                             <button onclick="validateForm('ADD')" class="btn btn-primary">Add</button>
                             <button onclick="validateForm('update')" class="btn btn-warning">Update</button>
                             <br><br>
@@ -329,32 +336,32 @@
 
 
 
-    // async function openChiTietModal(sanPhamId){
-    //     var url = '/san-pham/ctsp?idctsp='+sanPhamId
-    //     const response = await fetch(url, {
-    //         method: 'GET'
-    //     });
-    //     var result = await response.json();
-    //     console.log(result)
-    //     var main = '';
-    //     for(var i=0; i< result.length; i++){
-    //         main += `
-    //             <tr>
-    //                 <td>${result[i].id}</td>
-    //                 <td>${result[i].sanPham.tenSanPham}</td>
-    //                 <td>${result[i].mauSac.tenMau}</td>
-    //                 <td>${result[i].size.tenSize}</td>
-    //                 <td>${result[i].chatLieu.tenChatLieu}</td>
-    //                 <td>${result[i].soLuong}</td>
-    //                 <td>${formatmoney(result[i].donGia)}</td>
-    //                 <td>${result[i].moTa}</td>
-    //                 <td><img th:src="${result[i].anhSanPham}" style="width: 100px; height: 100px; object-fit: cover;"></td>
-    //
-    //             </tr>
-    //         `
-    //     }
-    //     document.getElementById("listctsp").innerHTML = main
-    // }
+    async function openChiTietModal(sanPhamId){
+        var url = '/san-pham/ctsp?idctsp='+sanPhamId
+        const response = await fetch(url, {
+            method: 'GET'
+        });
+        var result = await response.json();
+        console.log(result)
+        var main = '';
+        for(var i=0; i< result.length; i++){
+            main += `
+                <tr>
+                    <td>${result[i].id}</td>
+                    <td>${result[i].sanPham.tenSanPham}</td>
+                    <td>${result[i].mauSac.tenMau}</td>
+                    <td>${result[i].kichThuoc.tenKichThuoc}</td>
+                    <td>${result[i].chatLieu.tenChatLieu}</td>
+                    <td>${result[i].soLuong}</td>
+                    <td>${formatmoney(result[i].donGia)}</td>
+                    <td>${result[i].moTa}</td>
+                    <td><img th:src="${result[i].anhSanPham}" style="width: 100px; height: 100px; object-fit: cover;"></td>
+
+                </tr>
+            `
+        }
+        document.getElementById("listctsp").innerHTML = main
+    }
 
 
 
