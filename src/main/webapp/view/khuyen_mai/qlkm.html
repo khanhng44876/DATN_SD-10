@@ -37,7 +37,7 @@
           <td th:text="${k.ten_khuyen_mai}"></td>
           <td th:text="${k.so_luong}"></td>
           <td th:text="${k.mo_ta}"></td>
-          <td th:text="${k.muc_giam}"></td>
+          <td th:text="${k.muc_giam +'%'}"></td>
           <td th:text="${k.giam_toi_da}"></td>
           <td th:text="${k.dieu_kien}"></td>
           <td th:text="${k.ngay_bat_dau}"></td>
@@ -82,7 +82,7 @@
 
 
                       <label class="lb-form">Mức giảm</label>
-                      <input id="muc_giam" class="form-control" type="number" required>
+                      <input id="muc_giam" class="form-control" oninput="formatPercentage(this)" type="text" required>
 
 
                       <label class="lb-form">Giảm tối đa</label>
@@ -100,13 +100,6 @@
 
                       <label class="lb-form">Ngày kết thúc</label>
                       <input type="date" id="ngay_ket_thuc" class="form-control" required>
-
-                      <label class="lb-form">Trạng thái</label>
-                      <select id="trang_thai" class="form-control">
-                        <option value="">Chọn trạng thái</option>
-                        <option value="Đang kích hoạt">Đang kích hoạt</option>
-                        <option value="Ngừng kích hoạt">Ngừng kích hoạt</option>
-                      </select>
                     </div>
                   </div>
                 </form>

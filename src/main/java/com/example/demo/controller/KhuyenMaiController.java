@@ -4,10 +4,12 @@ import com.example.demo.entity.KhuyenMai;
 import com.example.demo.repository.KhuyenMaiRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -26,6 +28,14 @@ public class KhuyenMaiController {
 
     @PostMapping("/add-km")
     public ResponseEntity<KhuyenMai> addKm(@RequestBody KhuyenMai km) {
+        LocalDate today = LocalDate.now();
+        if(today.isBefore(km.getNgay_bat_dau())){
+            km.setTrang_thai("Sắp diễn ra");
+        }else if(!today.isBefore(km.getNgay_bat_dau()) && !today.isAfter(km.getNgay_ket_thuc())){
+            km.setTrang_thai("Đang diễn ra");
+        }else {
+            km.setTrang_thai("Đã kết thúc");
+        }
         System.out.println(km.getNgay_ket_thuc());
         repo.save(km);
         return ResponseEntity.ok(km);
@@ -44,8 +54,17 @@ public class KhuyenMaiController {
         if(!repo.existsById(id)){
             return ResponseEntity.notFound().build();
         }
+        LocalDate today = LocalDate.now();
+        if(today.isBefore(km.getNgay_bat_dau())){
+            km.setTrang_thai("Sắp diễn ra");
+        }else if(!today.isBefore(km.getNgay_bat_dau()) && !today.isAfter(km.getNgay_ket_thuc())){
+            km.setTrang_thai("Đang diễn ra");
+        }else {
+            km.setTrang_thai("Đã kết thúc");
+        }
         km.setId(id);
         repo.save(km);
         return ResponseEntity.ok(km);
     }
+
 }
