@@ -1,0 +1,9 @@
+.order-tabs {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 10px 0;
+}
+.order-tabs button {
+    margin-right: 5px;
+}

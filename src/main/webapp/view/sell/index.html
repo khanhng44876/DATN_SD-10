@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ban hang tai quay</title>
+    <head th:replace="giao_dien_chinh/libAdmin :: libheaderadmin"></head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+<div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
+<div class="d-flex">
+    <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
+    <div class="pt-3" style="width: calc(100% - 250px);">
+        <div class="container">
+            <div class="d-flex justify-content-between">
+                <h3>Bán hàng</h3>
+                <button id="createOrderBtn" onclick="createOrder()" class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill">
+                    <i class="fas fa-plus"></i> Tạo đơn hàng
+                </button>
+        </div>
+            <ul class="nav nav-tabs" id="nav-tab" role="tablist">
+
+            </ul>
+            <div class="tab-content" id="nav-tabContent">
+
+            </div>
+    </div>
+</div>
+</div>
+<script src="/js/sell/sell.js"></script>
+</body>
+</html>
