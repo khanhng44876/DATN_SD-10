@@ -1,42 +1,78 @@
 package com.example.demo.entity;
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
+
 @Entity
 @Data
-@Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "nhan_vien")
 public class NhanVien {
-    @ManyToOne
-    @JoinColumn(name = "id_chuc_vu")
-    private ChucVu chucVu;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
-    @Column
-    private String tai_khoan;
-    @Column
-    private String mat_khau;
-    @Column
-    private String ten_nhan_vien;
-    @Column
+    private Integer id;
+
+    @ManyToOne()
+    @JoinColumn(name = "id_chuc_vu")
+    private ChucVu chucVu;
+
+    @NotBlank(message = "Tài khoản không được để trống")
+    @Column(name = "tai_khoan", unique = true, length = 100)
+    private String taiKhoan;
+
+    @NotBlank(message = "Mật khẩu không được để trống")
+    @Column(name = "mat_khau")
+    private String matKhau;
+
+    @NotBlank(message = "Tên nhân viên không được để trống")
+    @Column(name = "ten_nhan_vien", length = 100)
+    private String tenNhanVien;
+
+    @Email(message = "Email không hợp lệ")
+    @Column(name = "email", unique = true)
     private String email;
-    @Column
+
+    @Pattern(regexp = "^(0|\\+84)[0-9]{9}$", message = "Số điện thoại không hợp lệ")
+    @Column(name = "sdt", length = 15)
     private String sdt;
-    @Column
-    private String dia_chi;
-    @Column
-    private String gioi_tinh;
-    @DateTimeFormat(pattern = "yyyy/MM/dd")
-    @Temporal(TemporalType.DATE)
-    @Column
-    private Date ngay_tao;
-    @Column
-    private Date ngay_sua;
-    @Column
-    private String trang_thai;
+
+    @Column(name = "dia_chi", length = 200)
+    private String diaChi;
+
+    @Column(name = "gioi_tinh", length = 10)
+    private String gioiTinh;
+
+    @CreationTimestamp
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "ngay_tao", updatable = false)
+    private Date ngayTao;
+
+    @UpdateTimestamp
+    @Column(name = "ngay_sua")
+    private Date ngaySua;
+
+    @Column(name = "trang_thai", length = 50)
+    private String trangThai;
+
+    @PrePersist
+    protected void onCreate() {
+        ngayTao = new Date();
+        ngaySua = new Date();
+        if (trangThai == null) {
+            trangThai = "Đang hoạt động";
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        ngaySua = new Date();
+    }
 }

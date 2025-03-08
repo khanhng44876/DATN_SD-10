@@ -15,13 +15,23 @@ import java.util.Date;
 @Table(name = "hoa_don_chi_tiet")
 public class HoaDonCT {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Integer id;
-    private Integer so_luong;
-    private float don_gia;
-    private float tong_tien;
-    private float thanh_tien;
-    private String trang_thai;
+
+    @Column(name = "so_luong")
+    private Integer soLuong;
+
+    @Column(name = "don_gia")
+    private Float donGia;
+
+    @Column(name = "tong_tien")
+    private Float tongTien;
+
+    @Column(name = "thanh_tien")
+    private Float thanhTien;
+
+    @Column(name = "trang_thai")
+    private String trangThai;
+
     @ManyToOne @JoinColumn(name ="id_san_pham_chi_tiet", insertable = false, updatable = false )
     private SanPhamChiTiet sanPhamChiTiet;
     @ManyToOne @JoinColumn(name = "id_hoa_don", insertable = false, updatable = false)
