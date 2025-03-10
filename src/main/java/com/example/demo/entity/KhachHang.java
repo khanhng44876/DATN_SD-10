@@ -44,7 +44,7 @@ public class KhachHang {
     @Column(name = "tai_khoan", unique = true, length = 100)
     private String taiKhoan;
 
-//    @NotBlank(message = "Mật khẩu không được để trống")
+//  ...  @NotBlank(message = "Mật khẩu không được để trống")
     @Column(name = "mat_khau")
     private String matKhau;
 
