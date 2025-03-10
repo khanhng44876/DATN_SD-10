@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Ban hang tai quay</title>
@@ -23,6 +23,97 @@
             </ul>
             <div class="tab-content" id="nav-tabContent">
 
+
+            </div>
+            <div>
+                <table>
+
+                </table>
+            </div>
+<!--            Modal hiển thị danh sách sản phẩm-->
+            <div class="modal fade" id="spModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Danh sách sản phẩm</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table id="example" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Mã CTSP</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Màu sắc</th>
+                                    <th>Kích thước</th>
+                                    <th>Chất liệu</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Ghi chú</th>
+                                    <th>Ảnh</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="d : ${listCTSP}">
+                                    <td th:text="${d.id}"></td>
+                                    <td th:text="${d.sanPham.tenSanPham}"></td>
+                                    <td th:text="${d.mauSac.ten_mau_sac}"></td>
+                                    <td th:text="${d.kichThuoc.ten_kich_thuoc}"></td>
+                                    <td th:text="${d.chatLieu.tenChatLieu}"></td>
+                                    <td th:text="${d.soLuong}"></td>
+                                    <td><span th:inline="text">[[${#numbers.formatDecimal(d.donGia, 0, 'COMMA', 0, 'POINT')}]]</span></td>
+                                    <td th:text="${d.moTa}"></td>
+                                    <td><img th:src="${d.anhSanPham}" alt="Ảnh sản phẩm" style="width: 100px; height: 100px;"></td>
+                                    <td>
+                                        <button type="button" id="save" class="btn btn-primary" th:attr="data-id=${d.id}" data-bs-toggle="modal" data-bs-target="#quantityModal" onclick="openModalQuantity(this)">Chọn</button>
+                                    </td>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+<!--            Modal để chọn số lượng -->
+            <div class="modal fade" id="quantityModal" tabindex="-1" aria-labelledby="quantityLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="quantityLabel">Nhập số lượng</h1>
+                            <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>
+                                <strong id="ten_sp"></strong>
+                            </p>
+                            <p>
+                                <strong>Màu sắc : </strong><span id="mau_sac"></span>
+                            </p>
+                            <p>
+                                <strong>Kích thước : </strong><span id="kich_thuoc"></span>
+                            </p>
+                            <p>
+                                <strong>Đơn giá :
+                                    <span style="color: red" id="don_gia"></span>
+                                </strong>
+                            </p>
+                            <p>
+                                <strong style="color: red">Số lượng :
+                                    <span id="so_luong"></span>
+                                </strong>
+                                <input type="number">
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="">Save changes</button>
+                        </div>
+                    </div>
+                </div>
             </div>
     </div>
 </div>

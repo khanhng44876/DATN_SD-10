@@ -43,7 +43,6 @@ function themMs(){
                 let table = document.getElementById("msTable").getElementsByTagName("tbody")[0];
                 let newRow = table.insertRow();
                 newRow.innerHTML =`
-                    <td></td>
                     <td>${data.ten_mau_sac}</td>
                     <td>${data.mo_ta}</td>
                     <td>
@@ -75,8 +74,8 @@ function updateMs(id){
             .then(data =>{
                 alert("Cập nhật thành công");
                 let row = document.querySelector(`button[data-id="${id}"]`).closest("tr");
-                row.cells[1].innerText = data.ten_mau_sac
-                row.cells[2].innerText = data.mo_ta
+                row.cells[0].innerText = data.ten_mau_sac
+                row.cells[1].innerText = data.mo_ta
             })
             .catch(error => console.error("Loi",error))
 }
