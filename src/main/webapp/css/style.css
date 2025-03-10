@@ -80,3 +80,24 @@
     background-color: #f8f9fa;
     border-top: 1px solid #dee2e6;
 }
+.navbar-nav .btn-outline-light:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.navbar-nav .text-light {
+    font-weight: 500;
+}
+/*==================================online Sell Css=================================*/
+.swiper {
+    height: 400px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.social-links a:hover {
+    opacity: 0.8;
+}

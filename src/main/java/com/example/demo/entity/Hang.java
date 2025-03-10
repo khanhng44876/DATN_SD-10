@@ -17,6 +17,6 @@ public class Hang {
     @Column(name = "ten_hang")
     private String tenHang;
     @Column(name = "trang_thai")
-    private String trangthai;
+    private String trangThai;
 
 }

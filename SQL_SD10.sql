@@ -80,7 +80,9 @@ CREATE TABLE hoa_don (
 CREATE TABLE khach_hang (
     id INT IDENTITY(1,1) PRIMARY KEY,
     ten_khach_hang NVARCHAR(100) NOT NULL,
-    email NVARCHAR(100), 
+    tai_khoan NVARCHAR(100),
+    email NVARCHAR(100),
+    mat_khau NVARCHAR(255),
     so_dien_thoai NVARCHAR(15), 
     dia_chi NVARCHAR(255), 
     ngay_sinh DATE, 
@@ -271,12 +273,12 @@ values (1200, 150, 1, 1, 1, 1, N'Chất liệu thấm hút tốt', NULL, N'Còn 
     (2400, 5, 25, 1, 1, 2, N'Áo đấu siêu bền', NULL, N'Còn hàng');
 
 
-insert into khach_hang(ten_khach_hang, email, so_dien_thoai, dia_chi,ngay_sinh, gioi_tinh)
-values ('Nguyen Gia Khanh', 'khanhngph44876@fpt.edu.vn','0345760481','Dai Mo, HN','1998-02-12','Nam'),
-('Nguyen Quach Vu', 'vunqph45621@fpt.edu.vn','0396311217','Nhon, HN','1995-12-22','Nam'),
-('Vi Cong Minh', 'minhvcph45103@fpt.edu.vn','0702202307','Huu Lung, LS','2004-05-09','Nam'),
-('Nguyen Van Sao', 'saonvph45620@fpt.edu.vn','0879913025','n, BN','2003-05-09','Nam'),
-('Tran Thi Thu phuong', 'phuongtttph45219@fpt.edu.vn','0947052726','n, LS','2003-05-09',N'Nữ')
+insert into khach_hang(ten_khach_hang, email, so_dien_thoai, dia_chi,ngay_sinh, gioi_tinh,tai_khoan, mat_khau)
+values ('Nguyen Gia Khanh', 'khanhngph44876@fpt.edu.vn','0345760481','Dai Mo, HN','1998-02-12','Nam','khanh123', '123456'),
+('Nguyen Quach Vu', 'vunqph45621@fpt.edu.vn','0396311217','Nhon, HN','1995-12-22','Nam','vu123', '123456'),
+('Vi Cong Minh', 'minhvcph45103@fpt.edu.vn','0702202307','Huu Lung, LS','2004-05-09','Nam','minh123', '123456'),
+('Nguyen Van Sao', 'saonvph45620@fpt.edu.vn','0879913025','n, BN','2003-05-09','Nam','sao123', '123456'),
+('Tran Thi Thu phuong', 'phuongtttph45219@fpt.edu.vn','0947052726','n, LS','2003-05-09',N'Nữ','phuong123', '123456')
 
 insert into chuc_vu(ten_chuc_vu,trang_thai)
 values(N'Nhân Viên',N'Đang hoạt động'),

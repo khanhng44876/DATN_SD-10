@@ -36,7 +36,7 @@
                             <td th:text="${d.id}"></td>
                             <td th:text="${d.sanPham.tenSanPham}"></td>
                             <td th:text="${d.mauSac.ten_mau_sac}"></td>
-                            <td th:text="${d.kichThuoc.ten_kich_thuoc}"></td>
+                            <td th:text="${d.kichThuoc.tenKichThuoc}"></td>
                             <td th:text="${d.chatLieu.tenChatLieu}"></td>
                             <td th:text="${d.soLuong}"></td>
                             <td><span th:inline="text">[[${#numbers.formatDecimal(d.donGia, 0, 'COMMA', 0, 'POINT')}]]</span></td>
@@ -82,7 +82,7 @@
                             <label class="lb-form">Kích thước</label>
                             <select id="kichThuoc" class="form-control">
                                 <option value="">Chọn kích thước</option>
-                                <option th:each="size : ${dsKichThuoc}" th:value="${size.id}" th:text="${size.ten_kich_thuoc}"></option>
+                                <option th:each="size : ${dsKichThuoc}" th:value="${size.id}" th:text="${size.tenKichThuoc}"></option>
                             </select>
                             <span id="errorSize" class="text-danger"></span>
                             <a th:href="@{/san-pham/kich-thuoc}">Thêm kích thước</a>
