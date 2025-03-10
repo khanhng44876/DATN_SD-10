@@ -94,7 +94,7 @@
 </div>
 
 <script th:inline="javascript">
-    // Hàm validate form
+    // Hàm validate form (giữ nguyên)
     function validateForm(action) {
         document.getElementById("errorTenHang").innerText = "";
         document.getElementById("errorTrangThai").innerText = "";
@@ -119,7 +119,7 @@
         }
     }
 
-    // Hàm tải dữ liệu hãng
+    // Hàm tải dữ liệu hãng (giữ nguyên)
     async function loadHangData(idhang) {
         console.log("ID hãng nhận được:", idhang);
         try {
@@ -150,55 +150,65 @@
         }
     }
 
-    // Hàm thêm hãng
+    // Sửa hàm Thêm
     async function themHang() {
-        var con = window.confirm("Bạn có chắc chắn muốn thêm hãng sản phẩm?");
-        if (!con) return;
-        var payload = {
-            "tenHang": document.getElementById("tenHang").value.trim(),
-            "trangThai": document.getElementById("trangThai").value.trim()
+        if (!confirm("Bạn có chắc chắn muốn thêm hãng sản phẩm?")) return;
+
+        const payload = {
+            tenHang: document.getElementById("tenHang").value.trim(),
+            trangThai: document.getElementById("trangThai").value.trim()
         };
-        console.log("Dữ liệu gửi lên:", payload);
-        const response = await fetch("/san-pham/them-hang", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        if (response.ok) {
-            alert("Hãng sản phẩm đã được thêm thành công!");
-            window.location.href = "/san-pham/hang";
-        } else {
-            const errorText = await response.text();
-            console.error("Lỗi từ server:", errorText);
-            alert(`Đã có lỗi xảy ra khi thêm hãng: ${errorText}`);
+
+        try {
+            const response = await fetch("/san-pham/them-hang", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.text();
+            if (!response.ok) {
+                throw new Error(result);
+            }
+            alert(result); // Hiển thị thông báo từ server
+            window.location.href = "/san-pham/hang"; // Reload trang
+        } catch (error) {
+            console.error("Lỗi khi thêm hãng:", error);
+            alert(error.message); // Hiển thị lỗi từ server
         }
     }
 
-    // Hàm cập nhật hãng
+    // Sửa hàm Cập nhật
     async function capNhatHang(id) {
-        var con = window.confirm("Bạn có chắc chắn muốn cập nhật hãng sản phẩm?");
-        if (!con) return;
-        var payload = {
-            "tenHang": document.getElementById("tenHang").value.trim(),
-            "trangThai": document.getElementById("trangThai").value.trim()
+        if (!id) {
+            alert("Vui lòng chọn hãng để cập nhật!");
+            return;
+        }
+        if (!confirm("Bạn có chắc chắn muốn cập nhật hãng sản phẩm?")) return;
+
+        const payload = {
+            tenHang: document.getElementById("tenHang").value.trim(),
+            trangThai: document.getElementById("trangThai").value.trim()
         };
-        console.log("Dữ liệu gửi lên:", payload);
-        const response = await fetch(`/san-pham/cap-nhat-hang/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        if (response.ok) {
-            alert("Hãng sản phẩm đã được cập nhật thành công!");
-            window.location.href = "/san-pham/hang";
-        } else {
-            const errorText = await response.text();
-            console.error("Lỗi từ server:", errorText);
-            alert(`Đã có lỗi xảy ra khi cập nhật hãng: ${errorText}`);
+
+        try {
+            const response = await fetch(`/san-pham/cap-nhat-hang/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.text();
+            if (!response.ok) {
+                throw new Error(result);
+            }
+            alert(result); // Hiển thị thông báo từ server
+            window.location.href = "/san-pham/hang"; // Reload trang
+        } catch (error) {
+            console.error("Lỗi khi cập nhật hãng:", error);
+            alert(error.message); // Hiển thị lỗi từ server
         }
     }
 
-    // Hàm hiển thị số lượng hàng
+    // Các hàm khác giữ nguyên
     function displayRows(rows, pageSize) {
         rows.forEach((row, index) => {
             if (index < pageSize) {
@@ -209,14 +219,12 @@
         });
     }
 
-    // Hàm xử lý tìm kiếm
     function searchHang() {
         const searchValue = document.getElementById("searchInput").value.trim().toLowerCase();
         const rows = document.querySelectorAll("#tableBody tr");
         const pageSize = parseInt(document.getElementById("pageSize").value) || 10;
         const filteredRows = [];
 
-        // Lọc dữ liệu theo tìm kiếm
         rows.forEach(row => {
             const tenHang = row.cells[1].textContent.trim().toLowerCase();
             if (tenHang.startsWith(searchValue)) {
@@ -224,35 +232,26 @@
             }
         });
 
-        // Ẩn tất cả hàng trước khi hiển thị
         rows.forEach(row => row.style.display = "none");
-
-        // Hiển thị số lượng hàng theo pageSize từ kết quả lọc
         if (filteredRows.length > 0) {
             displayRows(filteredRows, pageSize);
         } else if (searchValue !== "") {
             alert("Hãng bạn tìm không tồn tại!");
-            updatePageSize(); // Khôi phục bảng theo pageSize
+            updatePageSize();
         } else {
-            updatePageSize(); // Hiển thị theo pageSize khi ô tìm kiếm rỗng
+            updatePageSize();
         }
     }
 
-    // Hàm cập nhật số lượng hiển thị
     function updatePageSize() {
         const pageSize = parseInt(document.getElementById("pageSize").value) || 10;
         const rows = document.querySelectorAll("#tableBody tr");
-
-        // Ẩn tất cả hàng trước khi hiển thị
         rows.forEach(row => row.style.display = "none");
-
-        // Hiển thị đúng số lượng hàng theo pageSize
         displayRows(rows, pageSize);
     }
 
-    // Khởi tạo hiển thị ban đầu
     document.addEventListener("DOMContentLoaded", function() {
-        updatePageSize(); // Hiển thị chính xác 10 hàng khi tải trang
+        updatePageSize();
     });
 </script>
 </body>

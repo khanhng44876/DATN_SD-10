@@ -15,9 +15,15 @@ import lombok.Setter;
 public class ChucVu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
-    @Column
-    private String ten_chuc_vu;
-    @Column
-    private String trang_thai;
+//    @Column
+//    private String ten_chuc_vu;
+    @Column(name = "ten_chuc_vu")
+    private String tenChucVu;
+    @Column(name = "trang_thai")
+    private String trangThai;
 }
+//    id INT IDENTITY(1,1) PRIMARY KEY,
+//    ten_chuc_vu NVARCHAR(50) NOT NULL,
+//    trang_thai NVARCHAR(50) DEFAULT N'Đang hoạt động'

@@ -11,32 +11,35 @@ import java.util.Date;
 @AllArgsConstructor
 @Table(name = "nhan_vien")
 public class NhanVien {
-    @ManyToOne
-    @JoinColumn(name = "id_chuc_vu")
-    private ChucVu chucVu;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
-    @Column
-    private String tai_khoan;
-    @Column
-    private String mat_khau;
-    @Column
+    @Column (name = "tai_khoan")
+    private String tenDangNhap;
+    @Column (name = "mat_khau")
+    private String matKhau;
+    @Column(name = "ten_nhan_vien")
     private String ten_nhan_vien;
-    @Column
+
     private String email;
-    @Column
+
     private String sdt;
-    @Column
+    @Column(name = "dia_chi")
     private String dia_chi;
-    @Column
+    @Column(name = "gioi_tinh")
     private String gioi_tinh;
     @DateTimeFormat(pattern = "yyyy/MM/dd")
     @Temporal(TemporalType.DATE)
-    @Column
-    private Date ngay_tao;
-    @Column
+    @Column(name = "ngay_tao")
+    private Date ngayTao;
+    @DateTimeFormat(pattern = "yyyy/MM/dd")
+    @Temporal(TemporalType.DATE)
+    @Column(name = "ngay_sua")
     private Date ngay_sua;
-    @Column
-    private String trang_thai;
+    @Column (name = "trang_thai")
+    private String trangThai;
+
+    @ManyToOne
+    @JoinColumn(name = "id_chuc_vu")
+    private ChucVu chucVu;
 }
