@@ -24,7 +24,6 @@ public class NhanVien {
     @JoinColumn(name = "id_chuc_vu")
     private ChucVu chucVu;
 
-    @NotBlank(message = "Tài khoản không được để trống")
     @Column(name = "tai_khoan", unique = true, length = 100)
     private String taiKhoan;
 
@@ -32,7 +31,6 @@ public class NhanVien {
     @Column(name = "mat_khau")
     private String matKhau;
 
-    @NotBlank(message = "Tên nhân viên không được để trống")
     @Column(name = "ten_nhan_vien", length = 100)
     private String tenNhanVien;
 
@@ -41,7 +39,7 @@ public class NhanVien {
     private String email;
 
     @Pattern(regexp = "^(0|\\+84)[0-9]{9}$", message = "Số điện thoại không hợp lệ")
-    @Column(name = "sdt", length = 15)
+    @Column(name = "sdt", length = 10)
     private String sdt;
 
     @Column(name = "dia_chi", length = 200)

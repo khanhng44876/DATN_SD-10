@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quản Lý Nhân Viên</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
+</head>
+<body>
+<div>
+    <div th:replace="~{giao_dien_chinh/navbarAdmin :: headerAdmin}"></div>
+
+    <div class="d-flex">
+        <div th:replace="~{giao_dien_chinh/navbarAdmin :: sidenavAdmin}"></div>
+        <div class="pt-3" style="width: calc(100% - 250px);">
+            <div class="container">
+                <h2 style="text-align: center;">Quản Lý Nhân Viên</h2>
+
+                <table id="example" class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên đăng nhập</th>
+                        <th>Mật khẩu</th>
+                        <th>Tên NV</th>
+                        <th>Chức vụ</th>
+                        <th>Email</th>
+                        <th>SĐT</th>
+                        <th>Ngày tạo</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="d : ${listtk}">
+                        <td th:text="${d.id}"></td>
+                        <td th:text="${d.taiKhoan}"></td>
+                        <td th:text="${d.matKhau}"></td>
+                        <td th:text="${d.tenNhanVien}"></td>
+                        <td th:text="${d.chucVu?.tenChucVu}"></td>
+                        <td th:text="${d.email}"></td>
+                        <td th:text="${d.sdt}"></td>
+                        <td th:text="${#dates.format(d.ngayTao, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${d.trangThai}"></td>
+                        <td>
+                            <button th:onclick="'loadNVData(' + ${d.id} + ')'" class="btn btn-warning">
+                                <i class="fa fa-pencil-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <br><br>
+
+                <!-- Form Thêm/Cập nhật Nhân Viên -->
+                <div class="row">
+                    <div class="col-sm-13">
+                        <label class="lb-form">Tên đăng nhập</label>
+                        <div class="input-group">
+                            <input id="tenDangNhap" class="form-control" placeholder="Nhập tên đăng nhập" required>
+                            <span id="errorTenDangNhap" class="text-danger" style="margin-left: 10px;"></span>
+                        </div>
+
+                        <label class="lb-form">Mật khẩu</label>
+                        <div class="input-group">
+                            <input id="matKhau" class="form-control" placeholder="Nhập mật khẩu" required>
+                            <span id="errorMatKhau" class="text-danger" style="margin-left: 10px;"></span>
+                        </div>
+
+                        <label class="lb-form">Tên nhân viên</label>
+                        <div class="input-group">
+                            <input id="tenNhanVien" class="form-control" placeholder="Nhập tên nhân viên" required>
+                            <span id="errorTenNhanVien" class="text-danger" style="margin-left: 10px;"></span>
+                        </div>
+
+                        <label class="lb-form">Chức vụ</label>
+                        <div class="input-group">
+                            <select id="chucVu" class="form-control">
+                                <option value="">Chọn chức vụ</option>
+                                <option th:each="cv : ${chucVus}"
+                                        th:value="${cv.id}"
+                                        th:text="${cv.tenChucVu}"></option>
+                            </select>
+                            <span id="errorChucVu" class="text-danger" style="margin-left: 10px;"></span>
+                        </div>
+
+                        <label class="lb-form">Email</label>
+                        <div class="input-group">
+                            <input id="email" class="form-control" placeholder="Nhập email" required>
+                            <span id="errorEmail" class="text-danger" style="margin-left: 10px;"></span>
+                        </div>
+
+                        <label class="lb-form">Số điện thoại</label>
+                        <div class="input-group">
+                            <input id="soDienThoai" class="form-control" placeholder="Nhập số điện thoại" required>
+                            <span id="errorsoDienThoai" class="text-danger" style="margin-left: 10px;"></span>
+                        </div>
+
+                        <label class="lb-form">Ngày tạo</label>
+                        <div class="input-group">
+                            <input id="ngayTao" class="form-control" type="date" required>
+                            <span id="errorNgayTao" class="text-danger" style="margin-left: 10px;"></span>
+                        </div>
+
+                        <label class="lb-form">Trạng thái</label>
+                        <div class="input-group">
+                            <select id="trangThai" class="form-control">
+                                <option value="">Chọn trạng thái</option>
+                                <option value="Hoat dong">Hoạt động</option>
+                                <option value="Khong hoat dong">Không hoạt động</option>
+                            </select>
+                            <span id="errorTrangThai" class="text-danger" style="margin-left: 10px;"></span>
+                        </div>
+
+                        <br>
+                        <button onclick="validateForm('add')" class="btn btn-primary">Thêm</button>
+                        <button onclick="validateForm('update')" class="btn btn-warning">Cập nhật</button>
+                        <br><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#example').DataTable();
+    });
+
+    function validateForm(action) {
+        console.log("validateForm called with action:", action);
+
+        // Clear error messages
+        document.getElementById("errorTenDangNhap").innerText = "";
+        document.getElementById("errorMatKhau").innerText = "";
+        document.getElementById("errorTenNhanVien").innerText = "";
+        document.getElementById("errorChucVu").innerText = "";
+        document.getElementById("errorEmail").innerText = "";
+        document.getElementById("errorsoDienThoai").innerText = "";
+        document.getElementById("errorNgayTao").innerText = "";
+        document.getElementById("errorTrangThai").innerText = "";
+
+        // Get values
+        const tenDangNhap = document.getElementById("tenDangNhap").value.trim();
+        const matKhau = document.getElementById("matKhau").value.trim();
+        const tenNhanVien = document.getElementById("tenNhanVien").value.trim();
+        const chucVu = document.getElementById("chucVu").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const soDienThoai = document.getElementById("soDienThoai").value.trim();
+        const ngayTao = document.getElementById("ngayTao").value.trim();
+        const trangThai = document.getElementById("trangThai").value.trim();
+
+        let isValid = true;
+
+        // Validate tenDangNhap
+        if (!tenDangNhap) {
+            document.getElementById("errorTenDangNhap").innerText = "Tên đăng nhập không được để trống.";
+            isValid = false;
+        }
+
+        // Validate matKhau
+        if (!matKhau) {
+            document.getElementById("errorMatKhau").innerText = "Mật khẩu không được để trống.";
+            isValid = false;
+        }
+
+        // Validate tenNhanVien
+        if (!tenNhanVien) {
+            document.getElementById("errorTenNhanVien").innerText = "Tên nhân viên không được để trống.";
+            isValid = false;
+        }
+
+        // Validate chucVu
+        if (!chucVu) {
+            document.getElementById("errorChucVu").innerText = "Vui lòng chọn chức vụ.";
+            isValid = false;
+        }
+
+        // Validate email
+        if (!email) {
+            document.getElementById("errorEmail").innerText = "Email không được để trống.";
+            isValid = false;
+        } else if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email)) {
+            document.getElementById("errorEmail").innerText = "Email phải có định dạng hợp lệ và đuôi @gmail.com.";
+            isValid = false;
+        }
+
+        // Validate soDienThoai
+        if (!soDienThoai) {
+            document.getElementById("errorsoDienThoai").innerText = "Số điện thoại không được để trống.";
+            isValid = false;
+        } else if (!/^\d{10}$/.test(soDienThoai)) { // Kiểm tra số điện thoại phải có đúng 10 chữ số
+            document.getElementById("errorsoDienThoai").innerText = "Số điện thoại phải có 10 chữ số.";
+            isValid = false;
+        }
+
+        // Validate ngayTao
+        if (!ngayTao) {
+            document.getElementById("errorNgayTao").innerText = "Ngày tạo không được để trống.";
+            isValid = false;
+        } else if (isNaN(Date.parse(ngayTao))) {
+            document.getElementById("errorNgayTao").innerText = "Ngày tạo không hợp lệ.";
+            isValid = false;
+        } else {
+            const today = new Date().toISOString().split("T")[0];
+            if (ngayTao > today) {
+                document.getElementById("errorNgayTao").innerText = "Ngày tạo không được là ngày trong tương lai.";
+                isValid = false;
+            }
+        }
+
+        // Validate trangThai
+        if (!trangThai) {
+            document.getElementById("errorTrangThai").innerText = "Vui lòng chọn trạng thái.";
+            isValid = false;
+        }
+
+        // If all fields are valid, proceed with action
+        if (isValid) {
+            console.log("Form is valid. Proceeding with action:", action);
+            if (action === 'add') {
+                themSP();
+            } else if (action === 'update') {
+                capNhatSP(window.currentNVId);
+            }
+        }
+    }
+    async function themSP() {
+        if (!window.confirm("Bạn có chắc chắn muốn thêm nhân viên?")) {
+            return;
+        }
+
+        const payload = {
+            tenDangNhap: document.getElementById("tenDangNhap").value,
+            matKhau: document.getElementById("matKhau").value,
+            ten_nhan_vien: document.getElementById("tenNhanVien").value,
+            chucVu: document.getElementById("chucVu").value,
+            email: document.getElementById("email").value,
+            sdt: document.getElementById("soDienThoai").value,
+            ngayTao: document.getElementById("ngayTao").value,
+            trangThai: document.getElementById("trangThai").value
+        };
+
+        try {
+            const response = await fetch("/nhan-vien/them-nhan-vien", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                alert("Nhân viên đã được thêm thành công!");
+                window.location.href = "/nhan-vien/hien-thi";
+            } else {
+                const errorText = await response.text();
+                alert("Lỗi khi thêm nhân viên: " + errorText);
+            }
+        } catch (error) {
+            alert("Lỗi kết nối: " + error.message);
+        }
+    }
+
+    async function capNhatSP(idnv) {
+        if (!window.confirm("Bạn có chắc chắn muốn cập nhật nhân viên?")) {
+            return;
+        }
+
+        const payload = {
+            tenDangNhap: document.getElementById("tenDangNhap").value,
+            matKhau: document.getElementById("matKhau").value,
+            ten_nhan_vien: document.getElementById("tenNhanVien").value,
+            chucVu: document.getElementById("chucVu").value,
+            email: document.getElementById("email").value,
+            sdt: document.getElementById("soDienThoai").value,
+            ngayTao: document.getElementById("ngayTao").value,
+            trangThai: document.getElementById("trangThai").value
+        };
+
+        try {
+            const response = await fetch(`/nhan-vien/cap-nhat-nhan-vien/${idnv}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                alert("Nhân viên đã được cập nhật thành công!");
+                window.location.href = "/nhan-vien/hien-thi";
+            } else {
+                const errorText = await response.text();
+                alert("Lỗi khi cập nhật nhân viên: " + errorText);
+            }
+        } catch (error) {
+            alert("Lỗi kết nối: " + error.message);
+        }
+    }
+
+    async function loadNVData(idnv) {
+        try {
+            const response = await fetch(`/nhan-vien/danh-sach-nhan-vien/${idnv}`);
+            if (!response.ok) {
+                throw new Error("Không thể tải dữ liệu nhân viên.");
+            }
+            const taiKhoan = await response.json();
+
+            document.getElementById("tenDangNhap").value = taiKhoan.taiKhoan;
+            document.getElementById("matKhau").value = taiKhoan.matKhau;
+            document.getElementById("tenNhanVien").value = taiKhoan.tenNhanVien || '';
+            document.getElementById("chucVu").value = taiKhoan.chucVu?.id || '';
+            document.getElementById("email").value = taiKhoan.email;
+            document.getElementById("soDienThoai").value = taiKhoan.sdt;
+            document.getElementById("ngayTao").value = new Date(taiKhoan.ngayTao).toISOString().split("T")[0];
+            document.getElementById("trangThai").value = taiKhoan.trangThai;
+
+            window.currentNVId = idnv;
+        } catch (error) {
+            console.error("Lỗi tải dữ liệu:", error);
+            alert("Lỗi tải dữ liệu nhân viên: " + error.message);
+        }
+    }
+</script>
+</body>
+</html>
