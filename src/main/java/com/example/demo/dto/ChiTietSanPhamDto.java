@@ -15,4 +15,5 @@ public class ChiTietSanPhamDto {
     private Float donGia;
     private String moTa;
     private String anhSanPham;
+    private String trangThai;
 }

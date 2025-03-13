@@ -1,6 +1,9 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.ChiTietSanPhamDto;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import com.example.demo.dto.SanPhamDto;
 import com.example.demo.entity.*;
 import com.example.demo.repository.*;
@@ -10,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
@@ -54,6 +58,11 @@ public class QuanLiSanPhamController {
     public List<DanhMuc> getdanhmuc(){return danhMucRepository.findAll();}
     @ModelAttribute("dsHang")
     public List<Hang> gethang(){return hangRepository.findAll();}
+
+    @GetMapping("/addsp")
+    public String iii(){
+        return "san_pham/addsp";
+    }
 
     // Hiển thị danh danh sách sản phẩm
     @GetMapping("/hien-thi")
@@ -203,27 +212,57 @@ public class QuanLiSanPhamController {
 
 
     @PostMapping("/them-ctsp")
-    public String themCtsp(@RequestBody ChiTietSanPhamDto ctspDto) {
+    public String themCtsp(
+            @RequestParam("idsanPham") Integer idsanPham,
+            @RequestParam("idmauSac") Integer idmauSac,
+            @RequestParam("idkichThuoc") Integer idkichThuoc,
+            @RequestParam("idchatLieu") Integer idchatLieu,
+            @RequestParam("soLuong") int soLuong,
+            @RequestParam("donGia") float donGia,
+            @RequestParam("moTa") String moTa,
+            @RequestParam("trangThai") String trangThai,
+            @RequestParam(value = "anhSanPham", required = false) MultipartFile anhSanPham) {
         try {
             SanPhamChiTiet ctsp = new SanPhamChiTiet();
-            SanPham sanPham = sanPhamRepository.findById(ctspDto.getIdsanPham())
+            SanPham sanPham = sanPhamRepository.findById(idsanPham)
                     .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại!"));
 
-            MauSac mauSac = mauSacRepository.findById(ctspDto.getIdmauSac())
-                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy màu sắc với ID: " + ctspDto.getIdmauSac()));
-            KichThuoc kichThuoc = kichThuocRepository.findById(ctspDto.getIdkichThuoc())
-                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy kích thước với ID: " + ctspDto.getIdkichThuoc()));
-            ChatLieu chatLieu = chatLieuRepository.findById(ctspDto.getIdchatLieu())
-                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy chất liệu với ID: " + ctspDto.getIdchatLieu()));
+            MauSac mauSac = mauSacRepository.findById(idmauSac)
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy màu sắc với ID: " + idmauSac));
+            KichThuoc size = kichThuocRepository.findById(idkichThuoc)
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy kích thước với ID: " + idkichThuoc));
+            ChatLieu chatLieu = chatLieuRepository.findById(idchatLieu)
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy chất liệu với ID: " + idchatLieu));
 
             ctsp.setSanPham(sanPham);
             ctsp.setMauSac(mauSac);
-            ctsp.setKichThuoc(kichThuoc);
+            ctsp.setKichThuoc(size);
             ctsp.setChatLieu(chatLieu);
-            ctsp.setSoLuong(ctspDto.getSoLuong());
-            ctsp.setDonGia(ctspDto.getDonGia());
-            ctsp.setMoTa(ctspDto.getMoTa());
-            ctsp.setAnhSanPham(ctspDto.getAnhSanPham());
+            ctsp.setSoLuong(soLuong);
+            ctsp.setDonGia(donGia);
+            ctsp.setMoTa(moTa);
+            ctsp.setTrangThai(trangThai);
+
+            // Xử lý lưu ảnh
+            // Xử lý lưu ảnh
+            if (anhSanPham != null && !anhSanPham.isEmpty()) {
+                String uploadDir = "D:\\"; // Thư mục trong dự án
+                String fileName = System.currentTimeMillis() + "_" + anhSanPham.getOriginalFilename();
+                Path uploadPath = Paths.get(uploadDir);
+
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath); // Tạo thư mục nếu chưa có
+                }
+
+                Path filePath = uploadPath.resolve(fileName);
+                Files.copy(anhSanPham.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                ctsp.setAnhSanPham("/uploads/" + fileName); // Đường dẫn ảnh để hiển thị
+            } else {
+                ctsp.setAnhSanPham(null);
+            }
+
+
 
             sanPhamCTRepository.save(ctsp);
             return "san_pham/ctsp";
@@ -245,6 +284,7 @@ public class QuanLiSanPhamController {
         ctsp.setDonGia(Float.parseFloat((String)payload.get("donGia")));
         ctsp.setAnhSanPham((String) payload.get("anhSanPham"));
         ctsp.setMoTa((String) payload.get("moTa"));
+        ctsp.setTrangThai((String) payload.get("trangThai"));
 
         Integer idmauSac = Integer.parseInt((String) payload.get("mauSac"));
         MauSac mauSac = mauSacRepository.findById(idmauSac)
@@ -346,6 +386,17 @@ public class QuanLiSanPhamController {
         danhMuc.setMota((String) payload.get("moTa"));
         danhMucRepository.save(danhMuc);
         return ResponseEntity.ok("Danh muc đã được thêm thành công!");
+    }
+
+    @GetMapping("/chinh-sua/{id}")
+    public String hienThiFormChinhSua(@PathVariable Integer id, Model model) {
+        Optional<SanPham> sanPham = sanPhamRepository.findById(id);
+        if (sanPham.isPresent()) {
+            model.addAttribute("sanPham", sanPham.get());
+            return "san_pham/updatesp"; // Trả về trang chỉnh sửa
+        } else {
+            return "redirect:/san-pham/hien-thi"; // Nếu không tìm thấy, quay về trang danh sách
+        }
     }
 
 
