@@ -16,6 +16,10 @@ import java.util.Date;
 public class HoaDonCT {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name = "id_hoa_don")
+    private int hoaDon_id;
+    @Column(name = "id_san_pham_chi_tiet")
+    private int ctsp_id;
 
     @Column(name = "so_luong")
     private Integer soLuong;

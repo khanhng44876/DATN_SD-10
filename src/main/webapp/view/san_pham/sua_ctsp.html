@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:if="${session.nhanVien != null}">
+    <head>
+        <title>Quan Ly San Pham</title>
+        <meta charset="utf-8">
+        <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
+        <link rel="stylesheet" type="text/css" href="/css/style.css">
+    </head>
+    <body>
+    <div>
+        <div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
+        <div class="d-flex">
+            <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
+            <div class="pt-3" style="width: calc(100% - 250px);">
+                <div class="container">
+                    <h2 style="text-align: center;">Quản Lý Chi Tiết Sản Phẩm</h2>
+                    <form id="formSuaCtsp" enctype="multipart/form-data" class="mt-4">
+                        <label>Tên sản phẩm(*)</label>
+                        <select id="idsanPham" class="form-control" disabled>
+                            <option value="">Chọn sản phẩm</option>
+                            <option th:each="sp : ${dataSP}" th:value="${sp.id}"
+                                    th:text="${sp.tenSanPham}"
+                                    th:selected="${sp.id == ctsp.sanPham.id}"></option>
+                        </select>
+
+                        <label>Đơn giá(*)</label>
+                        <input id="donGia" class="form-control" th:value="${ctsp.donGia}">
+
+                        <label>Số lượng(*)</label>
+                        <input id="soLuong" class="form-control" th:value="${ctsp.soLuong}">
+
+                        <label>Ghi chú</label>
+                        <input id="moTa" class="form-control" th:value="${ctsp.moTa}">
+
+                        <label>Màu sắc(*)</label>
+                        <select id="mauSac" class="form-control">
+                            <option value="">Chọn màu sắc</option>
+                            <option th:each="mau : ${dsMau}" th:value="${mau.id}"
+                                    th:text="${mau.ten_mau_sac}"
+                                    th:selected="${mau.id == ctsp.mauSac.id}"></option>
+                        </select>
+
+                        <label>Kích thước(*)</label>
+                        <select id="kichThuoc" class="form-control">
+                            <option value="">Chọn kích thước</option>
+                            <option th:each="size : ${dsKichThuoc}" th:value="${size.id}"
+                                    th:text="${size.tenKichThuoc}"
+                                    th:selected="${size.id == ctsp.kichThuoc.id}"></option>
+                        </select>
+
+                        <label>Chất liệu(*)</label>
+                        <select id="chatLieu" class="form-control">
+                            <option value="">Chọn chất liệu</option>
+                            <option th:each="chatLieu : ${dsChatLieu}" th:value="${chatLieu.id}"
+                                    th:text="${chatLieu.tenChatLieu}"
+                                    th:selected="${chatLieu.id == ctsp.chatLieu.id}"></option>
+                        </select>
+
+                        <label>Trạng Thái(*)</label>
+                        <select id="trangThai" class="form-control">
+                            <option value="Còn hàng" th:selected="${ctsp.trangThai == 'Còn hàng'}">Còn Hàng</option>
+                            <option value="Hết hàng" th:selected="${ctsp.trangThai == 'Hết hàng'}">Hết Hàng</option>
+                        </select>
+
+                        <label>Ảnh sản phẩm</label>
+                        <input id="anhSanPham" type="file" class="form-control">
+
+                        <br>
+                        <button type="button" class="btn btn-warning"
+                                th:attr="onclick='capNhatCTSP(' + ${ctsp.id} + ')'" >
+                            Update
+                        </button>
+                        <a th:href="@{'/san-pham/ds-ctsp/' + ${ctsp.sanPham.id}}" class="btn btn-secondary">Hủy</a>
+                    </form>
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </body>
+</div>
+
+<script>
+    $('#example').DataTable();
+</script>
+<script th:inline="javascript">
+
+    function validateCtsp(action) {
+
+        const soLuong = document.getElementById("soLuong").value;
+        const donGia = document.getElementById("donGia").value;
+        const moTa = document.getElementById("moTa").value;
+        const mauSac = document.getElementById("mauSac").value;
+        const kichThuoc = document.getElementById("kichThuoc").value;
+        const chatLieu = document.getElementById("chatLieu").value;
+        const trangThai = document.getElementById("trangThai").value;
+
+        let isValid = true;
+
+        if (!donGia || isNaN(donGia) || parseFloat(donGia) <= 0) {
+            document.getElementById("errorDonGia").innerText = "Vui lòng nhập đơn giá hợp lệ.";
+            isValid = false;
+        }
+
+        if (!soLuong || isNaN(soLuong) || parseInt(soLuong) <= 0) {
+            document.getElementById("errorSoLuong").innerText = "Vui lòng nhập số lượng hợp lệ.";
+            isValid = false;
+        }
+
+        if (mauSac === "") {
+            document.getElementById("errorMauSac").innerText = "Vui lòng chọn màu sắc.";
+            isValid = false;
+        }
+
+        if (kichThuoc === "") {
+            document.getElementById("errorSize").innerText = "Vui lòng chọn kích thước.";
+            isValid = false;
+        }
+
+        if (chatLieu === "") {
+            document.getElementById("errorChatLieu").innerText = "Vui lòng chọn chất liệu.";
+            isValid = false;
+        }
+        if (trangThai === "") {
+            document.getElementById("errorTrangThai").innerText = "Vui lòng chọn trạng thái.";
+            isValid = false;
+        }
+
+        if (isValid) {
+            if (action === 'add') {
+                themctspp();
+            } else if (action === 'update') {
+                capNhatCTSP(window.currentCTSanPhamId);
+            }
+        }
+
+
+    }
+
+    async function loadCtspData(idctsp) {
+        console.log("ID sản phẩm nhận được:", idctsp); // In ra để kiểm tra idsp
+        try {
+            const id = parseInt(idctsp, 10);
+            if (isNaN(id)) {
+                console.error("ID sản phẩm không hợp lệ:", idctsp);
+                alert("ID sản phẩm không hợp lệ.");
+                return;
+            }
+            // Gửi yêu cầu GET đến server để lấy dữ liệu sản phẩm
+            const response = await fetch(`/san-pham/danh-sach-ctsp/${id}`);
+
+            // Kiểm tra nếu phản hồi không thành công
+            if (!response.ok) {
+                console.error("Lỗi khi tải dữ liệu sản phẩm:", response.statusText);
+                alert("Không thể tải dữ liệu sản phẩm.");
+                return;
+            }
+
+            const ctsp = await response.json();
+
+            // Điền dữ liệu vào form
+            document.getElementById("soLuong").value = ctsp.soLuong;
+            document.getElementById("donGia").value = ctsp.donGia;
+            document.getElementById("moTa").value = ctsp.moTa;
+            document.getElementById("anhSanPham").value = ctsp.anhSanPham;
+            document.getElementById("mauSac").value = ctsp.mauSac.id;
+            document.getElementById("kichThuoc").value = ctsp.kichThuoc.id;
+            document.getElementById("chatLieu").value = ctsp.chatLieu.id;
+            document.getElementById("trangThai").value = ctsp.trangThai;
+
+
+            window.currentCTSanPhamId = idctsp;
+        } catch (error) {
+            console.error("Đã có lỗi xảy ra khi tải dữ liệu sản phẩm:", error);
+            alert("Không thể tải dữ liệu sản phẩm.");
+        }
+    }
+
+
+    async function themctspp() {
+
+        const idsanPham = document.getElementById("idsanPham").value;
+
+        if (!idsanPham || isNaN(idsanPham)) {
+            alert("Vui lòng chọn sản phẩm!");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("idsanPham", idsanPham);
+        formData.append("idmauSac", document.getElementById("mauSac").value);
+        formData.append("idkichThuoc", document.getElementById("kichThuoc").value);
+        formData.append("idchatLieu", document.getElementById("chatLieu").value);
+        formData.append("soLuong", document.getElementById("soLuong").value);
+        formData.append("donGia", document.getElementById("donGia").value);
+        formData.append("moTa", document.getElementById("moTa").value);
+        formData.append("trangThai", document.getElementById("trangThai").value);
+
+        const anhSanPham = document.getElementById("anhSanPham").files[0];
+        if (anhSanPham) {
+            formData.append("anhSanPham", anhSanPham);
+        }
+
+        try {
+            const response = await fetch(`/san-pham/them-ctsp`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                alert("Thêm chi tiết sản phẩm thành công!");
+                window.location.href = `/san-pham/ds-ctsp/${idsanPham}`;
+            } else {
+                const result = await response.text();
+                alert("Lỗi: " + result);
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Đã xảy ra lỗi khi thêm chi tiết sản phẩm.");
+        }
+    }
+
+    async function capNhatCTSP(id) {
+        const idsanPham = document.getElementById("idsanPham").value;
+
+        if (!confirm("Bạn chắc chắn muốn cập nhật sản phẩm?")) {
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("idsanPham", idsanPham);
+        formData.append("soLuong", document.getElementById("soLuong").value);
+        formData.append("donGia", document.getElementById("donGia").value);
+        formData.append("moTa", document.getElementById("moTa").value);
+        formData.append("idmauSac", document.getElementById("mauSac").value);
+        formData.append("idkichThuoc", document.getElementById("kichThuoc").value);
+        formData.append("idchatLieu", document.getElementById("chatLieu").value);
+        formData.append("trangThai", document.getElementById("trangThai").value);
+
+        const anhSanPham = document.getElementById("anhSanPham").files[0];
+        if (anhSanPham) formData.append("anhSanPham", anhSanPham);
+
+        try {
+            const response = await fetch(`/san-pham/cap-nhat-ctsp/${id}`, {
+                method: 'PUT',
+                body: formData // Chú ý: Không dùng headers 'Content-Type'
+            });
+
+            const result = await response.text();
+            if (response.ok) {
+                alert(result);
+                window.location.href = `/san-pham/ds-ctsp/${idsanPham}`;
+            } else {
+                alert("Lỗi khi cập nhật: " + result);
+            }
+        } catch (error) {
+            alert("Có lỗi xảy ra, vui lòng thử lại.");
+        }
+    }
+
+
+
+
+    // Hàm lấy id từ URL
+    function getIdFromURL() {
+        const segments = window.location.href.split("/");
+        return segments[segments.length - 1];
+    }
+
+
+
+    function getIdFromURL() {
+        const url = window.location.href;
+        const segments = url.split("/");
+        return segments[segments.length - 1];
+    }
+
+
+
+
+
+    function formatmoney(money) {
+        const VND = new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+        });
+        return VND.format(money);
+    }
+</script>
+
+<!--    <div class="modal fade" id="hoadonchitiet" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false">-->
+<!--        <div class="modal-dialog modal-fullscreen"> &lt;!&ndash; Sử dụng modal-fullscreen để làm modal chiếm toàn màn hình &ndash;&gt;-->
+<!--            <div class="modal-content">-->
+<!--                <div class="modal-header">-->
+<!--                    <h5 class="modal-title" id="exampleModalLabel">Sản phẩm chi tiết</h5>-->
+<!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--                </div>-->
+<!--                <div class="modal-body">-->
+
+
+<!--                    &lt;!&ndash; Bảng sản phẩm chi tiết &ndash;&gt;-->
+<!--                    <table class="table">-->
+<!--                        <thead>-->
+<!--                        <tr>-->
+<!--                            <th>Ma CTSP</th>-->
+<!--                            <th>Ten San Pham</th>-->
+<!--                            <th>Mau Sac</th>-->
+<!--                            <th>Kich Thuoc</th>-->
+<!--                            <th>Chat Lieu</th>-->
+<!--                            <th>So Luong</th>-->
+<!--                            <th>Don Gia</th>-->
+<!--                            <th>Ghi chu</th>-->
+<!--                            <th>Anh</th>-->
+<!--                        </tr>-->
+<!--                        </thead>-->
+<!--                        <tbody id="listctsp">-->
+<!--                        &lt;!&ndash; Dữ liệu sẽ được động hiển thị ở đây &ndash;&gt;-->
+<!--                        </tbody>-->
+<!--                    </table>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!-- Nội dung dành cho người dùng đã đăng nhập -->
+</div>
+<div th:if="${session.nhanVien == null}">
+    <p>Vui lòng <a th:href="@{/dang-nhap/login}">đăng nhập</a>.</p>
+</div>
+</html>

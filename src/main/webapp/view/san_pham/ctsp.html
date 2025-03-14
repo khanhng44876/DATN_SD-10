@@ -45,84 +45,88 @@
                             <td><img th:src="${d.anhSanPham}" alt="Ảnh sản phẩm" style="width: 100px; height: 100px;"></td>
                             <td th:text="${d.trangThai}"></td>
                             <td>
-                                <button th:onclick="'loadCtspData(' + ${d.id} + ')'" class="btn btn-warning">
+                                <button th:onclick="|window.location.href='/san-pham/chinh-sua-ctsp/${d.id}'|" class="btn btn-warning">
                                     <i class="fa fa-pencil-alt"></i>
                                 </button>
+
+
                             </td>
                             <!-- Dữ liệu sẽ được động hiển thị ở đây -->
                         </tbody>
                     </table>
                     <br><br>
+                    <a href="/san-pham/addctsp" class="btn btn-success">Thêm sản phẩm</a>
+
                     <!-- Form Thêm Sản Phẩm -->
-                    <div class="row">
+<!--                    <div class="row">-->
 
-                        <div class="col-sm-6">
-                            <label class="lb-form">Đơn giá(*)</label>
-                            <input id="donGia" class="form-control" required>
-                            <span id="errorDonGia" class="text-danger"></span>
-                            <br>
+<!--                        <div class="col-sm-6">-->
+<!--                            <label class="lb-form">Đơn giá(*)</label>-->
+<!--                            <input id="donGia" class="form-control" required>-->
+<!--                            <span id="errorDonGia" class="text-danger"></span>-->
+<!--                            <br>-->
 
-                            <label class="lb-form">Số lượng(*)</label>
-                            <input id="soLuong" class="form-control" required>
-                            <span id="errorSoLuong" class="text-danger"></span>
-                            <br>
+<!--                            <label class="lb-form">Số lượng(*)</label>-->
+<!--                            <input id="soLuong" class="form-control" required>-->
+<!--                            <span id="errorSoLuong" class="text-danger"></span>-->
+<!--                            <br>-->
 
-                            <label class="lb-form">Ghi chú</label>
-                            <input id="moTa" class="form-control" required>
-                            <span id="errorMoTa" class="text-danger"></span>
-                            <br>
+<!--                            <label class="lb-form">Ghi chú</label>-->
+<!--                            <input id="moTa" class="form-control" required>-->
+<!--                            <span id="errorMoTa" class="text-danger"></span>-->
+<!--                            <br>-->
 
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="lb-form">Màu sắc(*)</label>
-                            <select id="mauSac" class="form-control">
-                                <option value="">Chọn màu sắc</option>
-                                <option th:each="mau : ${dsMau}" th:value="${mau.id}" th:text="${mau.ten_mau_sac}"></option>
-                            </select>
-                            <a th:href="@{/mau-sac/hien-thi}">Thêm màu sắc</a>
-                            <br>
-                            <span id="errorMauSac" class="text-danger"></span>
-                            <br>
+<!--                        </div>-->
+<!--                        <div class="col-sm-6">-->
+<!--                            <label class="lb-form">Màu sắc(*)</label>-->
+<!--                            <select id="mauSac" class="form-control">-->
+<!--                                <option value="">Chọn màu sắc</option>-->
+<!--                                <option th:each="mau : ${dsMau}" th:value="${mau.id}" th:text="${mau.ten_mau_sac}"></option>-->
+<!--                            </select>-->
+<!--                            <a th:href="@{/mau-sac/hien-thi}">Thêm màu sắc</a>-->
+<!--                            <br>-->
+<!--                            <span id="errorMauSac" class="text-danger"></span>-->
+<!--                            <br>-->
 
-                            <label class="lb-form">Kích thước(*)</label>
-                            <select id="kichThuoc" class="form-control">
-                                <option value="">Chọn kích thước</option>
-                                <option th:each="size : ${dsKichThuoc}" th:value="${size.id}" th:text="${size.tenKichThuoc}"></option>
-                            </select>
-                            <span id="errorSize" class="text-danger"></span>
-                            <a th:href="@{/san-pham/kich-thuoc}">Thêm kích thước</a>
-                            <br>
+<!--                            <label class="lb-form">Kích thước(*)</label>-->
+<!--                            <select id="kichThuoc" class="form-control">-->
+<!--                                <option value="">Chọn kích thước</option>-->
+<!--                                <option th:each="size : ${dsKichThuoc}" th:value="${size.id}" th:text="${size.tenKichThuoc}"></option>-->
+<!--                            </select>-->
+<!--                            <span id="errorSize" class="text-danger"></span>-->
+<!--                            <a th:href="@{/san-pham/kich-thuoc}">Thêm kích thước</a>-->
+<!--                            <br>-->
 
-                            <label class="lb-form">Chất liệu(*)</label>
-                            <select id="chatLieu" class="form-control">
-                                <option value="">Chọn chất liệu</option>
-                                <option th:each="chatLieu : ${dsChatLieu}" th:value="${chatLieu.id}" th:text="${chatLieu.tenChatLieu}"></option>
-                            </select>
-                            <span id="errorChatLieu" class="text-danger"></span>
-                            <a th:href="@{/san-pham/chat-lieu}">Thêm chất liệu</a>
-                        </div>
-                        <br>
+<!--                            <label class="lb-form">Chất liệu(*)</label>-->
+<!--                            <select id="chatLieu" class="form-control">-->
+<!--                                <option value="">Chọn chất liệu</option>-->
+<!--                                <option th:each="chatLieu : ${dsChatLieu}" th:value="${chatLieu.id}" th:text="${chatLieu.tenChatLieu}"></option>-->
+<!--                            </select>-->
+<!--                            <span id="errorChatLieu" class="text-danger"></span>-->
+<!--                            <a th:href="@{/san-pham/chat-lieu}">Thêm chất liệu</a>-->
+<!--                        </div>-->
+<!--                        <br>-->
 
-                        <label class="lb-form">Trạng Thái(*)</label>
-                        <select id="trangThai" class="form-control">
-                            <option value="">Chọn trạng thái</option>
-                            <option value="Còn hàng">Còn Hàng</option>
-                            <option value="Hết hàng">Hết Hàng</option>
-                        </select>
-                        <span id="errorTrangThai" class="text-danger"></span>
-                        <br>
-                        <div>
-                            <label class="lb-form">Ảnh sản phẩm</label>
-                            <input id="anhSanPham" type="file" class="form-control" required>
-                            <span id="errorAnh" class="text-danger"></span>
-                        </div>
-                    </div>
+<!--                        <label class="lb-form">Trạng Thái(*)</label>-->
+<!--                        <select id="trangThai" class="form-control">-->
+<!--                            <option value="">Chọn trạng thái</option>-->
+<!--                            <option value="Còn hàng">Còn Hàng</option>-->
+<!--                            <option value="Hết hàng">Hết Hàng</option>-->
+<!--                        </select>-->
+<!--                        <span id="errorTrangThai" class="text-danger"></span>-->
+<!--                        <br>-->
+<!--                        <div>-->
+<!--                            <label class="lb-form">Ảnh sản phẩm</label>-->
+<!--                            <input id="anhSanPham" type="file" class="form-control" required>-->
+<!--                            <span id="errorAnh" class="text-danger"></span>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                    <br>
-                    <button onclick="validateCtsp('add')" class="btn btn-primary">Add</button>
-                    <button onclick="validateCtsp('update')" class="btn btn-warning">Update</button>
-                    <br><br>
-                    <!-- Nút bấm dưới cùng -->
+<!--                    <br>-->
+<!--                    <button onclick="validateCtsp('add')" class="btn btn-primary">Add</button>-->
+<!--                    <button onclick="validateCtsp('update')" class="btn btn-warning">Update</button>-->
+<!--                    <br><br>-->
+<!--                    &lt;!&ndash; Nút bấm dưới cùng &ndash;&gt;-->
 
 
 

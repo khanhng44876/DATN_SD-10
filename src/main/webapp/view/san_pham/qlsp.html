@@ -42,11 +42,9 @@
                             <td th:text="${d.trangThai}"></td>
                             <td>
                                 <!--                            <button th:attr="onclick=|openChiTietModal('${d.id}')|" data-bs-toggle="modal" data-bs-target="#hoadonchitiet" class="edit-btn"><i class="fa fa-eye"></i></button>-->
-                                <a th:href="@{/san-pham/chinh-sua/{id}(id=${d.id})}" class="btn btn-warning">
-                                    <i class="fa fa-pencil"></i>
-                                </a>
+                                <a th:href="@{/san-pham/chinh-sua/{id}(id=${d.id})}" class="btn btn-warning"><i class="fa fa-pencil-alt"></i></a>
 
-                                <a th:href="@{/san-pham/ds-ctsp/{id}(id=${d.id})}" class="btn btn-success"><i class="fa fa-eye"></i></a>
+                                <a th:href="@{/san-pham/ds-ctsp/{id}(id=${d.id})}" class="btn btn-warning"><i class="fa fa-eye"></i></a>
 
                             </td>
 
