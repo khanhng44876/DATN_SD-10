@@ -27,7 +27,7 @@
                             <th>Trạng thái</th>
                             <th>Hình thức</th>
                             <th>Tổng tiền</th>
-                            <th>Thao tác</th>
+                            <th>Hoạt động</th>
                             <th>Xem sản phẩm</th>
                         </tr>
                         </thead>
@@ -93,12 +93,11 @@
 
             // Hiển thị thông tin hóa đơn vào modal
             document.querySelector('#hoadonchitiet .modal-title').innerText = `Thông Tin Hóa Đơn #${hoaDon.id}`;
-            document.querySelector('#hoadonchitiet .form-control-plaintext.ten-nhan-vien').innerText = hoaDon.taiKhoan.tenDangNhap;
-            document.querySelector('#hoadonchitiet .form-control-plaintext.ngay-tao').innerText = hoaDon.ngayLap;
+            document.querySelector('#hoadonchitiet .form-control-plaintext.ten-nhan-vien').innerText = hoaDon.nhanVien.tenNhanVien;
+            document.querySelector('#hoadonchitiet .form-control-plaintext.ngay-tao').innerText = hoaDon.ngayTao;
             document.querySelector('#hoadonchitiet .form-control-plaintext.hinh-thuc-thanh-toan').innerText = hoaDon.hinhThucThanhToan;
             document.querySelector('#hoadonchitiet .form-control-plaintext.ho-ten').innerText = hoaDon.khachHang.tenKhachHang;
-            document.querySelector('#hoadonchitiet .form-control-plaintext.s-d-t').innerText = hoaDon.khachHang.sdt;
-            document.querySelector('#hoadonchitiet .form-control-plaintext.dia-chi').innerText = hoaDon.khachHang.diaChi;
+            document.querySelector('#hoadonchitiet .form-control-plaintext.s-d-t').innerText = hoaDon.khachHang.soDienThoai;
             document.querySelector('#hoadonchitiet .form-control-plaintext.ghi-chu').innerText = hoaDon.ghiChu;
             document.querySelector('#hoadonchitiet .form-control-plaintext.tong-tien').innerText = formatmoney(hoaDon.tongTien);
 
@@ -108,7 +107,7 @@
             // Fetch dữ liệu chi tiết hóa đơn từ server
             var url = '/hoa-don/chi-tiet-hoa-don?hoaDonId=' + iddonhang;
             try {
-                const response = await fetch(url, { method: 'GET' });
+                const response = await fetch(url, {method: 'GET'});
                 if (!response.ok) throw new Error("Không thể tải chi tiết hóa đơn từ server.");
                 var result = await response.json();
                 console.log(result);
@@ -117,18 +116,18 @@
                 var main = '';
                 for (var i = 0; i < result.length; i++) {
                     main += `
-                    <tr>
-                        <td>${result[i].id}</td>
-                        <td>${result[i].ctsp.sanPham.tenSanPham}</td>
-                        <td>${result[i].soLuong}</td>
-                        <td>${formatmoney(result[i].donGia)}</td>
-                        <td>${formatmoney(result[i].thanhTien)}</td>
-                    </tr>
-                `;
+                <tr>
+                    <td>${result[i].id}</td>
+                    <td>${result[i]?.sanPhamChiTiet?.sanPham?.tenSanPham}</td>
+                    <td>${result[i].soLuong}</td>
+                    <td>${formatmoney(result[i].donGia)}</td>
+                    <td>${formatmoney(result[i].thanhTien)}</td>
+                </tr>
+            `;
                 }
                 document.getElementById("listctsp").innerHTML = main;
             } catch (error) {
-                console.error("Lỗi khi tải chi tiết hóa đơn:", error);
+                console.error("Lỗi:", error);
                 alert("Không thể tải chi tiết hóa đơn. Vui lòng thử lại.");
             }
         }

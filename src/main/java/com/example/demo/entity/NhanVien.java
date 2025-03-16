@@ -20,9 +20,6 @@ public class NhanVien {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne()
-    @JoinColumn(name = "id_chuc_vu")
-    private ChucVu chucVu;
 
     @Column(name = "tai_khoan", unique = true, length = 100)
     private String taiKhoan;
@@ -47,6 +44,9 @@ public class NhanVien {
 
     @Column(name = "gioi_tinh", length = 10)
     private String gioiTinh;
+
+    @Column(name = "chuc_vu")
+    private String chucVu;
 
     @CreationTimestamp
     @DateTimeFormat(pattern = "yyyy-MM-dd")

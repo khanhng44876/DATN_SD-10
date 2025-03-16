@@ -16,11 +16,11 @@
             <tr>
                 <th>Hình Ảnh</th>
                 <th>Tên Sản Phẩm</th>
-                <th>Size</th>
+                <th>Kích thước</th>
                 <th>Giá</th>
                 <th>Số Lượng</th>
                 <th>Tổng</th>
-                <th>Thao tác</th>
+                <th>Hoạt động</th>
             </tr>
             </thead>
             <tbody id="cart-list">
@@ -145,59 +145,22 @@
             currency: 'VND'
         }).format(money);
     }
-
     function processCheckout(event) {
-        event.preventDefault(); // Ngăn hành động mặc định khi submit form
+        event.preventDefault();
 
-        // Lấy thông tin từ form
         const customerName = document.getElementById('customer-name').value.trim();
         const customerPhone = document.getElementById('customer-phone').value.trim();
         const customerAddress = document.getElementById('customer-address').value.trim();
         const paymentMethod = document.getElementById('payment-method').value;
-
-        // Lấy giỏ hàng từ LocalStorage
         const cart = getCartFromLocalStorage();
 
-        // Kiểm tra giỏ hàng không rỗng
         if (cart.length === 0) {
-            alert('Giỏ hàng của bạn đang trống! Vui lòng thêm sản phẩm vào giỏ.');
+            alert('Giỏ hàng trống!');
             return;
         }
 
-        // Kiểm tra Họ Tên
-        if (!customerName) {
-            alert('Vui lòng nhập họ tên.');
-            return;
-        } else if (/[-]/.test(customerName)) { // Kiểm tra có chứa số âm hoặc dấu trừ
-            alert('Họ tên không được chứa dấu trừ hoặc số âm.');
-            return;
-        }
-
-        // Kiểm tra Số Điện Thoại
-        if (!customerPhone || !/^\d{10}$/.test(customerPhone)) {
-            alert('Vui lòng nhập số điện thoại hợp lệ (10 chữ số).');
-            return;
-        }
-
-        // Kiểm tra Địa Chỉ
-        if (!customerAddress) {
-            alert('Vui lòng nhập địa chỉ.');
-            return;
-        } else if (/[-]/.test(customerAddress)) { // Kiểm tra có chứa số âm hoặc dấu trừ
-            alert('Địa chỉ không được chứa dấu trừ hoặc số âm.');
-            return;
-        }
-
-        // Kiểm tra Hình Thức Thanh Toán
-        if (!paymentMethod) {
-            alert('Vui lòng chọn hình thức thanh toán.');
-            return;
-        }
-
-        // Lấy tổng tiền từ giỏ hàng
         const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
-        // Tạo đối tượng request
         const requestData = {
             tenKhachHang: customerName,
             soDienThoai: customerPhone,
@@ -205,36 +168,39 @@
             hinhThucThanhToan: paymentMethod,
             tongTien: totalPrice,
             spct: cart.map(item => ({
-                idCtsp: item.id,      // ID của sản phẩm chi tiết
-                quantity: item.quantity // Số lượng sản phẩm
+                idCtsp: item.id,
+                quantity: item.quantity
             }))
         };
 
-        // Gửi yêu cầu POST đến server
+        console.log("Dữ liệu gửi lên server: ", requestData);
+
         fetch('/ban-hang-online/hoa-don', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData)
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestData)  // <-- SỬA THÀNH requestData
         })
             .then(response => {
-                if (response.ok) {
-                    return response.json(); // Parse JSON response nếu thành công
-                } else {
-                    throw new Error('Lỗi khi đặt hàng, lưu ý số lượng');
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text);
+                    });
                 }
+                return response.json();
             })
             .then(data => {
-                alert('Đã đặt hàng thành công!');
-                // Xóa giỏ hàng sau khi thanh toán
+                alert('Đặt hàng thành công!');
                 saveCartToLocalStorage([]);
                 displayCart();
             })
             .catch(error => {
-                alert('Đã xảy ra lỗi: ' + error.message);
+                alert('Lỗi đặt hàng: ' + error.message);
+                console.error(error);
             });
     }
+
+
+
 
 
 

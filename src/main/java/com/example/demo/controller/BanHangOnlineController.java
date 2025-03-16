@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,74 +58,70 @@ public class BanHangOnlineController {
             NhanVien taiKhoan = (NhanVien) session.getAttribute("nhanVien");
 
             if (taiKhoan == null) {
-                System.out.println("Lỗi: Không tìm thấy thông tin tài khoản trong session!");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Không tìm thấy thông tin tài khoản!");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Chưa đăng nhập!");
             }
-
 
             Float tongTien = 0F;
             for (SpctDto d : request.getSpct()) {
-                SanPhamChiTiet ctsp = ctsp_repository.findById(d.getIdCtsp()).get();
+                Optional<SanPhamChiTiet> ctspOptional = ctsp_repository.findById(d.getIdCtsp());
+
+                if (!ctspOptional.isPresent()) {
+                    return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm chi tiết ID: " + d.getIdCtsp());
+                }
+
+                SanPhamChiTiet ctsp = ctspOptional.get();
                 if (ctsp.getSoLuong() < d.getQuantity()) {
-                    throw new MessageException("id CTSP " + ctsp.getId() + " chỉ còn " + ctsp.getSoLuong());
+                    return ResponseEntity.badRequest().body("Sản phẩm [" + ctsp.getSanPham().getTenSanPham() + "] chỉ còn: " + ctsp.getSoLuong());
                 }
                 tongTien += ctsp.getDonGia() * d.getQuantity();
             }
 
-            // Tạo đối tượng khách hàng
             KhachHang khachHang = new KhachHang();
             khachHang.setTenKhachHang(request.getTenKhachHang() != null ? request.getTenKhachHang() : "Khách hàng không rõ");
-            khachHang.setSoDienThoai(request.getSdt());
+            khachHang.setSoDienThoai(request.getSoDienThoai());
             khachHang.setDiaChi(request.getDiaChi());
-
-            // Lưu khách hàng
             khachHang = khachHangRepository.save(khachHang);
 
-            // Tạo đối tượng hóa đơn
             HoaDon hoaDon = new HoaDon();
-            hoaDon.setNgayTao((java.sql.Date) new Date(System.currentTimeMillis()));
-            hoaDon.setTongTien(request.getTongTien());
+            hoaDon.setNgayTao(new Date(System.currentTimeMillis()));
+            hoaDon.setNgaySua(new Date(System.currentTimeMillis()));
+            hoaDon.setTongTien(tongTien);
             hoaDon.setHinhThucThanhToan(request.getHinhThucThanhToan());
             hoaDon.setTrangThaiThanhToan("Cho giao hang");
             hoaDon.setKhachHang(khachHang);
             hoaDon.setNhanVien(taiKhoan);
+            hoaDon = hoaDonrepo.save(hoaDon);
 
-            // Lưu hóa đơn
-            HoaDon savedHoaDon = hoaDonrepo.save(hoaDon);
-
-            // Cập nhật chi tiết hóa đơn
-            for (SpctDto d : request.getSpct()) {
-                Optional<SanPhamChiTiet> ctspOptional = ctsp_repository.findById(d.getIdCtsp());
-                if (ctspOptional.isPresent()) {
-                    SanPhamChiTiet ctsp = ctspOptional.get();
-                    HoaDonCT hdct = new HoaDonCT();
-                    hdct.setHoaDon(hoaDon);
-                    hdct.setDonGia(ctsp.getDonGia());
-                    hdct.setHoaDon_id(hoaDon.getId());
-                    hdct.setCtsp_id(ctsp.getId());
-                    hdct.setSanPhamChiTiet(ctsp);
-                    hdct.setSoLuong(d.getQuantity());
-                    hdct.setThanhTien(d.getQuantity() * ctsp.getDonGia());
-                    hdctRepository.save(hdct);
-                } else {
-                    // Log hoặc xử lý khi không tìm thấy sản phẩm
-                    System.out.println("Không tìm thấy sản phẩm với ID: " + d.getIdCtsp());
-                }
-            }
-
-
-            // Cập nhật số lượng sản phẩm
             for (SpctDto d : request.getSpct()) {
                 SanPhamChiTiet ctsp = ctsp_repository.findById(d.getIdCtsp()).get();
+
+                HoaDonCT hdct = new HoaDonCT();
+                hdct.setHoaDon(hoaDon);
+                hdct.setDonGia(ctsp.getDonGia());
+                hdct.setHoaDon_id(hoaDon.getId());
+                hdct.setCtsp_id(ctsp.getId());
+                hdct.setSanPhamChiTiet(ctsp);
+                hdct.setTongTien(tongTien);
+                hdct.setSoLuong(d.getQuantity());
+
+                // Đảm bảo tính toán và set giá trị thanhTien
+                hdct.setThanhTien(ctsp.getDonGia() * d.getQuantity());
+
+                hdctRepository.save(hdct);
+
+                // Cập nhật số lượng tồn kho
                 ctsp.setSoLuong(ctsp.getSoLuong() - d.getQuantity());
                 ctsp_repository.save(ctsp);
             }
 
-            return new ResponseEntity<>(savedHoaDon, HttpStatus.CREATED);
+
+            return new ResponseEntity<>(hoaDon, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body("Lỗi khi đặt hàng: " + e.getMessage());
         }
     }
+
+
 
 
 

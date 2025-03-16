@@ -75,7 +75,7 @@ public class DangNhapController {
         }
 
         // Nếu không phải quản lý, hiển thị thông báo thay vì redirect để tránh vòng lặp
-        if (taiKhoan.getChucVu() == null || !taiKhoan.getChucVu().getTenChucVu().equalsIgnoreCase("Quản Lý")) {
+        if (taiKhoan.getChucVu() == null || !taiKhoan.getChucVu().equalsIgnoreCase("Quản Lý")) {
             model.addAttribute("error", "Bạn không có quyền truy cập trang này.");
             return "error/forbidden";  // Hiển thị trang lỗi thay vì redirect
         }
@@ -85,10 +85,6 @@ public class DangNhapController {
         model.addAttribute("listtk", ls);
         return "nhan_vien/index";
     }
-
-
-
-
 
 
 
