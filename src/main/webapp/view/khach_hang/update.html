@@ -22,36 +22,39 @@
                 <!-- Form Thêm Khách Hàng -->
                 <div class="row">
                     <div class="col-sm-13">
-                        <label class="lb-form">Tên Khách Hàng</label>
+                        <label class="lb-form">Tên Khách Hàng<span style="color: red;">*</span></label>
                         <input id="tenKhachHang" class="form-control" required>
                         <span id="errorTenKhachHang" class="text-danger"></span>
 
-                        <label class="lb-form">Email</label>
+                        <label class="lb-form">Email<span style="color: red;">*</span></label>
                         <input id="email" class="form-control" required>
                         <span id="errorEmail" class="text-danger"></span>
 
-                        <label class="lb-form">Số điện thoại</label>
+                        <label class="lb-form">Số điện thoại<span style="color: red;">*</span></label>
                         <input id="soDienThoai" class="form-control" required>
                         <span id="errorSoDienThoai" class="text-danger"></span>
 
-                        <label class="lb-form">Địa chỉ</label>
+                        <label class="lb-form">Địa chỉ<span style="color: red;">*</span></label>
                         <input id="diaChi" class="form-control" required>
                         <span id="errorDiaChi" class="text-danger"></span>
 
-                        <label class="lb-form">Ngày sinh</label>
+                        <label class="lb-form">Ngày sinh<span style="color: red;">*</span></label>
                         <input id="ngaySinh" class="form-control" type="date" required>
                         <span id="errorNgaySinh" class="text-danger"></span>
 
-                        <label class="lb-form">Tài khoản</label>
+                        <label class="lb-form">Tài khoản<span style="color: red;">*</span></label>
                         <input id="taiKhoan" class="form-control" type="form-control" required>
                         <span id="errorTaiKhoan" class="text-danger"></span>
 
-                        <label class="lb-form">Mật khẩu</label>
+                        <label class="lb-form">Mật khẩu<span style="color: red;">*</span></label>
                         <input id="matKhau" class="form-control" type="form-control" required>
                         <span id="errorMatKhau" class="text-danger"></span>
 
-                        <label class="lb-form">Giới tính</label>
-                        <input id="gioiTinh" class="form-control" type="form-control" required>
+                        <label class="lb-form">Giới tính<span style="color: red;">*</span></label>
+                        <select id="gioiTinh" class="form-control">
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                        </select>
                         <span id="errorGioiTinh" class="text-danger"></span>
                         <br>
                         <button onclick="validateForm('update')" class="btn btn-warning">Cập Nhật</button>
