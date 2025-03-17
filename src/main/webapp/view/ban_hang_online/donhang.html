@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:if="${session.nhanVien != null}">
+    <head>
+        <title>Danh sách đơn hàng</title>
+        <meta charset="utf-8">
+        <head th:replace="giao_dien_chinh/libAdmin :: libheaderadmin"></head>
+        <link rel="stylesheet" type="text/css" href="/css/style.css">
+    </head>
+    <body>
+    <div>
+        <div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
+        <div class="d-flex">
+            <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
+            <div class="pt-3" style="width: calc(100% - 250px);">
+                <div class="container">
+                    <h2 style="text-align: center;">Bán Hàng Online</h2>
+
+                    <table id="example" class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên khách hàng</th>
+                            <th>Số điện thoại</th>
+                            <th>Địa chỉ</th>
+                            <th>Ngày</th>
+                            <th>Trạng thái</th>
+                            <th>Hình thức</th>
+                            <th>Tổng tiền</th>
+                            <th>Hoạt động</th>
+                            <th>Xem sản phẩm</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="d : ${donHang}">
+                            <td th:text="${d.id}"></td>
+                            <td th:text="${d.khachHang.tenKhachHang}"></td>
+                            <td th:text="${d.khachHang.soDienThoai}"></td>
+                            <td th:text="${d.khachHang.diaChi}"></td>
+                            <td th:text="${d.ngayTao}">
+                            <td th:text="${d.trangThaiThanhToan}"></td>
+                            <td th:text="${d.hinhThucThanhToan}"></td>
+                            <td><span th:inline="text">[[${#numbers.formatDecimal(d.tongTien, 0, 'COMMA', 0, 'POINT')}]]</span></td>
+
+                            <!-- Cột nút thao tác -->
+                            <td>
+                                <select class="form-select form-select-sm update-status"
+                                        th:data-id="${d.id}"
+                                        th:data-current-status="${d.trangThaiThanhToan}"
+                                        th:value="${d.trangThaiThanhToan}">
+                                    <option value="Cho giao hang">Chờ giao hàng</option>
+                                    <option value="Dang giao hang">Đang giao hàng</option>
+                                    <option value="Giao hang thanh cong">Giao thành công</option>
+                                    <option value="Da huy">Đã hủy</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button th:attr="onclick=|openChiTietModal('${d.id}')|"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#hoadonchitiet"
+                                        class="edit-btn">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <a href="/ban-hang-online/da-thanh-toan" class="btn btn-primary">Đơn hàng đã thanh toán</a>
+
+                    <a href="/ban-hang-online/da-huy" class="btn btn-danger">Đơn hàng đã hủy</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    </body>
+    <script>
+        $('#example').DataTable();
+    </script>
+    <script th:inline="javascript">
+
+
+        let listHoaDon = /*[[${donHang}]]*/ [];
+
+        async function openChiTietModal(iddonhang) {
+            // Tìm hóa đơn trong listHoaDon
+            let hoaDon = listHoaDon.find(d => d.id == iddonhang);
+            if (!hoaDon) {
+                console.error("Hóa đơn không tồn tại.");
+                return;
+            }
+
+            // Hiển thị thông tin hóa đơn vào modal
+            document.querySelector('#hoadonchitiet .modal-title').innerText = `Thông Tin Hóa Đơn #${hoaDon.id}`;
+            document.querySelector('#hoadonchitiet .form-control-plaintext.ten-nhan-vien').innerText = hoaDon.nhanVien.tenNhanVien;
+            document.querySelector('#hoadonchitiet .form-control-plaintext.ngay-tao').innerText = hoaDon.ngayTao;
+            document.querySelector('#hoadonchitiet .form-control-plaintext.hinh-thuc-thanh-toan').innerText = hoaDon.hinhThucThanhToan;
+            document.querySelector('#hoadonchitiet .form-control-plaintext.ho-ten').innerText = hoaDon.khachHang.tenKhachHang;
+            document.querySelector('#hoadonchitiet .form-control-plaintext.s-d-t').innerText = hoaDon.khachHang.soDienThoai;
+            document.querySelector('#hoadonchitiet .form-control-plaintext.ghi-chu').innerText = hoaDon.ghiChu;
+            document.querySelector('#hoadonchitiet .form-control-plaintext.tong-tien').innerText = formatmoney(hoaDon.tongTien);
+
+            // Làm sạch nội dung bảng chi tiết sản phẩm
+            document.getElementById("listctsp").innerHTML = "";
+
+            // Fetch dữ liệu chi tiết hóa đơn từ server
+            var url = '/hoa-don/chi-tiet-hoa-don?hoaDonId=' + iddonhang;
+            try {
+                const response = await fetch(url, {method: 'GET'});
+                if (!response.ok) throw new Error("Không thể tải chi tiết hóa đơn từ server.");
+                var result = await response.json();
+                console.log(result);
+
+                // Cập nhật nội dung bảng chi tiết sản phẩm
+                var main = '';
+                for (var i = 0; i < result.length; i++) {
+                    main += `
+                <tr>
+                    <td>${result[i].id}</td>
+                    <td>${result[i]?.sanPhamChiTiet?.sanPham?.tenSanPham}</td>
+                    <td>${result[i].soLuong}</td>
+                    <td>${formatmoney(result[i].donGia)}</td>
+                    <td>${formatmoney(result[i].thanhTien)}</td>
+                </tr>
+            `;
+                }
+                document.getElementById("listctsp").innerHTML = main;
+            } catch (error) {
+                console.error("Lỗi:", error);
+                alert("Không thể tải chi tiết hóa đơn. Vui lòng thử lại.");
+            }
+        }
+
+        function printModalContent() {
+            // Lấy nội dung của modal
+            const modalContentElement = document.querySelector('#hoadonchitiet .modal-content').cloneNode(true);
+
+            // Loại bỏ phần footer chứa nút
+            const modalFooter = modalContentElement.querySelector('.modal-footer');
+            if (modalFooter) {
+                modalFooter.remove();
+            }
+
+            // Lấy HTML đã được chỉnh sửa
+            const modalContent = modalContentElement.innerHTML;
+
+            // Tạo cửa sổ in tạm thời
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
+            printWindow.document.open();
+            printWindow.document.write(`
+        <html>
+        <head>
+            <title>In Hóa Đơn</title>
+            <link rel="stylesheet" href="/css/style.css">
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                }
+                table {
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+                table, th, td {
+                    border: 1px solid black;
+                }
+                th, td {
+                    padding: 10px;
+                    text-align: left;
+                }
+            </style>
+        </head>
+        <body>
+            ${modalContent}
+        </body>
+        </html>
+    `);
+            printWindow.document.close();
+
+            // Thực hiện in
+            printWindow.print();
+        }
+
+
+        function formatmoney(money) {
+            const VND = new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+            });
+            return VND.format(money);
+        }
+
+
+
+
+
+
+
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const selects = document.querySelectorAll(".update-status");
+
+            // Định nghĩa trình tự hợp lệ của trạng thái
+            const validTransitions = {
+                "Cho giao hang": ["Dang giao hang"],
+                "Dang giao hang": ["Giao hang thanh cong", "Da huy"],
+                "Giao hang thanh cong": [],
+                "Da huy": []
+            };
+
+            selects.forEach(select => {
+                select.addEventListener("change", function () {
+                    const id = this.getAttribute("data-id");
+                    const oldStatus = this.getAttribute("data-current-status"); // Lưu trạng thái hiện tại
+                    const newStatus = this.value;
+
+                    // Kiểm tra nếu trạng thái mới không hợp lệ
+                    if (!validTransitions[oldStatus].includes(newStatus)) {
+                        alert(`Không thể chuyển từ trạng thái "${oldStatus}" sang "${newStatus}". Vui lòng chuyển đúng trình tự.`);
+                        this.value = oldStatus; // Reset về trạng thái cũ
+                        return;
+                    }
+
+                    // Cập nhật trạng thái qua API
+                    fetch(`/ban-hang-online/hoa-don/${id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ trangThaiThanhToan: newStatus })
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error("Cập nhật thất bại!");
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            alert("Cập nhật trạng thái thành công!");
+                            this.setAttribute("data-current-status", newStatus); // Cập nhật trạng thái hiện tại
+
+                            // Reload lại trang sau khi cập nhật thành công
+                            window.location.reload();
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            alert("Cập nhật trạng thái thất bại!");
+                            this.value = oldStatus; // Reset về trạng thái cũ
+                        });
+                });
+            });
+        });
+
+
+
+
+    </script>
+
+
+    <div class="modal fade" id="hoadonchitiet" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Thông Tin Hóa Đơn</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Hóa đơn chi tiết -->
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label"><strong>Tên Nhân Viên:</strong></label>
+                            <p class="form-control-plaintext ten-nhan-vien">Chưa cập nhật</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label"><strong>Ngày Tạo:</strong></label>
+                            <p class="form-control-plaintext ngay-tao">Chưa cập nhật</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label"><strong>Tên Khách Hàng:</strong></label>
+                            <p class="form-control-plaintext ho-ten">Chưa cập nhật</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label"><strong>Số Điện Thoại:</strong></label>
+                            <p class="form-control-plaintext s-d-t">Chưa cập nhật</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label"><strong>Tổng Tiền:</strong></label>
+                            <p class="form-control-plaintext tong-tien">Chưa cập nhật</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label"><strong>Hình Thức Thanh Toán:</strong></label>
+                            <p class="form-control-plaintext hinh-thuc-thanh-toan">Chưa cập nhật</p>
+                        </div>
+                    </div>
+
+
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label"><strong>Địa chỉ giao hàng:</strong></label>
+                            <p class="form-control-plaintext dia-chi">Chưa cập nhật</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label"><strong>Ghi Chú:</strong></label>
+                            <p class="form-control-plaintext ghi-chu">Chưa cập nhật</p>
+                        </div>
+                    </div>
+
+
+
+                    <!-- Bảng chi tiết hóa đơn -->
+                    <h5 class="mt-4"><strong>Chi Tiết Sản Phẩm</strong></h5>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Ma CTSP</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Giá tiền</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                        </thead>
+                        <tbody id="listctsp">
+
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" onclick="printModalContent()">In Hóa Đơn</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Nội dung dành cho người dùng đã đăng nhập -->
+</div>
+
+<div th:if="${session.nhanVien == null}">
+    <p>Vui lòng <a th:href="@{/dang-nhap/login}"> đăng nhập</a>.</p>
+</div>
+
+</html>

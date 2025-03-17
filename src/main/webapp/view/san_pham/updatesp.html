@@ -17,43 +17,62 @@
                     <h2 style="text-align: center;">Quản Lý Sản Phẩm</h2>
 
 
-                    <table id="example" class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th>Mã sản phẩm</th>
-                            <th>Tên sản phẩm</th>
-                            <th>Ngày nhập</th>
-                            <th>Ngày sửa</th>
-                            <th>Danh mục</th>
-                            <th>Hãng</th>
-                            <th>Trạng thái</th>
-                            <th colspan="1">Hoạt động</th>
-                        </tr>
 
-                        </thead>
-                        <tbody>
-                        <tr th:each="d : ${dataSP}">
-                            <td th:text="${d.maSanPham}"></td>
-                            <td th:text="${d.tenSanPham}"></td>
-                            <td th:text="${d.ngayNhap}"></td>
-                            <td th:text="${d.ngaySua}"></td>
-                            <td th:text="${d.danhMuc != null ? d.danhMuc.tendanhmuc : 'Chưa có danh mục'}"></td>
-                            <td th:text="${d.hang != null ? d.hang.tenHang : 'Chưa có hãng'}"></td>
-                            <td th:text="${d.trangThai}"></td>
-                            <td>
-                                <!--                            <button th:attr="onclick=|openChiTietModal('${d.id}')|" data-bs-toggle="modal" data-bs-target="#hoadonchitiet" class="edit-btn"><i class="fa fa-eye"></i></button>-->
-                                <a th:href="@{/san-pham/chinh-sua/{id}(id=${d.id})}" class="btn btn-warning"><i class="fa fa-pencil-alt"></i></a>
-
-                                <a th:href="@{/san-pham/ds-ctsp/{id}(id=${d.id})}" class="btn btn-warning"><i class="fa fa-eye"></i></a>
-
-                            </td>
-
-                        </tr>
-                        </tbody>
-                    </table>
                     <br><br>
                     <!-- Form Thêm Sản Phẩm -->
-                    <a th:href="@{/san-pham/addsp}" class="btn btn-success"> Thêm sản phẩm</a>
+                    <form id="updateSanPhamForm">
+                        <input type="hidden" id="idSanPham" th:value="${sanPham.id}">
+
+                        <label class="lb-form">Mã Sản Phẩm(*)</label>
+                        <input type="text" id="maSanPham" th:value="${sanPham.maSanPham}" class="form-control" required>
+                        <span id="errorMaSanPham" class="text-danger"></span>
+                        <br>
+
+                        <label class="lb-form">Tên Sản Phẩm(*)</label>
+                        <input type="text" id="tenSanPham" th:value="${sanPham.tenSanPham}" class="form-control" required>
+                        <span id="errorTenSanPham" class="text-danger"></span>
+                        <br>
+
+                        <label class="lb-form">Ngày Nhập(*)</label>
+                        <input type="date" id="ngayNhap" th:value="${sanPham.ngayNhap}" class="form-control" required>
+                        <span id="errorNgayNhap" class="text-danger"></span>
+                        <br>
+
+                        <label class="lb-form">Ngày Sửa(*)</label>
+                        <input type="date" id="ngaySua" th:value="${sanPham.ngaySua}" class="form-control" required>
+                        <span id="errorNgaySua" class="text-danger"></span>
+                        <br>
+
+                        <label class="lb-form">Danh Mục(*)</label>
+                        <select id="danhMuc">
+                            <option th:each="dm : ${dsDanhMuc}" th:value="${dm.id}" th:text="${dm.tendanhmuc}"
+                                    th:selected="${sanPham.danhMuc.id == dm.id}"></option>
+                        </select>
+                        <span id="errorDanhMuc" class="text-danger"></span>
+                        <br>
+                        <a th:href="@{/san-pham/danh-muc}">Thêm danh mục</a>
+                        <br>
+
+                        <label class="lb-form">Hãng(*)</label>
+                        <select id="hang">
+                            <option th:each="dm : ${dsHang}" th:value="${dm.id}" th:text="${dm.tenHang}"
+                                    th:selected="${sanPham.hang.id == dm.id}"></option>
+                        </select>
+                        <span id="errorHang" class="text-danger"></span>
+                        <br>
+                        <a th:href="@{/san-pham/hang}">Thêm hãng</a>
+                        <br>
+
+                        <label class="lb-form">Trạng Thái(*)</label>
+                        <select id="trangThai">
+                            <option value="Còn hàng" th:selected="${sanPham.trangThai == 'Còn hàng'}">Còn hàng</option>
+                            <option value="Hết hàng" th:selected="${sanPham.trangThai == 'Hết hàng'}">Hết hàng</option>
+                        </select>
+                        <span id="errorTrangThai" class="text-danger"></span>
+                        <br>
+
+                        <button type="button" onclick="capNhatSanPham()" class="btn btn-warning">Update</button>
+                    </form>
 
 
                 </div>
@@ -62,9 +81,9 @@
     </body>
 </div>
 
-    <script>
-        $('#example').DataTable();
-    </script>
+<script>
+    $('#example').DataTable();
+</script>
 
 
 <script th:inline="javascript">
@@ -313,41 +332,50 @@
 
 
 
-    async function capNhatSP(idsp) {
+
+        async function capNhatSanPham() {
         var con = window.confirm("Bạn có chắc chắn muốn cập nhật sản phẩm?");
-        if (con == false) {
-            return;
-        }
+        if (!con) {
+        return;
+    }
+
+        // Lấy ID sản phẩm
+        let idsp = document.getElementById("idSanPham").value;
 
         // Thu thập dữ liệu từ form
         const payload = {
-            maSanPham :document.getElementById("maSanPham").value,
-            tenSanPham :document.getElementById("tenSanPham").value,
-            ngayNhap :document.getElementById("ngayNhap").value,
-            ngaySua: document.getElementById("ngaySua").value,
-            iddanhMuc: document.getElementById("danhMuc").value,
-            idhang: document.getElementById("hang").value,
-            trangThai: document.getElementById("trangThai").value,
-        };
+        maSanPham: document.getElementById("maSanPham").value,
+        tenSanPham: document.getElementById("tenSanPham").value,
+        ngayNhap: document.getElementById("ngayNhap").value,
+        ngaySua: document.getElementById("ngaySua").value,
+        iddanhMuc: document.getElementById("danhMuc").value,
+        idhang: document.getElementById("hang").value,
+        trangThai: document.getElementById("trangThai").value,
+    };
 
-        // Gửi dữ liệu đến server (PUT request)
+        try {
         const response = await fetch(`/san-pham/cap-nhat-san-pham/${idsp}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload) // Chuyển dữ liệu thành JSON
-        });
+        method: 'PUT',
+        headers: {
+        'Content-Type': 'application/json'
+    },
+        body: JSON.stringify(payload)
+    });
 
-        // Kiểm tra phản hồi từ server
+        const result = await response.text();
+
         if (response.ok) {
-            alert("Sản phẩm đã được cập nhật thành công!");
-            // Chuyển hướng về trang hiển thị danh sách sản phẩm
-            window.location.href = "/san-pham/hien-thi";
-        } else {
-            alert("Đã có lỗi xảy ra khi cập nhật sản phẩm.");
-        }
+        alert("Cập nhật thành công!");
+        window.location.href = "/san-pham/hien-thi";
+    } else {
+        alert("Lỗi: " + result);
     }
+    } catch (error) {
+        console.error("Lỗi khi cập nhật sản phẩm:", error);
+        alert("Đã có lỗi xảy ra khi cập nhật sản phẩm.");
+    }
+    }
+
 
 
 

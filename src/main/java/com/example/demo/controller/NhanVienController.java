@@ -1,8 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.ChucVu;
 import com.example.demo.entity.NhanVien;
-import com.example.demo.repository.ChucVuRepository;
 import com.example.demo.repository.NhanVienRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,18 +23,11 @@ public class NhanVienController {
     @Autowired
     NhanVienRepository nhanVienRepository;
 
-    @Autowired
-    ChucVuRepository chucVuRepository;
 
     @GetMapping("hien-thi")
     public String hienThiNhanVien(Model model) {
         List<NhanVien> ds = this.nhanVienRepository.findAll();
         model.addAttribute("listtk", ds);
-
-        List<ChucVu> chucVus = this.chucVuRepository.findAll();
-        model.addAttribute("chucVus", chucVus);
-        System.out.println("Danh sách chức vụ: " + chucVus); // Debug
-
         return "nhan_vien/nhanvien";
     }
 
@@ -55,7 +46,7 @@ public class NhanVienController {
             String email = (String) payload.get("email");
 
             // Kiểm tra xem tên đăng nhập và email đã tồn tại chưa
-            if (nhanVienRepository.findByTaiKhoan(tenDangNhap).isPresent()) {
+                if (nhanVienRepository.findByTaiKhoan(tenDangNhap).isPresent()) {
                 return ResponseEntity.badRequest().body("Tên đăng nhập đã tồn tại: " + tenDangNhap);
             }
             if (nhanVienRepository.findByEmail(email).isPresent()) {
@@ -66,11 +57,7 @@ public class NhanVienController {
             taiKhoan.setTaiKhoan(tenDangNhap);
             taiKhoan.setMatKhau((String) payload.get("matKhau"));
             taiKhoan.setTenNhanVien((String) payload.get("ten_nhan_vien"));
-
-            Integer chucVuId = parseChucVuId(payload.get("chucVu"));
-            ChucVu chucVu = chucVuRepository.findById(chucVuId)
-                    .orElseThrow(() -> new RuntimeException("Chức vụ với ID " + chucVuId + " không tồn tại"));
-            taiKhoan.setChucVu(chucVu);
+            taiKhoan.setChucVu((String) payload.get("chucVu"));
 
             taiKhoan.setEmail(email);
             taiKhoan.setSdt((String) payload.get("sdt"));
@@ -115,13 +102,7 @@ public class NhanVienController {
             taiKhoan.setTaiKhoan(tenDangNhap);
             taiKhoan.setMatKhau((String) payload.get("matKhau"));
             taiKhoan.setTenNhanVien((String) payload.get("ten_nhan_vien"));
-
-            if (payload.get("chucVu") != null) {
-                Integer chucVuId = parseChucVuId(payload.get("chucVu"));
-                ChucVu chucVu = chucVuRepository.findById(chucVuId)
-                        .orElseThrow(() -> new RuntimeException("Chức vụ với ID " + chucVuId + " không tồn tại"));
-                taiKhoan.setChucVu(chucVu);
-            }
+            taiKhoan.setChucVu((String) payload.get("chucVu"));
 
             taiKhoan.setEmail(email);
             taiKhoan.setSdt((String) payload.get("sdt"));
@@ -141,13 +122,4 @@ public class NhanVienController {
         }
     }
 
-    private Integer parseChucVuId(Object chucVuIdObj) {
-        if (chucVuIdObj instanceof String) {
-            return Integer.parseInt((String) chucVuIdObj);
-        } else if (chucVuIdObj instanceof Integer) {
-            return (Integer) chucVuIdObj;
-        } else {
-            throw new RuntimeException("ID chức vụ không hợp lệ");
-        }
-    }
 }

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:if="${session.nhanVien != null}">
+    <head>
+        <title>Index</title>
+        <meta charset="utf-8">
+        <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
+        <link rel="stylesheet" type="text/css" href="/css/style.css">
+        <style>
+            .center-content {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                overflow: hidden;
+            }
+            .center-content img {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: cover;
+            }
+        </style>
+    </head>
+    <body>
+    <div>
+        <div th:replace="~{giao_dien_chinh/navbarAdmin :: headerAdmin}"></div>
+        <div class="d-flex">
+            <div th:replace="~{giao_dien_chinh/navbarAdmin :: sidenavAdmin}"></div>
+            <div class="center-content" style="width: calc(100% - 250px);">
+                <img src="https://bizweb.dktcdn.net/100/522/096/themes/959072/assets/slider_2.jpg?959072">
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${session.nhanVien == null}">
+        <p>Vui lòng <a th:href="@{/dang-nhap/login}">đăng nhập</a>.</p>
+    </div>
+    </body>
+</html>
+
+

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:if="${session.nhanVien != null}">
+    <div th:if="${session.nhanVien.chucVu == 'Quản lý'}">
 <head>
     <title>Quản Lý Nhân Viên</title>
     <meta charset="utf-8">
@@ -37,7 +39,7 @@
                         <td th:text="${d.taiKhoan}"></td>
                         <td th:text="${d.matKhau}"></td>
                         <td th:text="${d.tenNhanVien}"></td>
-                        <td th:text="${d.chucVu?.tenChucVu}"></td>
+                        <td th:text="${d.chucVu}"></td>
                         <td th:text="${d.email}"></td>
                         <td th:text="${d.sdt}"></td>
                         <td th:text="${#dates.format(d.ngayTao, 'yyyy-MM-dd')}"></td>
@@ -73,14 +75,12 @@
                             <span id="errorTenNhanVien" class="text-danger" style="margin-left: 10px;"></span>
                         </div>
 
-                        <label class="lb-form">Chức vụ</label>
-                        <div class="input-group">
-                            <select id="chucVu" class="form-control">
-                                <option value="">Chọn chức vụ</option>
-                                <option th:each="cv : ${chucVus}"
-                                        th:value="${cv.id}"
-                                        th:text="${cv.tenChucVu}"></option>
-                            </select>
+                        <label class="lb-form">Chức vụ </label>
+                        <select id="chucVu" class="form-control">
+                            <option value="">Chọn chức vụ</option>
+                            <option value="Nhân viên">Nhân viên</option>
+                            <option value="Quản lý">Quản lý</option>
+                        </select>
                             <span id="errorChucVu" class="text-danger" style="margin-left: 10px;"></span>
                         </div>
 
@@ -309,7 +309,7 @@
             document.getElementById("tenDangNhap").value = taiKhoan.taiKhoan;
             document.getElementById("matKhau").value = taiKhoan.matKhau;
             document.getElementById("tenNhanVien").value = taiKhoan.tenNhanVien || '';
-            document.getElementById("chucVu").value = taiKhoan.chucVu?.id || '';
+            document.getElementById("chucVu").value = taiKhoan.chucVu || '';
             document.getElementById("email").value = taiKhoan.email;
             document.getElementById("soDienThoai").value = taiKhoan.sdt;
             document.getElementById("ngayTao").value = new Date(taiKhoan.ngayTao).toISOString().split("T")[0];
@@ -323,4 +323,12 @@
     }
 </script>
 </body>
+</div>
+<div th:if="${session.nhanVien.chucVu != 'Quản lý'}">
+    <p>Bạn không có quyền truy cập trang này.</p>
+</div>
+</div>
+<div th:if="${session.nhanVien == null}">
+    <p>Vui lòng <a th:href="@{/dang-nhap/login}">đăng nhập</a>.</p>
+</div>
 </html>

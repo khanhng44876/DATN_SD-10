@@ -10,6 +10,9 @@ import java.util.List;
 
 @Repository
 public interface SanPhamCTRepository extends JpaRepository<SanPhamChiTiet,Integer> {
-    @Query("SELECT h FROM SanPhamChiTiet h WHERE h.sanPham.id = :sanPhamId")
-    List<SanPhamChiTiet> findBySanPhamId(@Param("sanPhamId") Integer sanPhamId);
+    @Query("SELECT h FROM SanPhamChiTiet h WHERE h.sanPham.id = ?1")
+    List<SanPhamChiTiet> findBySanPham(Integer spId);
+
+    @Query("SELECT h FROM SanPhamChiTiet h WHERE h.sanPham.id = :idsanPham")
+    List<SanPhamChiTiet> findBySanPhamId(@Param("idsanPham") Integer idsanPham);
 }
