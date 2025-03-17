@@ -22,27 +22,27 @@
                     <!-- Form Thêm Sản Phẩm -->
                     <div class="row">
                         <div class="col-sm-13">
-                            <label class="lb-form">Mã Sản Phẩm(*)</label>
+                            <label class="lb-form">Mã Sản Phẩm<span style="color: red;">*</span></label>
                             <input id="maSanPham" class="form-control" required>
                             <span id="errorMaSanPham" class="text-danger"></span>
                             <br>
 
-                            <label class="lb-form">Tên Sản Phẩm(*)</label>
+                            <label class="lb-form">Tên Sản Phẩm<span style="color: red;">*</span></label>
                             <input id="tenSanPham" class="form-control" required>
                             <span id="errorTenSanPham" class="text-danger"></span>
                             <br>
 
-                            <label class="lb-form">Ngày Nhập(*)</label>
+                            <label class="lb-form">Ngày Nhập<span style="color: red;">*</span></label>
                             <input id="ngayNhap" class="form-control" type="date" required>
                             <span id="errorNgayNhap" class="text-danger"></span>
                             <br>
 
-                            <label class="lb-form">Ngày Sửa(*)</label>
+                            <label class="lb-form">Ngày Sửa<span style="color: red;">*</span></label>
                             <input id="ngaySua" class="form-control" type="date" required>
                             <span id="errorNgaySua" class="text-danger"></span>
                             <br>
 
-                            <label class="lb-form">Danh Mục(*)</label>
+                            <label class="lb-form">Danh Mục<span style="color: red;">*</span></label>
                             <select id="danhMuc" class="form-control">
                                 <option value="">Chọn danh mục</option>
                                 <option th:each="danhMuc : ${dsDanhMuc}" th:value="${danhMuc.id}" th:text="${danhMuc.tendanhmuc}"></option>
@@ -52,7 +52,7 @@
                             <a th:href="@{/san-pham/danh-muc}">Thêm danh mục</a>
                             <br>
 
-                            <br><label class="lb-form">Hãng(*)</label>
+                            <br><label class="lb-form">Hãng<span style="color: red;">*</span></label>
                             <select id="hang" class="form-control">
                                 <option value="">Chọn hãng</option>
                                 <option th:each="hang : ${dsHang}" th:value="${hang.id}" th:text="${hang.tenHang}"></option>
@@ -62,7 +62,7 @@
                             <a th:href="@{/san-pham/hang}">Thêm hãng</a>
                             <br>
 
-                            <label class="lb-form">Trạng Thái(*)</label>
+                            <label class="lb-form">Trạng Thái<span style="color: red;">*</span></label>
                             <select id="trangThai" class="form-control">
                                 <option value="">Chọn trạng thái</option>
                                 <option value="Còn hàng">Còn Hàng</option>

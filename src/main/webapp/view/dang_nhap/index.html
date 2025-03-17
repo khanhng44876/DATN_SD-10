@@ -8,17 +8,26 @@
         <link rel="stylesheet" type="text/css" href="/css/style.css">
         <style>
             .center-content {
+                position: relative;
+                height: 80vh; /* Giảm chiều cao để ảnh không bị tụt */
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                height: 100vh;
                 overflow: hidden;
             }
+
             .center-content img {
+                position: absolute;
+                top: 45%; /* Giảm giá trị này để đưa ảnh lên trên */
+                transform: translateY(-50%);
                 max-width: 100%;
                 max-height: 100%;
-                object-fit: cover;
+                width: auto;
+                height: auto;
+                object-fit: contain;
             }
+
+
         </style>
     </head>
     <body>
@@ -27,7 +36,7 @@
         <div class="d-flex">
             <div th:replace="~{giao_dien_chinh/navbarAdmin :: sidenavAdmin}"></div>
             <div class="center-content" style="width: calc(100% - 250px);">
-                <img src="https://bizweb.dktcdn.net/100/522/096/themes/959072/assets/slider_2.jpg?959072">
+                <img src="https://i.imgur.com/wrPUrUr.png" alt="Image">
             </div>
         </div>
     </div>
@@ -37,5 +46,3 @@
     </div>
     </body>
 </html>
-
-

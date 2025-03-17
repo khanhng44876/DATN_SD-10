@@ -88,18 +88,14 @@ CREATE TABLE khach_hang (
     ngay_sinh DATE, 
     gioi_tinh NVARCHAR(10)
 );
-CREATE TABLE chuc_vu(
-    id INT IDENTITY(1,1) PRIMARY KEY,
-	ten_chuc_vu NVARCHAR(50) NOT NULL, 
-	trang_thai NVARCHAR(50) DEFAULT N'Đang hoạt động'
-);
+
 CREATE TABLE nhan_vien (
     id INT IDENTITY(1,1) PRIMARY KEY,
-	id_chuc_vu INT NOT NULL,
     tai_khoan NVARCHAR(100) NOT NULL UNIQUE,
     mat_khau NVARCHAR(255) NOT NULL,		
 	ten_nhan_vien NVARCHAR(100),
-    email NVARCHAR(100) UNIQUE, 
+    email NVARCHAR(100) UNIQUE,
+	chuc_vu NVARCHAR(100),
     sdt NVARCHAR(15),
 	dia_chi NVARCHAR(200),
 	gioi_tinh NVARCHAR(10),
@@ -177,10 +173,7 @@ alter table san_pham
 add constraint fk_san_pham_hang foreign key (id_hang) references hang (id) ON DELETE CASCADE;
 go
 
---------Nhan Vien-----------
-alter table nhan_vien
-add constraint fk_nhan_vien_chuc_vu foreign key (id_chuc_vu) references chuc_vu (id)
-go
+ALTER TABLE hoa_don ALTER COLUMN id_khuyen_mai INT NULL;
 
 --------------------------------------------------------------------
 insert into danh_muc(ten_danh_muc, mo_ta, trang_thai)
@@ -280,15 +273,12 @@ values ('Nguyen Gia Khanh', 'khanhngph44876@fpt.edu.vn','0345760481','Dai Mo, HN
 ('Nguyen Van Sao', 'saonvph45620@fpt.edu.vn','0879913025','n, BN','2003-05-09','Nam','sao123', '123456'),
 ('Tran Thi Thu phuong', 'phuongtttph45219@fpt.edu.vn','0947052726','n, LS','2003-05-09',N'Nữ','phuong123', '123456')
 
-insert into chuc_vu(ten_chuc_vu,trang_thai)
-values(N'Nhân Viên',N'Đang hoạt động'),
-(N'Quản Lý',N'Đang hoạt động')
 
 
-insert into nhan_vien(tai_khoan,ten_nhan_vien, mat_khau,id_chuc_vu, email,sdt, ngay_tao, ngay_sua,trang_thai)
-values ('khanhok123','khanh','SA12342',1,'jdk1234@gmail.com','0987654321','2025-02-14','2025-02-14','Hoat dong'),
-('vuok321','quachvu','as12312',1,'zzzzz@gmail.com','0988769287','2025-02-14','2025-02-14','Hoat dong'),
-('minhok123','minh','11111',2,'skbd9999@gmail.com','0999999999','2025-02-14','2025-02-14','Hoat dong')
+insert into nhan_vien(tai_khoan,ten_nhan_vien, mat_khau,chuc_vu, email,sdt, ngay_tao, ngay_sua,trang_thai)
+values ('khanhok123','khanh','SA12342',N'Nhân Viên','jdk1234@gmail.com','0987654321','2025-02-14','2025-02-14','Hoat dong'),
+('vuok321','quachvu','as12312',N'Nhân Viên','zzzzz@gmail.com','0988769287','2025-02-14','2025-02-14','Hoat dong'),
+('minhok123','minh','11111',N'Quản Lý','skbd9999@gmail.com','0999999999','2025-02-14','2025-02-14','Hoat dong')
 
 
 
