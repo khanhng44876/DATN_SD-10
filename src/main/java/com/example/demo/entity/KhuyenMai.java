@@ -1,6 +1,8 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -25,6 +27,7 @@ public class KhuyenMai {
 
     String mo_ta;
 
+    @NotBlank
     String ma_khuyen_mai;
 
     Integer muc_giam;

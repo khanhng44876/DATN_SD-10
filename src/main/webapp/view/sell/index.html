@@ -5,6 +5,7 @@
     <title>Ban hang tai quay</title>
     <head th:replace="giao_dien_chinh/libAdmin :: libheaderadmin"></head>
     <link rel="stylesheet" type="text/css" href="/css/style.css">
+
 </head>
 <body>
 <div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
@@ -21,6 +22,7 @@
             <ul class="nav nav-tabs" id="nav-tab" role="tablist">
 
             </ul>
+
             <div class="tab-content" id="nav-tabContent">
 
 
@@ -59,7 +61,7 @@
                                     <td th:text="${d.id}"></td>
                                     <td th:text="${d.sanPham.tenSanPham}"></td>
                                     <td th:text="${d.mauSac.ten_mau_sac}"></td>
-                                    <td th:text="${d.kichThuoc.ten_kich_thuoc}"></td>
+                                    <td th:text="${d.kichThuoc.tenKichThuoc}"></td>
                                     <td th:text="${d.chatLieu.tenChatLieu}"></td>
                                     <td th:text="${d.soLuong}"></td>
                                     <td><span th:inline="text">[[${#numbers.formatDecimal(d.donGia, 0, 'COMMA', 0, 'POINT')}]]</span></td>
@@ -87,6 +89,7 @@
                             <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
+                            <input type="hidden" id="ctsp_id">
                             <p>
                                 <strong id="ten_sp"></strong>
                             </p>
@@ -105,12 +108,54 @@
                                 <strong style="color: red">Số lượng :
                                     <span id="so_luong"></span>
                                 </strong>
-                                <input type="number">
+                                <input type="number" id="inp_so_luong">
                             </p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="button" class="btn btn-primary" onclick="">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+<!--            Modal chọn khach hang-->
+            <div class="modal fade" id="khModal" tabindex="-1" aria-labelledby="khModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="khModalLabel">Khách hàng</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Mã khách hàng</th>
+                                        <th>Tên khách hàng</th>
+                                        <th>Giới tính</th>
+                                        <th>Email</th>
+                                        <th>Số điện thoại</th>
+                                        <th>Ngày sinh</th>
+                                        <th>Địa chỉ</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="k : ${listKH}">
+                                        <td th:text="${k.id}"></td>
+                                        <td th:text="${k.tenKhachHang}"></td>
+                                        <td th:text="${k.gioiTinh}"></td>
+                                        <td th:text="${k.email}"></td>
+                                        <td th:text="${k.soDienThoai}"></td>
+                                        <td th:text="${k.ngaySinh}"></td>
+                                        <td th:text="${k.diaChi}"></td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary" th:attr="onclick=|selectKH('${k.tenKhachHang}', this)|">Chọn</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
