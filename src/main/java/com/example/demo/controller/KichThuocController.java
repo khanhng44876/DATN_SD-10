@@ -20,7 +20,12 @@ public class KichThuocController {
     @Autowired
     private KichThuocRepository kichThuocRepository;
 
-    @GetMapping("/kich-thuoc") // Đổi từ /hien-thi thành /kich-thuoc để khớp với HTML
+    @GetMapping("/kich-thuoc/save-kich-thuoc")
+    public String hienthiPageAdd() {
+        return "/san_pham/addKichThuoc.html";
+    }
+
+    @GetMapping("/kich-thuoc")
     public String hienThiKichThuoc(Model model) {
         List<KichThuoc> ds = this.kichThuocRepository.findAll();
         model.addAttribute("listKichThuoc", ds);
@@ -30,7 +35,7 @@ public class KichThuocController {
     @GetMapping("/danh-sach-kich-thuoc/{id}")
     @ResponseBody
     public ResponseEntity<KichThuoc> getKichThuocById(@PathVariable("id") Integer id) {
-        Optional<KichThuoc> result = kichThuocRepository.findById(id); // Giả sử findByIdKichThuoc đổi thành findById nếu dùng JPA chuẩn
+        Optional<KichThuoc> result = kichThuocRepository.findById(id);
         return result.map(kichThuoc -> ResponseEntity.ok(kichThuoc))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
@@ -49,6 +54,7 @@ public class KichThuocController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Lỗi khi thêm kích thước: " + e.getMessage());
         }
+
     }
 
     // Sửa chức năng Cập nhật
@@ -72,19 +78,4 @@ public class KichThuocController {
         }
     }
 
-    // Giữ nguyên chức năng tìm kiếm
-    @GetMapping("/tim-kiem-kich-thuoc")
-    @ResponseBody
-    public ResponseEntity<List<KichThuoc>> timKiemKichThuoc(@RequestParam("keyword") String keyword) {
-        try {
-            List<KichThuoc> result = kichThuocRepository.findByTenKichThuocContainingIgnoreCase(keyword);
-            if (result.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 }

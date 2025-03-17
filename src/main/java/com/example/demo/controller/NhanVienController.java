@@ -23,6 +23,10 @@ public class NhanVienController {
     @Autowired
     NhanVienRepository nhanVienRepository;
 
+@GetMapping("add")
+public String iii(){
+    return "/nhan_vien/addNhanVien.html";
+}
 
     @GetMapping("hien-thi")
     public String hienThiNhanVien(Model model) {
@@ -56,7 +60,7 @@ public class NhanVienController {
             NhanVien taiKhoan = new NhanVien();
             taiKhoan.setTaiKhoan(tenDangNhap);
             taiKhoan.setMatKhau((String) payload.get("matKhau"));
-            taiKhoan.setTenNhanVien((String) payload.get("ten_nhan_vien"));
+            taiKhoan.setTenNhanVien((String) payload.get("tenNhanVien"));
             taiKhoan.setChucVu((String) payload.get("chucVu"));
 
             taiKhoan.setEmail(email);
@@ -99,9 +103,10 @@ public class NhanVienController {
                 return ResponseEntity.badRequest().body("Email đã tồn tại: " + email);
             }
 
+
             taiKhoan.setTaiKhoan(tenDangNhap);
             taiKhoan.setMatKhau((String) payload.get("matKhau"));
-            taiKhoan.setTenNhanVien((String) payload.get("ten_nhan_vien"));
+            taiKhoan.setTenNhanVien((String) payload.get("tenNhanVien"));
             taiKhoan.setChucVu((String) payload.get("chucVu"));
 
             taiKhoan.setEmail(email);

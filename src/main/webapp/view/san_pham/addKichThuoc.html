@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quản Lý Kích Thước</title>
+    <meta charset="utf-8">
+    <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
+</head>
+<body>
+<div>
+    <div th:replace="~{giao_dien_chinh/navbarAdmin :: headerAdmin}"></div>
+    <div class="d-flex">
+        <div th:replace="~{giao_dien_chinh/navbarAdmin :: sidenavAdmin}"></div>
+
+        <div class="pt-3" style="width: calc(100% - 250px);">
+            <div class="container">
+                <h1 style="text-align: center;">Thêm kích thước sản phẩm</h1> <!-- Căn giữa tiêu đề -->
+                <div class="row justify-content-center"> <!-- Căn giữa hàng -->
+                    <div class="col-sm-6"> <!-- Chỉnh sửa lại kích thước cột -->
+                        <form class="form-elegant" style="max-width: 100%; margin: 0 auto;"> <!-- Giảm kích thước bảng xuống 50% và căn giữa -->
+                            <div class="form-group">
+                                <label class="lb-form" for="tenKichThuoc">Tên kích thước <span style="color: red;">*</span></label> <!-- Dấu sao hoa -->
+                                <input id="tenKichThuoc" class="form-control" required>
+                                <span id="errorTenKichThuoc" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="lb-form" for="moTa">Mô tả  <span style="color: red;">*</span></label>
+                                <input id="moTa" class="form-control" required>
+                                <span id="errorMoTa" class="text-danger"></span>
+                            </div>
+                            <div class="form-button">
+                                <button type="button" onclick="validateForm('add')" class="btn btn-primary">Add</button>
+                                <button type="button" onclick="validateForm('update')" class="btn btn-warning">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .lb-form {
+                font-weight: bold; /* Chữ đậm cho nhãn */
+            }
+        </style>
+
+        <style>
+            .form-elegant {
+                border: 2px solid #007bff; /* Màu sắc và độ dày của đường viền */
+                border-radius: 8px; /* Bo góc */
+                padding: 20px; /* Khoảng cách bên trong */
+                background-color: #f8f9fa; /* Màu nền */
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+            }
+
+            .lb-form {
+                font-weight: bold; /* Chữ đậm */
+            }
+
+            .form-control {
+                border: 1px solid #ced4da; /* Đường viền cho các input */
+                border-radius: 0.25rem; /* Bo góc cho các input */
+            }
+
+            .btn {
+                margin-top: 10px; /* Khoảng cách giữa các nút */
+            }
+        </style>
+    </div>
+</div>
+<script src="/js/kich_thuoc/KichThuoc.js" defer></script>
+</body>
+</html>
