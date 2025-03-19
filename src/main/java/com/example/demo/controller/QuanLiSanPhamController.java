@@ -250,7 +250,7 @@ public class QuanLiSanPhamController {
             ctsp.setTrangThai(trangThai);
 
             if (anhSanPham != null && !anhSanPham.isEmpty()) {
-                String uploadDir = "D:\\";
+                String uploadDir = "D:\\DATN_SD-10\\src\\main\\webapp\\images";
                 String fileName = System.currentTimeMillis() + "_" + anhSanPham.getOriginalFilename();
                 Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
@@ -316,7 +316,7 @@ public class QuanLiSanPhamController {
             ctsp.setTrangThai(trangThai);
 
             if (anhSanPham != null && !anhSanPham.isEmpty()) {
-                String uploadDir = "D:\\";
+                String uploadDir = "D:\\DATN_SD-10\\src\\main\\webapp\\images";
                 String fileName = System.currentTimeMillis() + "_" + anhSanPham.getOriginalFilename();
                 Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
@@ -364,6 +364,15 @@ public class QuanLiSanPhamController {
         return "san_pham/chatlieu";
     }
 
+    @GetMapping("/chat-lieu/addcl")
+    public String hienThi(){
+        return "/san_pham/addcl";
+    }
+    @GetMapping("/chat-lieu/updatecl")
+    public String update(){
+        return "/san_pham/updatecl";
+    }
+
     @GetMapping("/danh-sach-chat-lieu/{id}")
     @ResponseBody
     public ResponseEntity<ChatLieu> dsmasaaa(@PathVariable("id") Integer idct) {
@@ -399,6 +408,15 @@ public class QuanLiSanPhamController {
         return "san_pham/danhmuc";
     }
 
+    @GetMapping("/danh-muc/adddm")
+    public String hienThi2(){
+        return "/san_pham/adddm";
+    }
+
+    @GetMapping("/danh-muc/updatedm")
+    public String update2(){
+        return "/san_pham/updatedm";
+    }
     @GetMapping("/danh-sach-danh-muc/{id}")
     @ResponseBody
     public ResponseEntity<DanhMuc> dsmasasss(@PathVariable("id") Integer iddm) {

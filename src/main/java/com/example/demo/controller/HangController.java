@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Hang;
+import com.example.demo.entity.KichThuoc;
 import com.example.demo.repository.HangRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -15,12 +16,16 @@ import java.util.Optional;
 import java.util.List;
 
 @Controller
-@RequestMapping("/san-pham") // Đổi thành /san-pham để khớp với frontend
+@RequestMapping("/san-pham")
 public class HangController {
 
     @Autowired
     private HangRepository hangRepository;
 
+    @GetMapping("/hang/save-hang")
+    public String hienthiPageAdd() {
+        return "/san_pham/addHang.html";
+    }
     @GetMapping("/hang") // Đổi từ hien-thi thành /hang để khớp với HTML reload
     public String hienThiHang(Model model) {
         List<Hang> ds = this.hangRepository.findAll();
@@ -72,4 +77,5 @@ public class HangController {
                     .body("Lỗi khi cập nhật hãng: " + e.getMessage());
         }
     }
+
 }

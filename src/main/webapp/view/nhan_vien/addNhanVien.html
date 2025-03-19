@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quản Lý Nhân Viên</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <!-- Import các thư viện cần thiết nếu có -->
+    <th:block th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></th:block>
+</head>
+<body>
+<div>
+    <!-- Phần header của Admin -->
+    <th:block th:replace="~{giao_dien_chinh/navbarAdmin :: headerAdmin}"></th:block>
+
+    <div class="d-flex">
+        <!-- Phần menu bên trái -->
+        <th:block th:replace="~{giao_dien_chinh/navbarAdmin :: sidenavAdmin}"></th:block>
+        <div class="pt-3" style="width: calc(100% - 250px);">
+            <div class="container">
+                <h2 style="text-align: center;">Quản Lý Nhân Viên</h2>
+
+                <!-- Form Thêm/Cập nhật Nhân Viên -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <!-- Form Fieldset -->
+                        <div class="form-elegant">
+                            <label class="lb-form">Tên đăng nhập<span style="color: red;">*</span></label>
+                            <div class="input-group">
+                                <input id="tenDangNhap" class="form-control" placeholder="Nhập tên đăng nhập" required>
+                                <span id="errorTenDangNhap" class="text-danger" style="margin-left: 10px;"></span>
+                            </div>
+
+                            <label class="lb-form">Mật khẩu<span style="color: red;">*</span></label>
+                            <div class="input-group">
+                                <input id="matKhau" class="form-control" placeholder="Nhập mật khẩu" required>
+                                <span id="errorMatKhau" class="text-danger" style="margin-left: 10px;"></span>
+                            </div>
+
+                            <label class="lb-form">Tên nhân viên<span style="color: red;">*</span></label>
+                            <div class="input-group">
+                                <input id="tenNhanVien" class="form-control" placeholder="Nhập tên nhân viên" required>
+                                <span id="errorTenNhanVien" class="text-danger" style="margin-left: 10px;"></span>
+                            </div>
+
+                            <label class="lb-form">Chức vụ <span style="color: red;">*</span></label>
+                            <select id="chucVu" class="form-control">
+                                <option value="">Chọn chức vụ</option>
+                                <option value="Nhân viên">Nhân viên</option>
+                                <option value="Quản lý">Quản lý</option>
+                            </select>
+                            <span id="errorChucVu" class="text-danger" style="margin-left: 10px;"></span>
+
+                            <label class="lb-form">Email<span style="color: red;">*</span></label>
+                            <div class="input-group">
+                                <input id="email" class="form-control" placeholder="Nhập email" required>
+                                <span id="errorEmail" class="text-danger" style="margin-left: 10px;"></span>
+                            </div>
+
+                            <label class="lb-form">Số điện thoại<span style="color: red;">*</span></label>
+                            <div class="input-group">
+                                <input id="soDienThoai" class="form-control" placeholder="Nhập số điện thoại" required>
+                                <span id="errorsoDienThoai" class="text-danger" style="margin-left: 10px;"></span>
+                            </div>
+
+                            <label class="lb-form">Ngày tạo<span style="color: red;">*</span></label>
+                            <div class="input-group">
+                                <input id="ngayTao" class="form-control" type="date" required>
+                                <span id="errorNgayTao" class="text-danger" style="margin-left: 10px;"></span>
+                            </div>
+
+                            <label class="lb-form">Trạng thái<span style="color: red;">*</span></label>
+                            <div class="input-group">
+                                <select id="trangThai" class="form-control">
+                                    <option value="">Chọn trạng thái</option>
+                                    <option value="Hoat dong">Hoạt động</option>
+                                    <option value="Khong hoat dong">Không hoạt động</option>
+                                </select>
+                                <span id="errorTrangThai" class="text-danger" style="margin-left: 10px;"></span>
+                            </div>
+
+                            <!-- Buttons -->
+                            <button type="button" onclick="validateForm('add')" class="btn btn-primary">Add</button>
+                            <button type="button" onclick="validateForm('update')" class="btn btn-warning">Update</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Styles cho form -->
+<style>
+    /* Chỉnh lại style cho form */
+    .lb-form {
+        font-weight: bold;
+        margin-top: 10px; /* Khoảng cách phía trên của nhãn */
+    }
+
+    .form-elegant {
+        border: 2px solid #007bff;
+        border-radius: 8px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        margin-bottom: 10px; /* Khoảng cách dưới các input */
+    }
+
+    .form-button {
+        margin-top: 20px;
+    }
+
+    .btn {
+        margin-top: 10px;
+    }
+
+    /* Style cho error message */
+    .text-danger {
+        font-size: 12px;
+        color: #dc3545;
+    }
+</style>
+
+<script src="/js/nhan_vien/nhanVien.js" defer></script>
+</body>
+</html>

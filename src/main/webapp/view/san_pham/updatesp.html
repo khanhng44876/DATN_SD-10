@@ -23,27 +23,27 @@
                     <form id="updateSanPhamForm">
                         <input type="hidden" id="idSanPham" th:value="${sanPham.id}">
 
-                        <label class="lb-form">Mã Sản Phẩm(*)</label>
+                        <label class="lb-form">Mã Sản Phẩm</label>
                         <input type="text" id="maSanPham" th:value="${sanPham.maSanPham}" class="form-control" required>
                         <span id="errorMaSanPham" class="text-danger"></span>
                         <br>
 
-                        <label class="lb-form">Tên Sản Phẩm(*)</label>
+                        <label class="lb-form">Tên Sản Phẩm</label>
                         <input type="text" id="tenSanPham" th:value="${sanPham.tenSanPham}" class="form-control" required>
                         <span id="errorTenSanPham" class="text-danger"></span>
                         <br>
 
-                        <label class="lb-form">Ngày Nhập(*)</label>
+                        <label class="lb-form">Ngày Nhập</label>
                         <input type="date" id="ngayNhap" th:value="${sanPham.ngayNhap}" class="form-control" required>
                         <span id="errorNgayNhap" class="text-danger"></span>
                         <br>
 
-                        <label class="lb-form">Ngày Sửa(*)</label>
+                        <label class="lb-form">Ngày Sửa</label>
                         <input type="date" id="ngaySua" th:value="${sanPham.ngaySua}" class="form-control" required>
                         <span id="errorNgaySua" class="text-danger"></span>
                         <br>
 
-                        <label class="lb-form">Danh Mục(*)</label>
+                        <label class="lb-form">Danh Mục</label>
                         <select id="danhMuc">
                             <option th:each="dm : ${dsDanhMuc}" th:value="${dm.id}" th:text="${dm.tendanhmuc}"
                                     th:selected="${sanPham.danhMuc.id == dm.id}"></option>
@@ -53,7 +53,7 @@
                         <a th:href="@{/san-pham/danh-muc}">Thêm danh mục</a>
                         <br>
 
-                        <label class="lb-form">Hãng(*)</label>
+                        <label class="lb-form">Hãng</label>
                         <select id="hang">
                             <option th:each="dm : ${dsHang}" th:value="${dm.id}" th:text="${dm.tenHang}"
                                     th:selected="${sanPham.hang.id == dm.id}"></option>
@@ -63,7 +63,7 @@
                         <a th:href="@{/san-pham/hang}">Thêm hãng</a>
                         <br>
 
-                        <label class="lb-form">Trạng Thái(*)</label>
+                        <label class="lb-form">Trạng Thái</label>
                         <select id="trangThai">
                             <option value="Còn hàng" th:selected="${sanPham.trangThai == 'Còn hàng'}">Còn hàng</option>
                             <option value="Hết hàng" th:selected="${sanPham.trangThai == 'Hết hàng'}">Hết hàng</option>

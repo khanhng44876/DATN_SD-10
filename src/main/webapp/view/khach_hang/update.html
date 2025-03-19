@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!--<div th:if="${session.khachHang != null}">-->
+<!--    <div th:if="${session.khachHang.chucVu == 'QL'}">-->
+
+<head>
+    <title>Quản Lý Khách Hàng</title>
+    <meta charset="utf-8">
+    <head th:replace="giao_dien_chinh/libAdmin :: libheaderadmin"></head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+<div>
+    <div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
+    <div class="d-flex">
+        <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
+        <div class="pt-3" style="width: calc(100% - 250px);">
+            <div class="container">
+                <h2 style="text-align: center;">Quản Lý Khách Hàng</h2>
+
+                <br><br>
+                <!-- Form Thêm Khách Hàng -->
+                <div class="row">
+                    <div class="col-sm-13">
+                        <label class="lb-form">Tên Khách Hàng<span style="color: red;">*</span></label>
+                        <input id="tenKhachHang" class="form-control" required>
+                        <span id="errorTenKhachHang" class="text-danger"></span>
+
+                        <label class="lb-form">Email<span style="color: red;">*</span></label>
+                        <input id="email" class="form-control" required>
+                        <span id="errorEmail" class="text-danger"></span>
+
+                        <label class="lb-form">Số điện thoại<span style="color: red;">*</span></label>
+                        <input id="soDienThoai" class="form-control" required>
+                        <span id="errorSoDienThoai" class="text-danger"></span>
+
+                        <label class="lb-form">Địa chỉ<span style="color: red;">*</span></label>
+                        <input id="diaChi" class="form-control" required>
+                        <span id="errorDiaChi" class="text-danger"></span>
+
+                        <label class="lb-form">Ngày sinh<span style="color: red;">*</span></label>
+                        <input id="ngaySinh" class="form-control" type="date" required>
+                        <span id="errorNgaySinh" class="text-danger"></span>
+
+                        <label class="lb-form">Tài khoản<span style="color: red;">*</span></label>
+                        <input id="taiKhoan" class="form-control" type="form-control" required>
+                        <span id="errorTaiKhoan" class="text-danger"></span>
+
+                        <label class="lb-form">Mật khẩu<span style="color: red;">*</span></label>
+                        <input id="matKhau" class="form-control" type="form-control" required>
+                        <span id="errorMatKhau" class="text-danger"></span>
+
+                        <label class="lb-form">Giới tính<span style="color: red;">*</span></label>
+                        <select id="gioiTinh" class="form-control">
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                        </select>
+                        <span id="errorGioiTinh" class="text-danger"></span>
+                        <br>
+                        <button onclick="validateForm('update')" class="btn btn-warning">Cập Nhật</button>
+                        <br><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    $('#example').DataTable();
+</script>
+<script src="/js/khach_hang/khachhang.js"></script>
+
+<!--        <p>Chào mừng Quản Lý</p>-->
+<!--    </div>-->
+<!--    <div th:if="${session.khachHang.chucVu != 'QL'}">-->
+<!--        <p>Bạn không có quyền truy cập trang này.</p>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<div th:if="${session.khachHang == null}">-->
+<!--    <p>Vui lòng <a th:href="@{/dang-nhap/login}">đăng nhập</a>.</p>-->
+<!--</div>-->
+
+</html>

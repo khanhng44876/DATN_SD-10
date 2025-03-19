@@ -37,24 +37,23 @@
     <h2 class="text-center">Thông Tin Thanh Toán</h2>
     <form id="checkout-form" onsubmit="processCheckout(event)">
         <div class="mb-3">
-            <label for="customer-name" class="form-label">Họ Tên</label>
+            <label for="customer-name" class="form-label">Họ Tên<span style="color: red;">*</span></label>
             <input type="text" class="form-control" id="customer-name" placeholder="Nhập họ tên" required>
         </div>
         <div class="mb-3">
-            <label for="customer-phone" class="form-label">Số Điện Thoại</label>
+            <label for="customer-phone" class="form-label">Số Điện Thoại<span style="color: red;">*</span></label>
             <input type="tel" class="form-control" id="customer-phone" placeholder="Nhập số điện thoại" required>
         </div>
         <div class="mb-3">
-            <label for="customer-address" class="form-label">Địa Chỉ</label>
+            <label for="customer-address" class="form-label">Địa Chỉ<span style="color: red;">*</span></label>
             <input type="text" class="form-control" id="customer-address" placeholder="Nhập địa chỉ" required>
         </div>
         <div class="mb-3">
-            <label for="payment-method" class="form-label">Hình Thức Thanh Toán</label>
+            <label for="payment-method" class="form-label">Hình Thức Thanh Toán<span style="color: red;">*</span></label>
             <select class="form-control" id="payment-method" required>
                 <option value="" disabled selected>Chọn hình thức thanh toán</option>
                 <option value="cod">Thanh toán khi nhận hàng (COD)</option>
                 <option value="bank">Chuyển khoản ngân hàng</option>
-                <option value="credit-card">Thẻ tín dụng/ghi nợ</option>
             </select>
         </div>
         <div class="text-end">
@@ -198,10 +197,6 @@
                 console.error(error);
             });
     }
-
-
-
-
 
 
 

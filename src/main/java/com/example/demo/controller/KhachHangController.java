@@ -34,6 +34,10 @@ public class KhachHangController {
         return result.map(mauSac -> new ResponseEntity<>(mauSac, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    @GetMapping("/add")
+    public String hienThi(){
+        return "/khach_hang/add";
+    }
 
     @PostMapping("/them-khach-hang")
     public ResponseEntity<?> themSM(@RequestBody Map<String, Object> payload) {
@@ -50,6 +54,10 @@ public class KhachHangController {
         return ResponseEntity.ok("Khách hàng đã được thêm thành công!");
     }
 
+    @GetMapping("/update")
+    public String update(){
+        return "/khach_hang/update";
+    }
     @PutMapping("/cap-nhat-khach-hang/{id}")
     public ResponseEntity<?> updateSM(@PathVariable Integer id, @RequestBody Map<String, Object> payload) {
 
