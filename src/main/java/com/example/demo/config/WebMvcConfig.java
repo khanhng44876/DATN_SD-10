@@ -9,6 +9,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:///D:/"); // Thêm 3 dấu gạch chéo
+                .addResourceLocations("file:D:/DATN_SD-10/src/main/webapp/images/");
+
     }
 }

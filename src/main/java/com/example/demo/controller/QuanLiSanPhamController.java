@@ -250,7 +250,7 @@ public class QuanLiSanPhamController {
             ctsp.setTrangThai(trangThai);
 
             if (anhSanPham != null && !anhSanPham.isEmpty()) {
-                String uploadDir = "D:\\";
+                String uploadDir = "D:\\DATN_SD-10\\src\\main\\webapp\\images";
                 String fileName = System.currentTimeMillis() + "_" + anhSanPham.getOriginalFilename();
                 Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
@@ -316,7 +316,7 @@ public class QuanLiSanPhamController {
             ctsp.setTrangThai(trangThai);
 
             if (anhSanPham != null && !anhSanPham.isEmpty()) {
-                String uploadDir = "D:\\";
+                String uploadDir = "D:\\DATN_SD-10\\src\\main\\webapp\\images";
                 String fileName = System.currentTimeMillis() + "_" + anhSanPham.getOriginalFilename();
                 Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
