@@ -1,36 +1,54 @@
 let orders = JSON.parse(localStorage.getItem("orders")) || []
 
-function renderOrders() {
+// Hàm load lại đơn hàng
+async function renderOrders() {
     console.log(orders)
     let activeTab = document.querySelector("#nav-tab .nav-link.active")
     let activeId = activeTab ? activeTab.getAttribute("data-order-id") : null
     document.getElementById("nav-tab").innerHTML = ""
     document.getElementById("nav-tabContent").innerHTML=""
-    orders.forEach(order => {
+    for(let order of orders){
+        updateThanhTien(order.id)
+        await updateDiscount(order)
         createElementOrder(order)
         if(order.product.length>0){
-            let tbody = document.querySelector(`#content-${order.id} table tbody`);
-
+            let productList = document.getElementById(`product-list-${order.id}`);
             order.product.forEach(product => {
-                let tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td><input type="checkbox" class="selectProduct" onchange="updateThanhTien(${order.id})"></td>
-                    <td>${product.id}</td>
-                    <td>${product.ten_san_pham}</td>
-                    <td>${product.mau_sac}</td>
-                    <td>${product.kich_thuoc}</td>
-                    <td>${product.so_luong}</td>
-                    <td>${product.don_gia}</td>
-                    <td class="product-total">${product.tong_tien}</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" onclick="removeProduct(${order.id}, ${product.id})">Xóa</button>
-                    </td>
+                let productItem = document.createElement("div")
+                productItem.classList.add("d-flex", "justify-content-between", "align-items-center");
+
+                productItem.innerHTML = `
+                    <div class="col-3">
+                        <img src="" alt="${product.ten_san_pham}" class="img-fluid">
+                    </div>
+                    <div class="col-5">
+                        <h5 class="mb-1">${product.ten_san_pham}</h5>
+                        <div class="text-danger fw-bold">
+                             <span class="price">${product.don_gia.toLocaleString("vi-VN")}</span> VND
+                        </div>
+                        <div>Size: ${product.kich_thuoc}</div>
+                    </div>
+                    <div class="col-1 text-center">
+                        <div class="input-group input-group-sm">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="updateQuantity(${order.id}, ${product.id}, -1)">-</button>
+                            <span class="form-control text-center" >${product.so_luong}</span>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="updateQuantity(${order.id}, ${product.id}, +1)">+</button>
+                        </div>
+                    </div>
+                    <div class="col-2 text-end text-danger fw-bold">
+                        ${(product.tong_tien).toLocaleString("vi-VN")} VND
+                    </div>
+                    <div class="col-1 text-end">
+                        <button class="btn btn-danger btn-sm" onclick="removeProduct(${order.id}, ${product.id})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
                 `;
-                tbody.appendChild(tr);
+                productList.appendChild(productItem)
             });
 
         }
-    })
+    }
     if(activeId){
         setTimeout(() => {
             let activeTabElement = document.querySelector(`#li-${activeId} .nav-link`);
@@ -39,6 +57,8 @@ function renderOrders() {
     }
 
 }
+
+// Xóa sản phẩm trong đơn hàng
 function removeProduct(orderId, productId) {
     let order = orders.find(o => o.id === Number(orderId));
     if (!order) {
@@ -51,10 +71,13 @@ function removeProduct(orderId, productId) {
     saveOrderToLocalStorage();
     renderOrders();
 }
+
+// Thêm dữ liệu đơn hàng vào LocalStorage
 function saveOrderToLocalStorage(){
     localStorage.setItem("orders",JSON.stringify(orders))
 }
 
+// Hàm tạo đơn hàng
 function createOrder(){
     if(orders.length >= 5){
         alert("Tối đa 5")
@@ -66,7 +89,10 @@ function createOrder(){
         id: orderId,
         name:orderName,
         product:[],
-        customer : "Khách lẻ",
+        customer : {
+            id:1,
+            name:"Khách lẻ"
+        },
         totalAmount: 0,
         discount:{
             id:null,
@@ -82,6 +108,7 @@ function createOrder(){
     createElementOrder(order);
 }
 
+// Hàm tạo các thành phần trong đơn hàng
 function createElementOrder(order){
 
     let li = document.createElement("li");
@@ -112,24 +139,7 @@ function createElementOrder(order){
         </div>
         <hr>
         <div>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Chọn</th>
-                        <th>Mã CTSP</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Màu sắc</th>
-                        <th>Kích thước</th>
-                        <th>Số lượng</th>
-                        <th>Đơn giá</th>
-                        <th>Tổng tiền</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                
-                </tbody>
-            </table>
+            <div id="product-list-${order.id}" class="product-list"></div>
             <p style="color: red">
                 <strong>Thành tiền : </strong>
                 <span class="thanh_tien-${order.id}">${order.totalAmount}</span> VND
@@ -143,36 +153,41 @@ function createElementOrder(order){
                 <div class="col-md-6">
                     <div class="d-flex justify-content-between">
                         <h4>Khách hàng</h4>
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#khModal">Thêm khách hàng</button>
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#khModal" class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill">Chọn khách hàng</button>
                     </div>
                     <hr>
                     <div class="kh-container d-flex justify-content-between">
                         <strong>Tên khách hàng : </strong>
-                        <span class="ten-khach-hang">${order.customer}</span>
+                        <span class="ten-khach-hang">${order.customer.name}</span>
                     </div>
-                    <input type="hidden" id="kh-id-${order.id}" value="">
+                    <input type="hidden" id="kh-id-${order.id}" value="${order.customer.id}">
                 </div>
                 <div class="col-md-6">
                     <p>
                     <input type="text" id="ma-km-${order.id}" placeholder="Mã khuyến mãi" value="${order.discount.ma}" readonly>
-                    <input type="text" id="phan-tram-${order.id}" placeholder="Phần trăm giảm" value="${order.discount.phan_tram}" readonly>
+                    <input type="text" id="phan-tram-${order.id}" placeholder="Phần trăm giảm" value="${order.discount.phan_tram + '%'}" readonly>
                     </p>
                     <p>Tiền hàng: <span class="thanh_tien-${order.id}">${order.totalAmount}</span> VND</p>
                     <p>Giảm giá: <span id="tien-giam-${order.id}">${order.discount.tien_giam}</span> VND</p>
                     <hr>
-                    <h5 class="text-danger">Tổng số tiền: <span id="totalAmount-${order.id}">0</span> VND</h5>
+                    <h5 class="text-danger">Tổng số tiền: <span id="totalAmount-${order.id}">${order.tien_phai_tra}</span> VND</h5>
                     <hr>
                     <p>Hình thức thanh toán : 
                         <input type="radio" value="Tiền mặt" name="hinhthuctt"> Tiền mặt
                         <input type="radio" value="Chuyển khoản" name="hinhthuctt"> Chuyển khoản
                     </p>
+                    <span style="color: red" id="error-httt-${order.id}"></span>
                     <p>Tiền khách đưa : 
                         <input type="text" id="customer-pay-${order.id}">
                     </p>
+                    <span style="color: red" id="error-tkd-${order.id}"></span>
                     <p>Tiền thừa : 
                         <input type="text" id="refund-money-${order.id}" readonly>
                     </p>
-                    <button>Xác nhận</button>
+                    <p>
+                        <input type="hidden" id="km-id-${order.id}">
+                        <button class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill" onclick="confirmOrder(${order.id})">Xác nhận</button>
+                    </p>
                 </div>
             </div>
         </div>
@@ -180,12 +195,33 @@ function createElementOrder(order){
     document.getElementById("nav-tabContent").appendChild(tabContent);
 }
 
+// Hàm xóa đơn hàng
 function removeOrder(orderId){
     orders = orders.filter(order => order.id !== orderId)
     saveOrderToLocalStorage()
     renderOrders()
 }
 
+// Hàm cập nhật số lượng ngay tren giao diện
+function updateQuantity(orderId,productId,change){
+    let order =orders.find(o=> o.id === orderId)
+    if(!order){
+        console.log("không tìm thấy order")
+        return;
+    }
+    let product = order.product.find(p => Number(p.id) === Number(productId));
+    if (!product){
+        console.log("không tìm thấy product")
+        return;
+    }
+    product.so_luong = Math.max(1,product.so_luong + change)
+    product.tong_tien = product.so_luong * product.don_gia;
+    saveOrderToLocalStorage()
+    updateThanhTien(orderId)
+    renderOrders()
+}
+
+// Hàm mở form Nhập số lượng
 function openModalQuantity(button){
 
     let id = button.getAttribute("data-id")
@@ -205,29 +241,21 @@ function openModalQuantity(button){
         .catch(error => console.error("Lỗi",error))
 }
 
+// Hàm Tính tiền hàng
 function updateThanhTien(orderId){
-    let orderContent = document.querySelector(`#content-${orderId}`)
-    let checkBoxes = document.querySelectorAll(".selectProduct")
-    let total = 0;
-    checkBoxes.forEach(checkBox =>{
-        if(checkBox.checked){
-            let row = checkBox.closest("tr");
-            let totalPrice = parseFloat(row.querySelector(".product-total").innerText);
-            total += totalPrice;
-        }
-    })
     let order = orders.find(o=>o.id===orderId)
-    if (order) {
-        order.totalAmount = total;
-        saveOrderToLocalStorage();
+    if(!order){
+        console.log("Khong tim thay don hang")
+        return
     }
-    document.querySelectorAll(`.thanh_tien-${orderId}`).forEach(el => {
-        el.innerText = order.totalAmount.toLocaleString("vi-VN");
-    });
-    updateDiscount(orderId)
+    order.totalAmount = order.product.reduce((sum, p) => sum + (p.so_luong * p.don_gia), 0)
+    saveOrderToLocalStorage()
 }
 
-function selectKH(idKH,tenKH,button){
+// Hàm chọn khách hàng
+function selectKH(button){
+    let idKH = button.getAttribute("data-id");
+    let tenKH = button.getAttribute("data-name");
     let activeTab = document.querySelector("#nav-tab .nav-link.active")
     if(!activeTab){
         alert("Vui lòng chọn một đơn hàng trước!");
@@ -239,45 +267,42 @@ function selectKH(idKH,tenKH,button){
         console.error("Không tìm thấy đơn hàng!");
         return;
     }
-    document.getElementById(`kh-id-${orderId}`).value = idKH
-    order.customer = tenKH
+    order.customer.id = Number(idKH)
+    order.customer.name = tenKH
     saveOrderToLocalStorage()
     renderOrders()
     let modal = bootstrap.Modal.getInstance(document.getElementById('khModal'));
     modal.hide()
 }
 
-function updateDiscount(orderId){
-    let order = orders.find(o=>o.id===orderId)
-    if(!order) return;
-    console.log(order)
-    let totalAmount = parseInt(order.totalAmount)
-    console.log
-    fetch(`/ban-hang-off/best-km/${totalAmount}`)
-        .then(response => response.json())
-        .then(data =>{
-            console.log(data)
-            document.getElementById(`ma-km-${orderId}`).value = data.ma_khuyen_mai
-            document.getElementById(`phan-tram-${orderId}`).value =data.phan_tram_giam + "%"
-            document.getElementById(`tien-giam-${order.id}`).innerText = data.tien_giam.toLocaleString("vi-VN")
-            document.getElementById(`totalAmount-${order.id}`).innerText = (totalAmount - data.tien_giam).toLocaleString("vi-VN")
-            order.discount = {
-                id:data.id,
-                ma:data.ma_khuyen_mai,
-                phan_tram:data.phan_tram_giam,
-                tien_giam:data.tien_giam
-            }
-            order.tien_phai_tra = totalAmount - data.tien_giam
-        })
-        .catch(error => console.error("Lỗi khi lấy khuyến mãi:", error))
+// Hàm để tự động cập nhật khuyến mãi
+async function updateDiscount(order) {  // Thêm async vào đây
+    let totalAmount = order.totalAmount;
 
+    try {
+        let response = await fetch(`/ban-hang-off/best-km/${totalAmount}`); // Dùng await
+        let data = await response.json(); // Dùng await để lấy JSON
+
+        order.discount = {
+            id: data.id || null,
+            ma: data.ma_khuyen_mai || "",
+            phan_tram: data.phan_tram_giam || 0,
+            tien_giam: data.tien_giam || 0
+        };
+        order.tien_phai_tra = totalAmount - (data.tien_giam || 0);
+
+        saveOrderToLocalStorage();
+    } catch (error) {
+        console.error("Lỗi khi lấy khuyến mãi:", error);
+    }
 }
+
+// Phần input nhập số tiền khách đưa
 document.addEventListener("focus", function (event) {
     if (event.target.matches("[id^=customer-pay-]")) {
         event.target.value = event.target.value.replace(" VND", ""); // Bỏ " VND"
     }
 }, true);
-
 document.addEventListener("blur", function (event) {
     if (event.target.matches("[id^=customer-pay-]")) {
         let value = event.target.value.replace(/\D/g, ""); // Lọc bỏ tất cả ký tự không phải số
@@ -300,6 +325,203 @@ document.addEventListener("input", function (event) {
         document.getElementById(`refund-money-${order.id}`).value = change.toLocaleString("vi-VN") + " VND";
     }
 });
+
+async function confirmOrder(orderId) {
+    let order = orders.find(o => o.id === orderId);
+    if (!order.product.length > 0) {
+        alert("Vui lòng thêm sản phẩm vào đơn hàng");
+        return;
+    }
+
+    let today = new Date().toISOString().split("T")[0];
+
+    let hdJson = {
+        idnhanVien:1,
+        idkhachHang:parseInt(order.customer.id),
+        idkhuyenMai:parseInt(order.discount.id),
+        ngayTao: today,
+        ngaySua: null,
+        donGia: null,
+        tongTien: parseFloat(order.totalAmount),
+        trangThaiThanhToan: "Đã thanh toán",
+        hinhThucThanhToan: "Tiền mặt",
+        diaChiGiaoHang: "Tại cửa hàng",
+        ghiChu: null
+    };
+    console.log("Dữ liệu gửi đi:", JSON.stringify(hdJson));
+    try {
+        // Gửi request tạo hóa đơn
+        let response = await fetch("/ban-hang-off/add-hoa-don", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(hdJson)
+        });
+
+        let hoaDon = await response.json();
+        let idHoaDon = hoaDon.id;
+
+        if (!idHoaDon) {
+            alert("Không thể tạo hóa đơn!");
+            return;
+        }
+
+        let productList = order.product;
+
+        // **Tạo danh sách request để gửi song song**
+        let requests = productList.map((p) => {
+            let hdJson = {
+                id_nhan_vien: { id: 1 }, // Sửa lại cho đúng tên biến
+                id_khach_hang: { id: order.customer.id },
+                id_khuyen_mai: { id: order.discount.id },
+                ngay_tao: today,
+                ngay_sua: null,
+                don_gia: null,
+                tong_tien: parseFloat(order.totalAmount),
+                trang_thai_thanh_toan: "Đã thanh toán",
+                hinh_thuc_thanh_toan: "Tiền mặt",
+                dia_chi_giao_hang: "Tại cửa hàng",
+                ghi_chu: null
+            };
+
+            // **Tạo request POST thêm hóa đơn chi tiết**
+            let hdctRequest = fetch("/ban-hang-off/add-hoa-don-ct", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(hdctJson)
+            });
+
+            // **Tạo request PUT cập nhật số lượng sản phẩm**
+            let updateSpRequest = fetch(`/ban-hang-off/update-sp/${p.id}/${p.so_luong}`, {
+                method: "PUT"
+            });
+
+            return Promise.all([hdctRequest, updateSpRequest]); // Gửi cả 2 request song song
+        });
+        if(order.discount.id !== null){
+            let updateKmResponse = await fetch(`/ban-hang-off/update-km/${order.discount.id}`,{
+                method:"PUT"
+            })
+            requests.push(updateKmResponse)
+        }
+        // **Chạy tất cả các request cùng lúc**
+        await Promise.all(requests.flat());
+
+        alert("Xác nhận đơn hàng thành công!");
+    } catch (error) {
+        console.error("Lỗi:", error);
+        alert("Đã xảy ra lỗi khi xác nhận đơn hàng!");
+    }
+}
+
+// Hàm validate
+function validateOrder(orderId) {
+    let paymentMethods = document.querySelectorAll(`[name="hinhthuctt"]:checked`);
+    let customerPayInput = document.getElementById(`customer-pay-${orderId}`);
+    let errorHttt = document.getElementById(`error-httt-${orderId}`);
+    let errorTkd = document.getElementById(`error-tkd-${orderId}`);
+
+    errorHttt.innerText = "";
+    errorTkd.innerText = "";
+
+    // Kiểm tra hình thức thanh toán
+    if (paymentMethods.length === 0) {
+        errorHttt.innerText = "Vui lòng chọn hình thức thanh toán!";
+        return false;
+    }
+
+    // Kiểm tra tiền khách đưa
+    let customerPay = parseFloat(customerPayInput.value.replace(/\D/g, "")) || 0;
+    let order = orders.find(o => o.id === orderId);
+    if (!order) return false;
+
+    let finalTotal = order.tien_phai_tra;
+    if (customerPay < finalTotal) {
+        errorTkd.innerText = "Số tiền khách đưa không đủ!";
+        return false;
+    }
+
+    return true;
+}
+
+// Hàm in hóa đơn Sang file PDF
+function printInvoice(orderId) {
+    if(!validateOrder(orderId)) return
+    let order = orders.find(o => o.id === orderId);
+    if (!order) {
+        alert("Không tìm thấy đơn hàng!");
+        return;
+    }
+
+    let invoiceHTML = `
+        <html>
+        <head>
+            <title>Hóa đơn bán hàng</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                .invoice-box { width: 80%; margin: auto; border: 1px solid #ccc; padding: 20px; }
+                h2, h3 { text-align: center; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                table, th, td { border: 1px solid black; padding: 8px; text-align: center; }
+                .total { font-weight: bold; }
+                .logo { text-align: center; }
+                .logo img { width: 100px; }
+            </style>
+        </head>
+        <body>
+            <div class="invoice-box">
+                <div class="logo">
+                    <img src="/images/logo.png" alt="Logo">
+                </div>
+                <h2>Sky Football Fashion</h2>
+                <p>📞 0123456789 | 📧 skyfootballfashion8386@gmail.com</p>
+                <p>🏠 Địa chỉ: FPT Polytechnic Cơ Sở Kiều Mai, Từ Liêm, Hà Nội</p>
+                <h3>HÓA ĐƠN BÁN HÀNG</h3>
+
+                <p><strong>Tên khách hàng:</strong> ${order.customer || "Khách lẻ"}</p>
+                <p><strong>Địa chỉ nhận hàng:</strong> ${order.address || "Tại cửa hàng"}</p>
+                <p><strong>Mã hóa đơn:</strong> HD${order.id}</p>
+                <p><strong>Ngày tạo:</strong> ${new Date().toLocaleString()}</p>
+                <p><strong>Trạng thái:</strong> Hoàn thành</p>
+
+                <table>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                    ${order.product.map((product, index) => `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${product.ten_san_pham}</td>
+                            <td>${product.so_luong}</td>
+                            <td>${product.don_gia.toLocaleString()} VND</td>
+                            <td>${product.tong_tien.toLocaleString()} VND</td>
+                        </tr>
+                    `).join("")}
+                </table>
+
+                <p class="total">Tổng tiền hàng: ${order.totalAmount.toLocaleString()} VND</p>
+                <p class="total">Giảm giá: ${order.discount ? order.discount.tien_giam.toLocaleString() : "0"} VND</p>
+                <p class="total">Phí giao hàng: 0 VND</p>
+                <p class="total">Tổng tiền cần thanh toán: ${order.tien_phai_tra.toLocaleString()} VND</p>
+                <h4>Cảm ơn quý khách đã mua hàng!</h4>
+            </div>
+            <script>window.print();</script>
+        </body>
+        </html>
+    `;
+
+    let printWindow = window.open("", "", "width=900,height=700");
+    printWindow.document.open();
+    printWindow.document.write(invoiceHTML);
+    printWindow.document.close();
+}
+
+// Lấy thông tin ở form nhập số lượng truyền vào order.product
 document.querySelector("#quantityModal .btn-primary").addEventListener("click",function (){
     let productId = document.getElementById("ctsp_id").value
     let tenSp = document.getElementById("ten_sp").textContent

@@ -73,6 +73,7 @@ function themKm(){
                         <td>${data.ngay_bat_dau}</td>
                         <td>${data.ngay_ket_thuc}</td>
                         <td>${data.trang_thai}</td>
+                        <td>${data.so_luong_sd}</td>
                         <td>
                             <button type="button" data-id=${data.id} value="update" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kmModal" onclick="openModal(this)">
                                 <i class="fa fa-pencil-alt"></i>
@@ -93,8 +94,8 @@ function capnhatKm(id){
         dieu_kien:document.getElementById("dieu_kien").value,
         mo_ta:document.getElementById("mo_ta").value,
         ngay_bat_dau: document.getElementById("ngay_bat_dau").value,
-        ngay_ket_thuc: document.getElementById("ngay_ket_thuc").value
-
+        ngay_ket_thuc: document.getElementById("ngay_ket_thuc").value,
+        so_luong_sd:0
     }
     fetch(`/khuyen-mai/update/${id}`,{
         method:"PUT",
@@ -117,6 +118,7 @@ function capnhatKm(id){
             row.cells[7].innerText = data.ngay_bat_dau;
             row.cells[8].innerText = data.ngay_ket_thuc;
             row.cells[9].innerText = data.trang_thai;
+            row.cells[10].innerText = data.so_luong_sd
         })
         .catch(error => console.error("Looix",error))
 }

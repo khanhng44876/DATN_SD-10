@@ -1,25 +1,20 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ChiTietSanPhamDto;
+import com.example.demo.entity.HoaDon;
+import com.example.demo.entity.HoaDonCT;
 import com.example.demo.entity.KhuyenMai;
 import com.example.demo.entity.SanPhamChiTiet;
-import com.example.demo.repository.KhachHangRepository;
-import com.example.demo.repository.KhuyenMaiRepository;
-import com.example.demo.repository.SanPhamCTRepository;
-import com.example.demo.repository.SanPhamRepository;
+import com.example.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.util.*;
+@CrossOrigin(origins = "*")
 @Controller
 @RequestMapping("/ban-hang-off")
 public class BanHangController {
@@ -34,6 +29,12 @@ public class BanHangController {
 
     @Autowired
     KhuyenMaiRepository kmRepository;
+
+    @Autowired
+    HoaDonRepossitory hdRepository;
+
+    @Autowired
+    HoaDonCTRepository hdCTRepository;
 
     @GetMapping("/hien-thi")
     public String hienThi(Model model) {
@@ -65,5 +66,46 @@ public class BanHangController {
 
         }
         return ResponseEntity.ok(Collections.emptyMap());
+    }
+
+    @PostMapping("/add-hoa-don")
+    public ResponseEntity<?> addHoaDon(@RequestBody HoaDon hd) {
+        System.out.println("Dữ liệu nhận được: " + hd);
+        HoaDon savedHoaDon = hdRepository.save(hd);
+        System.out.println("Hóa đơn đã lưu: " + savedHoaDon);
+        return ResponseEntity.ok(savedHoaDon);
+    }
+
+    @PostMapping("/add-hoa-don-ct")
+    public ResponseEntity<HoaDonCT> addHDCT(@RequestBody HoaDonCT hdct){
+        hdCTRepository.save(hdct);
+        return ResponseEntity.ok(hdct);
+    }
+
+    @PutMapping("/update-sp/{id}/{so_luong}")
+    public ResponseEntity<SanPhamChiTiet> updateSanPham(@PathVariable Integer id,@PathVariable Integer so_luong) {
+        Optional<SanPhamChiTiet> optionalSanPham = ctRepository.findById(id);
+
+        if (!optionalSanPham.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        SanPhamChiTiet ctSp = optionalSanPham.get();
+        ctSp.setSoLuong(ctSp.getSoLuong()-so_luong);
+        ctRepository.save(ctSp);
+        return ResponseEntity.ok(ctSp);
+    }
+
+    @PutMapping("/update-km/{id}")
+    public ResponseEntity<KhuyenMai> updateKM(@PathVariable Integer id) {
+        Optional<KhuyenMai> optionalKhuyenMai = kmRepository.findById(id);
+        if (!optionalKhuyenMai.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        KhuyenMai km = optionalKhuyenMai.get();
+        km.setSo_luong(km.getSo_luong()-1);
+        km.setSo_luong_sd(km.getSo_luong_sd()+1);
+        kmRepository.save(km);
+        return ResponseEntity.ok(km);
     }
 }

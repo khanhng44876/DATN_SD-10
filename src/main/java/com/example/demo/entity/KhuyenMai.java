@@ -43,4 +43,6 @@ public class KhuyenMai {
     Double giam_toi_da;
 
     String trang_thai;
+
+    Integer so_luong_sd;
 }

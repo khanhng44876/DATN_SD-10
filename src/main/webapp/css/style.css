@@ -101,3 +101,36 @@
 .social-links a:hover {
     opacity: 0.8;
 }
+.badge {
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    padding: 5px 12px;
+    font-weight: bold;
+    border-radius: 20px; /* Bo tròn */
+    width: 100px; /* Cố định chiều rộng */
+    text-align: center;
+}
+
+td {
+    text-align: center; /* Căn giữa nội dung trong ô */
+    vertical-align: middle; /* Căn giữa theo chiều dọc */
+}
+
+.status-ongoing {
+    background-color: #e6f9e6; /* Xanh nhạt */
+    color: #28a745; /* Xanh lá */
+    border: 1px solid #90ee90;
+}
+
+.status-upcoming {
+    background-color: #fff3cd; /* Vàng nhạt */
+    color: #ffc107; /* Vàng */
+    border: 1px solid #ffecb5;
+}
+
+.status-ended {
+    background-color: #f8d7da; /* Đỏ nhạt */
+    color: #dc3545; /* Đỏ */
+    border: 1px solid #f5c6cb;
+}

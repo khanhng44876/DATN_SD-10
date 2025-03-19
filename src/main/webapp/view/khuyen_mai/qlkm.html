@@ -13,6 +13,7 @@
   <div class="pt-3" style="width: calc(100% - 250px);">
     <div class="container">
       <h2 style="text-align: center;">Quản Lý Khuyến Mãi</h2>
+      <hr>
 <!--      Bảng khuyến mãi-->
       <table class="table table-bordered" id="kmTable">
         <thead>
@@ -22,11 +23,12 @@
           <th>Số lượng</th>
           <th>Mô tả</th>
           <th>Mức giảm</th>
-          <th>GIảm tối đa</th>
-          <th>Điều kiện áp dụng</th>
+          <th>GIảm tối đa (VNĐ)</th>
+          <th>Điều kiện áp dụng (VNĐ)</th>
           <th>Ngày bắt đầu</th>
           <th>Ngày kết thúc</th>
           <th>Trạng thái</th>
+          <th>Số lượng sử dụng</th>
           <th>Hành động</th>
         </tr>
         </thead>
@@ -42,10 +44,18 @@
           <td th:text="${k.dieu_kien}"></td>
           <td th:text="${k.ngay_bat_dau}"></td>
           <td th:text="${k.ngay_ket_thuc}"></td>
-          <td th:text="${k.trang_thai}"></td>
+          <td style="text-align: center; vertical-align: middle;">
+    <span th:text="${k.trang_thai}"
+          th:classappend="${k.trang_thai == 'Đang diễn ra' ? 'status-ongoing' :
+                           k.trang_thai == 'Sắp diễn ra' ? 'status-upcoming' :
+                           'status-ended'}"
+          class="badge rounded-pill">
+    </span>
+          </td>
+          <td th:text="${k.so_luong_sd}"></td>
           <td>
             <!-- Button Cập nhật -->
-            <button type="button" th:attr="data-id = ${k.id}" value="update" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kmModal" onclick="openModal(this)">
+            <button type="button" th:attr="data-id = ${k.id}" value="update" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#kmModal" onclick="openModal(this)">
               <i class="fa fa-pencil-alt"></i>
             </button>
 
@@ -53,9 +63,11 @@
         </tr>
         </tbody>
 
-        <button type="button" value="create" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#kmModal" onclick="openModal(this)">
-          Thêm
+        <button type="button" value="create" class="btn btn-success px-4 py-2 fw-bold text-white rounded-pill" data-bs-toggle="modal" data-bs-target="#kmModal" onclick="openModal(this)">
+          <i class="bi bi-ticket-perforated"></i>
+          Thêm khuyến mãi
         </button>
+        <hr>
 
         <!-- Modal Form thêm khuyến mãi-->
         <div class="modal fade" id="kmModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -70,43 +82,43 @@
                   <div class="row">
                     <div class="col-md-6">
                       <input id="km_id" type="hidden">
-                      <label class="lb-form">Mã khuyến mãi</label>
+                      <label class="lb-form">Mã khuyến mãi <span class="text-danger">*</span></label>
                       <input id="ma_khuyen_mai" class="form-control" required>
 
-                      <label class="lb-form">Tên khuyến mãi</label>
+                      <label class="lb-form">Tên khuyến mãi <span class="text-danger">*</span></label>
                       <input id="ten_khuyen_mai" class="form-control" required>
 
 
-                      <label class="lb-form">Số lượng</label>
+                      <label class="lb-form">Số lượng <span class="text-danger">*</span></label>
                       <input id="so_luong" class="form-control" type="number" required>
 
 
-                      <label class="lb-form">Mức giảm</label>
+                      <label class="lb-form">Mức giảm <span class="text-danger">*</span></label>
                       <input id="muc_giam" class="form-control" oninput="formatPercentage(this)" type="text" required>
 
 
-                      <label class="lb-form">Giảm tối đa</label>
+                      <label class="lb-form">Giảm tối đa <span class="text-danger">*</span></label>
                       <input type="number" id="giam_toi_da" class="form-control" required>
                     </div>
                     <div class="col-md-6">
-                      <label class="lb-form">Điều kiện áp dụng</label>
+                      <label class="lb-form">Điều kiện áp dụng <span class="text-danger">*</span></label>
                       <input type="number" id="dieu_kien" class="form-control" required>
 
                       <label class="lb-form">Mô tả</label>
                       <input type="text" id="mo_ta" class="form-control">
 
-                      <label class="lb-form">Ngày bắt đầu</label>
+                      <label class="lb-form">Ngày bắt đầu <span class="text-danger">*</span></label>
                       <input type="date" id="ngay_bat_dau" class="form-control" required>
 
-                      <label class="lb-form">Ngày kết thúc</label>
+                      <label class="lb-form">Ngày kết thúc <span class="text-danger">*</span></label>
                       <input type="date" id="ngay_ket_thuc" class="form-control" required>
                     </div>
                   </div>
                 </form>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="save" class="btn btn-primary" >Save changes</button>
+                <button type="button" class="btn btn-secondary fw-bold rounded-pill" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="save" class="btn btn-primary fw-bold rounded-pill" >Lưu</button>
               </div>
             </div>
           </div>

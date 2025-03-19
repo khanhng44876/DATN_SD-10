@@ -7,9 +7,12 @@
 <nav th:fragment="headerAdmin" class="navbar navbar-expand-sm bg-light shadow">
     <div class="container-fluid">
         <!-- logo -->
-        <a href="/hoa-don/doanh-thu">
-            <img src="/images/logo.png" alt="" style="max-height: 80px;">
-        </a>
+        <div class="d-flex align-items-center">
+            <a href="/hoa-don/doanh-thu">
+                <img src="/images/logo.png" alt="" style="max-height: 80px;">
+            </a>
+            <h3>Sky Football Fashion</h3>
+        </div>
         <!-- Phần Navigation cho User đã đăng nhập -->
         <ul class="navbar-nav align-items-center">
             <!-- Hiển thị thông tin người dùng -->
@@ -78,7 +81,8 @@
             <br>
             <li class="nav-item">
                 <a class="nav-link btn text-black" href="/khuyen-mai/hien-thi" style="text-align: start">
-                    <i class="bi bi-bar-chart-line"></i> Khuyến mãi
+                    <i class="bi bi-ticket-perforated"></i>
+                    Khuyến mãi
                 </a>
             </li>
             <br>

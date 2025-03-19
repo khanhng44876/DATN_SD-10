@@ -151,7 +151,7 @@
                                         <td th:text="${k.ngaySinh}"></td>
                                         <td th:text="${k.diaChi}"></td>
                                         <td>
-                                            <button type="button" class="btn btn-primary" th:attr="onclick=|selectKH('${k.tenKhachHang}', this)|">Chọn</button>
+                                            <button type="button" class="btn btn-primary" th:data-id="${k.id}" th:data-name="${k.tenKhachHang}" onclick="selectKH(this)">Chọn</button>
                                         </td>
                                     </tr>
                                 </tbody>

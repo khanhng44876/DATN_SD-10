@@ -36,6 +36,7 @@ public class KhuyenMaiController {
         }else {
             km.setTrang_thai("Đã kết thúc");
         }
+        km.setSo_luong_sd(0);
         System.out.println(km.getNgay_ket_thuc());
         repo.save(km);
         return ResponseEntity.ok(km);
