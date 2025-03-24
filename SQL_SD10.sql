@@ -54,7 +54,7 @@ CREATE TABLE hoa_don_chi_tiet (
                                   so_luong INT NOT NULL,
                                   don_gia DECIMAL,
                                   tong_tien DECIMAL(10, 2) NOT NULL,
-                                  thanh_tien DECIMAL(10, 2) NOT NULL,
+                                  thanh_tien DECIMAL(10, 2),
                                   ngay_tao DATE,
                                   ngay_sua DATE,
                                   trang_thai NVARCHAR(50)
@@ -178,44 +178,52 @@ ALTER TABLE hoa_don ALTER COLUMN id_khuyen_mai INT NULL;
 
 --------------------------------------------------------------------
 insert into danh_muc(ten_danh_muc, mo_ta, trang_thai)
-values (N'Mùa Hè',N'Mùa Hè', N'Hoạt Động'),
-       (N'Mùa Đông',N'Mùa Đông',N'Hoạt Động'),
-       (N'Nam',N'Nam', N'Hoạt Động'),
-       (N'Nữ',N'Nữ', N'Hoạt Động'),
-       (N'Mùa Thu',N'Mùa Thu',N'Hoạt Động'),
-       (N'Mùa Xuân',N'Mùa Xuân',N'Hoạt Động')
+values (N'Bộ áo đấu Câu lạc bộ',N'CLB', N'Hoạt Động'),
+       (N'Bộ áo đấu Đội tuyển quốc gia',N'Đội tuyển quốc gia',N'Hoạt Động'),
+       (N'Bộ áo đấu Không logo',N'Không có logo đội tuyển', N'Hoạt Động'),
+       (N'Bộ áo đấu Dài tay',N'Mùa đông/thu/xuân', N'Hoạt Động')
 
-    insert into hang(ten_hang,trang_thai)
-values('ADADIS','Con'),
-    ('Nike','Con'),
-    ('Pama','Con')
+insert into hang(ten_hang,trang_thai)
+values('Adidas','Còn'),
+    ('Nike',N'Còn'),
+    ('Puma',N'Còn'),
+    ('Kappa',N'Còn'),
+    ('New Balance',N'Còn'),
+    ('Wika',N'Còn'),
+    ('Bulbal',N'Còn'),
+    ('Kamito',N'Còn')
+
 
 insert into san_pham(ma_san_pham, ten_san_pham, ngay_nhap, trang_thai, id_danh_muc, id_hang)
-values (N'SP001',N'Bộ áo đấu câu lạc bộ Manchester United','2025-02-12',N'Còn hàng',1,2),
-    (N'SP002',N'Bộ áo đấu câu lạc bộ Hà Nội','2025-02-12',N'Còn hàng',2,3),
-    (N'SP003',N'Bộ áo đấu câu lạc bộ Việt Nam','2025-02-12',N'Còn hàng',3,1),
-    (N'SP004', N'Bộ áo đấu câu lạc bộ Manchester City', '2025-02-12', N'Còn hàng', 1, 3),
-    (N'SP005', N'Bộ áo đấu câu lạc bộ Real Madrid', '2025-02-12', N'Còn hàng', 1, 1),
-    (N'SP006', N'Bộ áo đấu câu lạc bộ Barcelona', '2025-02-12', N'Còn hàng', 2, 1),
-    (N'SP007', N'Bộ áo đấu câu lạc bộ Bayern Munich', '2025-02-12', N'Còn hàng', 3, 2),
-    (N'SP008', N'Bộ áo đấu câu lạc bộ PSG', '2025-02-12', N'Còn hàng', 1, 2),
-    (N'SP009', N'Bộ áo đấu câu lạc bộ Chelsea', '2025-02-12', N'Còn hàng', 2, 3),
-    (N'SP010', N'Bộ áo đấu câu lạc bộ Juventus', '2025-02-12', N'Còn hàng', 3, 1),
-    (N'SP011', N'Bộ áo đấu câu lạc bộ AC Milan', '2025-02-12', N'Còn hàng', 1, 1),
-    (N'SP012', N'Bộ áo đấu câu lạc bộ Inter Milan', '2025-02-12', N'Còn hàng', 2, 2),
-    (N'SP013', N'Bộ áo đấu câu lạc bộ Arsenal', '2025-02-12', N'Còn hàng', 3, 3),
-    (N'SP014', N'Bộ áo đấu câu lạc bộ Tottenham Hotspur', '2025-02-12', N'Còn hàng', 1, 2),
-    (N'SP015', N'Bộ áo đấu câu lạc bộ Borussia Dortmund', '2025-02-12', N'Còn hàng', 2, 3),
-    (N'SP016', N'Bộ áo đấu câu lạc bộ Atletico Madrid', '2025-02-12', N'Còn hàng', 3, 1),
-    (N'SP017', N'Bộ áo đấu câu lạc bộ Napoli', '2025-02-12', N'Còn hàng', 1, 2),
-    (N'SP018', N'Bộ áo đấu câu lạc bộ Sevilla', '2025-02-12', N'Còn hàng', 2, 3),
-    (N'SP019', N'Bộ áo đấu câu lạc bộ AS Roma', '2025-02-12', N'Còn hàng', 3, 1),
-    (N'SP020', N'Bộ áo đấu câu lạc bộ Benfica', '2025-02-12', N'Còn hàng', 1, 2),
-    (N'SP021', N'Bộ áo đấu câu lạc bộ Porto', '2025-02-12', N'Còn hàng', 2, 3),
-    (N'SP022', N'Bộ áo đấu câu lạc bộ Sporting Lisbon', '2025-02-12', N'Còn hàng', 3, 1),
-    (N'SP023', N'Bộ áo đấu câu lạc bộ Lyon', '2025-02-12', N'Còn hàng', 1, 2),
-    (N'SP024', N'Bộ áo đấu câu lạc bộ Marseille', '2025-02-12', N'Còn hàng', 2, 3),
-    (N'SP025', N'Bộ áo đấu câu lạc bộ Ajax', '2025-02-12', N'Còn hàng', 3, 1);
+values (N'SP001',N'Bộ áo đấu câu lạc bộ Manchester United','2025-02-12',N'Còn hàng',1,1),
+    (N'SP003', N'Bộ áo đấu câu lạc bộ Real Madrid', '2025-02-12', N'Còn hàng', 1, 1),
+    (N'SP005', N'Bộ áo đấu câu lạc bộ Bayern Munich', '2025-02-12', N'Còn hàng', 1, 1),
+    (N'SP011', N'Bộ áo đấu câu lạc bộ Arsenal', '2025-02-12', N'Còn hàng', 1, 1),
+    (N'SP004', N'Bộ áo đấu câu lạc bộ Barcelona', '2025-02-12', N'Còn hàng', 1, 2),
+    (N'SP007', N'Bộ áo đấu câu lạc bộ Chelsea', '2025-02-12', N'Còn hàng', 1, 2),
+    (N'SP012', N'Bộ áo đấu câu lạc bộ Tottenham Hotspur', '2025-02-12', N'Còn hàng', 1, 2),
+    (N'SP009', N'Bộ áo đấu câu lạc bộ AC Milan', '2025-02-12', N'Còn hàng', 1, 3),
+    (N'SP013', N'Bộ áo đấu câu lạc bộ Borussia Dortmund', '2025-02-12', N'Còn hàng', 1, 3),
+    (N'SP002', N'Bộ áo đấu câu lạc bộ Manchester City', '2025-02-12', N'Còn hàng', 1, 3),
+    (N'SP014', N'Bộ áo đấu câu lạc bộ FC Porto', '2025-02-12', N'Còn hàng', 1, 5),
+    (N'SP015', N'Bộ áo đấu đội tuyển Anh', '2025-02-12', N'Còn hàng', 2, 2),
+    (N'SP016', N'Bộ áo đấu đội tuyển Pháp', '2025-02-12', N'Còn hàng', 2, 2),
+    (N'SP017', N'Bộ áo đấu đội tuyển Bồ Đào Nha', '2025-02-12', N'Còn hàng', 2, 2),
+    (N'SP018', N'Bộ áo đấu đội tuyển Brazil', '2025-02-12', N'Còn hàng', 2, 2),
+    (N'SP019', N'Bộ áo đấu đội tuyển Đức', '2025-02-12', N'Còn hàng', 2, 1),
+    (N'SP020', N'Bộ áo đấu đội tuyển Tây Ban Nha', '2025-02-12', N'Còn hàng', 2, 1),
+    (N'SP021', N'Bộ áo đấu đội tuyển Ý', '2025-02-12', N'Còn hàng', 2, 1),
+    (N'SP022', N'Bộ áo đấu đội tuyển Argentina', '2025-02-12', N'Còn hàng', 2, 1),
+    (N'SP023', N'Bộ áo đấu đội tuyển Thụy Sĩ', '2025-02-12', N'Còn hàng', 2, 3),
+    (N'SP024', N'Bộ áo đấu đội tuyển Serbia', '2025-02-12', N'Còn hàng', 2, 3),
+    (N'SP025', N'Bộ áo đấu đội tuyển Uruguay', '2025-02-12', N'Còn hàng', 2, 3),
+    (N'SP026', N'Bộ áo đá bóng Wika Tornado', '2025-02-12', N'Còn hàng', 3, 1),
+    (N'SP027', N'Bộ áo đá bóng Wika Blueming', '2025-02-12', N'Còn hàng', 3, 6),
+    (N'SP028', N'Bộ áo đá bóng Bulbal Predator', '2025-02-12', N'Còn hàng', 3, 7),
+    (N'SP029', N'Bộ áo đá bóng Bulbal Hunter 2', '2025-02-12', N'Còn hàng', 3, 7),
+    (N'SP030', N'Bộ áo đá bóng Kamito Artista 01', '2025-02-12', N'Còn hàng', 3, 8),
+    (N'SP031', N'Bộ áo đá bóng Kamito Galaxy 1.0', '2025-02-12', N'Còn hàng', 3, 8)
+
 
 
 insert into kich_thuoc(ten_kich_thuoc, mo_ta)
@@ -224,11 +232,13 @@ values ('S',N'Size nhỏ'),
        ('L',N'Size lớn'),
        ('XL',N'Size rất lớn')
 
-    insert into mau_sac(ten_mau_sac, mo_ta)
+insert into mau_sac(ten_mau_sac, mo_ta)
 values(N'Đen', N'Màu đen sang trọng'),
     (N'Trắng', N'Màu trắng tinh khiết'),
-    (N'Xanh', N'Màu xanh dương'),
-    (N'Vàng', N'Màu vàng bóng bẩy');
+    (N'Đỏ', N'Màu Đỏ Đẹp keng'),
+    (N'Xanh', N'Màu vàng bóng bẩy'),
+    (N'Xanh lá', N'Màu xa lánh');
+
 
 insert into chat_lieu(ten_chat_lieu, mo_ta)
 values(N'Polyester', N'Vải Polyester thoáng khí'),
@@ -240,31 +250,35 @@ values(N'Polyester', N'Vải Polyester thoáng khí'),
 
 
 insert into san_pham_chi_tiet(don_gia, so_luong, id_san_pham, id_kich_thuoc, id_mau_sac, id_chat_lieu, mo_ta, hinh_anh,trang_thai)
-values (1200, 150, 1, 1, 1, 1, N'Chất liệu thấm hút tốt', NULL, N'Còn hàng'),
-       (1250, 130, 2, 2, 2, 1, N'Chất liệu cao cấp', NULL, N'Còn hàng'),
-       (1100, 200, 3, 3, 3, 1, N'Áo đấu chính hãng', NULL, N'Còn hàng'),
-       (1400, 100, 4, 1, 2, 2, N'Co giãn tốt', NULL, N'Còn hàng'),
-       (1350, 170, 5, 2, 3, 2, N'Thiết kế thoáng mát', NULL, N'Còn hàng'),
-       (1500, 190, 6, 3, 1, 1, N'Phiên bản giới hạn', NULL, N'Còn hàng'),
-       (1450, 160, 7, 1, 3, 2, N'Mềm mại, thoải mái', NULL, N'Còn hàng'),
-       (1550, 120, 8, 2, 2, 3, N'Dành cho fan hâm mộ', NULL, N'Còn hàng'),
-       (1600, 180, 9, 3, 3, 1, N'Form áo ôm vừa vặn', NULL, N'Còn hàng'),
-       (1650, 140, 10, 1, 1, 2, N'Thiết kế tinh tế', NULL, N'Còn hàng'),
-       (1700, 130, 11, 2, 2, 3, N'Thích hợp vận động', NULL, N'Còn hàng'),
-       (1750, 150, 12, 3, 3, 1, N'Phong cách thời thượng', NULL, N'Còn hàng'),
-       (1800, 120, 13, 1, 1, 2, N'Mang phong cách cổ điển', NULL, N'Còn hàng'),
-       (1850, 110, 14, 2, 2, 3, N'Độ bền cao', NULL, N'Còn hàng'),
-       (1900, 100, 15, 3, 3, 1, N'Chất liệu siêu nhẹ', NULL, N'Còn hàng'),
-       (1950, 90, 16, 1, 1, 2, N'Thiết kế trẻ trung', NULL, N'Còn hàng'),
-       (2000, 80, 17, 2, 2, 3, N'Phiên bản đặc biệt', NULL, N'Còn hàng'),
-       (2050, 70, 18, 3, 3, 1, N'Áo đấu biểu tượng', NULL, N'Còn hàng'),
-       (2100, 60, 19, 1, 1, 2, N'Tinh tế và đẳng cấp', NULL, N'Còn hàng'),
-       (2150, 50, 20, 2, 2, 3, N'Phiên bản limited', NULL, N'Còn hàng'),
-       (2200, 40, 21, 3, 3, 1, N'Chất liệu cực thoáng', NULL, N'Còn hàng'),
-       (2250, 30, 22, 1, 1, 2, N'Thiết kế sang trọng', NULL, N'Còn hàng'),
-       (2300, 20, 23, 2, 2, 3, N'Áo đấu huyền thoại', NULL, N'Còn hàng'),
-       (2350, 10, 24, 3, 3, 1, N'Màu sắc nổi bật', NULL, N'Còn hàng'),
-       (2400, 5, 25, 1, 1, 2, N'Áo đấu siêu bền', NULL, N'Còn hàng');
+values (500000, 100, 1, 1,3,1, NULL, NULL, N'Còn hàng'),
+       (550000, 80, 2, 2,2,1, NULL, NULL, N'Còn hàng'),
+       (600000, 90, 3, 3,3,2,NULL, NULL, N'Còn hàng'),
+       (580000, 120, 4, 4,3,2, NULL, NULL, N'Còn hàng'),
+       (620000, 110, 5, 4,1,3, NULL, NULL, N'Còn hàng'),
+       (530000, 95, 6, 3,4,3, NULL, NULL, N'Còn hàng'),
+       (570000, 85, 7, 2,2,1, NULL, NULL, N'Còn hàng'),
+       (590000, 105, 8, 1,3,1, NULL, NULL, N'Còn hàng'),
+       (540000, 115, 9, 1,4,2, NULL, NULL, N'Còn hàng'),
+       (560000, 100, 10, 2,4,2, NULL, NULL, N'Còn hàng'),
+       (510000, 130, 11, 3,4,3, NULL, NULL, N'Còn hàng'),
+       (495000, 125, 12, 4,2,3, NULL, NULL, N'Còn hàng'),
+       (505000, 110, 13, 4,4,4, NULL, NULL, N'Còn hàng'),
+       (515000, 90, 14, 3,3,4, NULL, NULL, N'Còn hàng'),
+       (525000, 105, 15, 2,5,1, NULL, NULL, N'Còn hàng'),
+       (535000, 95, 16, 1,2,1, NULL, NULL, N'Còn hàng'),
+       (545000, 85, 17, 1,3, NULL, NULL, N'Còn hàng'),
+       (555000, 100, 18, 2,4,2, NULL, NULL, N'Còn hàng'),
+       (565000, 80, 19, 3,2,3, NULL, NULL, N'Còn hàng'),
+       (575000, 120, 20, 4,3,3, NULL, NULL, N'Còn hàng'),
+       (585000, 110, 21, 4,2,4, NULL, NULL, N'Còn hàng'),
+       (595000, 90, 22, 3,4,4, NULL, NULL, N'Còn hàng'),
+       (605000, 100, 23, 2,2,1, NULL, NULL, N'Còn hàng'),
+       (615000, 85, 24, 1,4,1, NULL, NULL, N'Còn hàng'),
+       (625000, 95, 25, 1,1,2, NULL, NULL, N'Còn hàng'),
+       (635000, 105, 26, 2,2,2, NULL, NULL, N'Còn hàng'),
+       (645000, 115, 27, 3,3,3, NULL, NULL, N'Còn hàng'),
+       (655000, 125, 28, 4,1,3, NULL, NULL, N'Còn hàng')
+
 
 
 insert into khach_hang(ten_khach_hang, email, so_dien_thoai, dia_chi,ngay_sinh, gioi_tinh,tai_khoan, mat_khau)

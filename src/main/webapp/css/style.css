@@ -87,20 +87,7 @@
 .navbar-nav .text-light {
     font-weight: 500;
 }
-/*==================================online Sell Css=================================*/
-.swiper {
-    height: 400px;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    transition: transform 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.social-links a:hover {
-    opacity: 0.8;
-}
+/*Css trạng thái*/
 .badge {
     display: flex;
     align-items: center; /* Căn giữa theo chiều dọc */

@@ -40,4 +40,12 @@ public class HoaDonCT {
     private SanPhamChiTiet sanPhamChiTiet;
     @ManyToOne @JoinColumn(name = "id_hoa_don", insertable = false, updatable = false)
     private HoaDon hoaDon;
+
+    @Column(name = "ngay_tao")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date ngayTao;
+
+    @Column(name = "ngay_sua")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date ngaySua;
 }

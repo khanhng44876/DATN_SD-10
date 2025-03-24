@@ -336,17 +336,17 @@ async function confirmOrder(orderId) {
     let today = new Date().toISOString().split("T")[0];
 
     let hdJson = {
-        idnhanVien:1,
-        idkhachHang:parseInt(order.customer.id),
-        idkhuyenMai:parseInt(order.discount.id),
-        ngayTao: today,
-        ngaySua: null,
-        donGia: null,
-        tongTien: parseFloat(order.totalAmount),
-        trangThaiThanhToan: "Đã thanh toán",
-        hinhThucThanhToan: "Tiền mặt",
-        diaChiGiaoHang: "Tại cửa hàng",
-        ghiChu: null
+        id_nhan_vien:1,
+        id_khach_hang:order.customer.id,
+        id_khuyen_mai:order.discount.id,
+        ngay_tao: today,
+        ngay_sua: null,
+        don_gia: null,
+        tong_tien: parseFloat(order.totalAmount),
+        trang_thai_thanh_toan: "Đã thanh toán",
+        hinh_thuc_thanh_toan: "Tiền mặt",
+        dia_chi_giao_hang: "Tại cửa hàng",
+        ghi_chu: null
     };
     console.log("Dữ liệu gửi đi:", JSON.stringify(hdJson));
     try {
@@ -369,41 +369,42 @@ async function confirmOrder(orderId) {
 
         let productList = order.product;
 
+        await new Promise(resolve => setTimeout(resolve, 500));
+
         // **Tạo danh sách request để gửi song song**
         let requests = productList.map((p) => {
-            let hdJson = {
-                id_nhan_vien: { id: 1 }, // Sửa lại cho đúng tên biến
-                id_khach_hang: { id: order.customer.id },
-                id_khuyen_mai: { id: order.discount.id },
+            let hdctJson = {
+                id_hoa_don:idHoaDon,
+                id_san_pham_chi_tiet:Number(p.id),
+                so_luong:p.so_luong,
+                don_gia:p.don_gia,
+                tong_tien:p.tong_tien,
+                thanh_tien:null,
                 ngay_tao: today,
                 ngay_sua: null,
-                don_gia: null,
-                tong_tien: parseFloat(order.totalAmount),
-                trang_thai_thanh_toan: "Đã thanh toán",
-                hinh_thuc_thanh_toan: "Tiền mặt",
-                dia_chi_giao_hang: "Tại cửa hàng",
-                ghi_chu: null
+                trang_thai: "Đã thanh toán"
             };
-
             // **Tạo request POST thêm hóa đơn chi tiết**
             let hdctRequest = fetch("/ban-hang-off/add-hoa-don-ct", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(hdctJson)
-            });
+            }).then(response => response.json())
+                .then(data => console.log("Dữ liệu trả về : ",data))
+                .catch(err => console.error("Lỗi thêm hóa đơn chi tiết:", err))
 
             // **Tạo request PUT cập nhật số lượng sản phẩm**
             let updateSpRequest = fetch(`/ban-hang-off/update-sp/${p.id}/${p.so_luong}`, {
                 method: "PUT"
-            });
+            }).catch(err => console.error("Lỗi cập nhật spct:", err));
 
             return Promise.all([hdctRequest, updateSpRequest]); // Gửi cả 2 request song song
         });
         if(order.discount.id !== null){
-            let updateKmResponse = await fetch(`/ban-hang-off/update-km/${order.discount.id}`,{
+            let updateKmRequest = fetch(`/ban-hang-off/update-km/${order.discount.id}`,{
                 method:"PUT"
-            })
-            requests.push(updateKmResponse)
+            }).catch(err => console.error("Lỗi cập nhật khuyến mãi:", err));
+            requests.push(updateKmRequest)
         }
         // **Chạy tất cả các request cùng lúc**
         await Promise.all(requests.flat());

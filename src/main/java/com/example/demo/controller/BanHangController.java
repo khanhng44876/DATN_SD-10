@@ -1,10 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ChiTietSanPhamDto;
-import com.example.demo.entity.HoaDon;
-import com.example.demo.entity.HoaDonCT;
-import com.example.demo.entity.KhuyenMai;
-import com.example.demo.entity.SanPhamChiTiet;
+import com.example.demo.dto.HoaDonCT_DTO;
+import com.example.demo.dto.HoaDonRequestNew;
+import com.example.demo.entity.*;
 import com.example.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
+import java.sql.SQLOutput;
 import java.util.*;
 @CrossOrigin(origins = "*")
 @Controller
@@ -32,6 +33,9 @@ public class BanHangController {
 
     @Autowired
     HoaDonRepossitory hdRepository;
+
+    @Autowired
+    NhanVienRepository nvRepository;
 
     @Autowired
     HoaDonCTRepository hdCTRepository;
@@ -69,17 +73,48 @@ public class BanHangController {
     }
 
     @PostMapping("/add-hoa-don")
-    public ResponseEntity<?> addHoaDon(@RequestBody HoaDon hd) {
+    public ResponseEntity<?> addHoaDon(@RequestBody HoaDonRequestNew hd) {
         System.out.println("Dữ liệu nhận được: " + hd);
-        HoaDon savedHoaDon = hdRepository.save(hd);
-        System.out.println("Hóa đơn đã lưu: " + savedHoaDon);
-        return ResponseEntity.ok(savedHoaDon);
+        HoaDon hoaDon = new HoaDon();
+        hoaDon.setNgayTao(hd.getNgayTao());
+        hoaDon.setNgaySua(hd.getNgaySua());
+        hoaDon.setDonGia(hd.getDonGia());
+        hoaDon.setTongTien(hd.getTongTien());
+        hoaDon.setTrangThaiThanhToan(hd.getTrangThaiThanhToan());
+        hoaDon.setHinhThucThanhToan(hd.getHinhThucThanhToan());
+        hoaDon.setDiaChiGiaoHang(hd.getDiaChiGiaoHang());
+        hoaDon.setGhiChu(hd.getGhiChu());
+
+        hoaDon.setKhachHang(khRepository.findById(hd.getIdKhachHang()).get());
+        hoaDon.setNhanVien(nvRepository.findById(hd.getIdNhanVien()).get());
+        if(hd.getIdKhuyenMai() == null) {
+            hoaDon.setKhuyenMai(null);
+        }else {
+            hoaDon.setKhuyenMai(kmRepository.findById(hd.getIdKhuyenMai()).get());
+        }
+
+        hdRepository.save(hoaDon);
+        return ResponseEntity.ok(hoaDon);
     }
 
     @PostMapping("/add-hoa-don-ct")
-    public ResponseEntity<HoaDonCT> addHDCT(@RequestBody HoaDonCT hdct){
-        hdCTRepository.save(hdct);
-        return ResponseEntity.ok(hdct);
+    public ResponseEntity<?> addHDCT(@RequestBody HoaDonCT_DTO hdct){
+        System.out.println(hdct);
+        HoaDonCT hoaDonCT = new HoaDonCT();
+
+        hoaDonCT.setDonGia(hdct.getDonGia());
+        hoaDonCT.setSoLuong(hdct.getSoLuong());
+        hoaDonCT.setTrangThai(hdct.getTrangThai());
+        hoaDonCT.setTongTien(hdct.getTongTien());
+        hoaDonCT.setThanhTien(hdct.getThanhTien());
+        hoaDonCT.setNgayTao(hdct.getNgayTao());
+        hoaDonCT.setNgaySua(hdct.getNgaySua());
+
+        hoaDonCT.setHoaDon_id(hdct.getIdHoaDon());
+        hoaDonCT.setCtsp_id(hdct.getIdSanPhamChiTiet());
+
+        hdCTRepository.save(hoaDonCT);
+        return ResponseEntity.ok(hoaDonCT);
     }
 
     @PutMapping("/update-sp/{id}/{so_luong}")
