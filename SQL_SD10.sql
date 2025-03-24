@@ -183,7 +183,7 @@ values (N'Bộ áo đấu Câu lạc bộ',N'CLB', N'Hoạt Động'),
        (N'Bộ áo đấu Không logo',N'Không có logo đội tuyển', N'Hoạt Động'),
        (N'Bộ áo đấu Dài tay',N'Mùa đông/thu/xuân', N'Hoạt Động')
 
-insert into hang(ten_hang,trang_thai)
+    insert into hang(ten_hang,trang_thai)
 values('Adidas','Còn'),
     ('Nike',N'Còn'),
     ('Puma',N'Còn'),
@@ -228,9 +228,9 @@ values (N'SP001',N'Bộ áo đấu câu lạc bộ Manchester United','2025-02-1
 
 insert into kich_thuoc(ten_kich_thuoc, mo_ta)
 values ('S',N'Size nhỏ'),
-       ('M',N'Size trung bình'),
-       ('L',N'Size lớn'),
-       ('XL',N'Size rất lớn')
+    ('M',N'Size trung bình'),
+    ('L',N'Size lớn'),
+    ('XL',N'Size rất lớn')
 
 insert into mau_sac(ten_mau_sac, mo_ta)
 values(N'Đen', N'Màu đen sang trọng'),
@@ -262,36 +262,36 @@ values (500000, 100, 1, 1,3,1, NULL, NULL, N'Còn hàng'),
        (560000, 100, 10, 2,4,2, NULL, NULL, N'Còn hàng'),
        (510000, 130, 11, 3,4,3, NULL, NULL, N'Còn hàng'),
        (495000, 125, 12, 4,2,3, NULL, NULL, N'Còn hàng'),
-       (505000, 110, 13, 4,4,4, NULL, NULL, N'Còn hàng'),
-       (515000, 90, 14, 3,3,4, NULL, NULL, N'Còn hàng'),
+       (505000, 110, 13, 4,4,2, NULL, NULL, N'Còn hàng'),
+       (515000, 90, 14, 3,3,3, NULL, NULL, N'Còn hàng'),
        (525000, 105, 15, 2,5,1, NULL, NULL, N'Còn hàng'),
        (535000, 95, 16, 1,2,1, NULL, NULL, N'Còn hàng'),
-       (545000, 85, 17, 1,3, NULL, NULL, N'Còn hàng'),
+       (545000, 85, 17, 1,3,1, NULL, NULL, N'Còn hàng'),
        (555000, 100, 18, 2,4,2, NULL, NULL, N'Còn hàng'),
        (565000, 80, 19, 3,2,3, NULL, NULL, N'Còn hàng'),
        (575000, 120, 20, 4,3,3, NULL, NULL, N'Còn hàng'),
-       (585000, 110, 21, 4,2,4, NULL, NULL, N'Còn hàng'),
-       (595000, 90, 22, 3,4,4, NULL, NULL, N'Còn hàng'),
+       (585000, 110, 21, 4,2,2, NULL, NULL, N'Còn hàng'),
+       (595000, 90, 22, 3,4,3, NULL, NULL, N'Còn hàng'),
        (605000, 100, 23, 2,2,1, NULL, NULL, N'Còn hàng'),
        (615000, 85, 24, 1,4,1, NULL, NULL, N'Còn hàng'),
        (625000, 95, 25, 1,1,2, NULL, NULL, N'Còn hàng'),
        (635000, 105, 26, 2,2,2, NULL, NULL, N'Còn hàng'),
-       (645000, 115, 27, 3,3,3, NULL, NULL, N'Còn hàng'),
-       (655000, 125, 28, 4,1,3, NULL, NULL, N'Còn hàng')
+       (645000, 115, 27, 3,3,2, NULL, NULL, N'Còn hàng'),
+       (655000, 125, 28, 4,1,1, NULL, NULL, N'Còn hàng')
 
 
 
-insert into khach_hang(ten_khach_hang, email, so_dien_thoai, dia_chi,ngay_sinh, gioi_tinh,tai_khoan, mat_khau)
+    insert into khach_hang(ten_khach_hang, email, so_dien_thoai, dia_chi,ngay_sinh, gioi_tinh,tai_khoan, mat_khau)
 values (N'Khách lẻ',null,null,null,null,null,null,null),
-        ('Nguyen Gia Khanh', 'khanhngph44876@fpt.edu.vn','0345760481','Dai Mo, HN','1998-02-12','Nam','khanh123', '123456'),
-       ('Nguyen Quach Vu', 'vunqph45621@fpt.edu.vn','0396311217','Nhon, HN','1995-12-22','Nam','vu123', '123456'),
-       ('Vi Cong Minh', 'minhvcph45103@fpt.edu.vn','0702202307','Huu Lung, LS','2004-05-09','Nam','minh123', '123456'),
-       ('Nguyen Van Sao', 'saonvph45620@fpt.edu.vn','0879913025','n, BN','2003-05-09','Nam','sao123', '123456'),
-       ('Tran Thi Thu phuong', 'phuongtttph45219@fpt.edu.vn','0947052726','n, LS','2003-05-09',N'Nữ','phuong123', '123456')
+    ('Nguyen Gia Khanh', 'khanhngph44876@fpt.edu.vn','0345760481','Dai Mo, HN','1998-02-12','Nam','khanh123', '123456'),
+    ('Nguyen Quach Vu', 'vunqph45621@fpt.edu.vn','0396311217','Nhon, HN','1995-12-22','Nam','vu123', '123456'),
+    ('Vi Cong Minh', 'minhvcph45103@fpt.edu.vn','0702202307','Huu Lung, LS','2004-05-09','Nam','minh123', '123456'),
+    ('Nguyen Van Sao', 'saonvph45620@fpt.edu.vn','0879913025','n, BN','2003-05-09','Nam','sao123', '123456'),
+    ('Tran Thi Thu phuong', 'phuongtttph45219@fpt.edu.vn','0947052726','n, LS','2003-05-09',N'Nữ','phuong123', '123456')
 
 
 
-    insert into nhan_vien(tai_khoan,ten_nhan_vien, mat_khau,chuc_vu, email,sdt, ngay_tao, ngay_sua,trang_thai)
+insert into nhan_vien(tai_khoan,ten_nhan_vien, mat_khau,chuc_vu, email,sdt, ngay_tao, ngay_sua,trang_thai)
 values ('khanhok123','khanh','SA12342',N'Nhân Viên','jdk1234@gmail.com','0987654321','2025-02-14','2025-02-14','Hoat dong'),
     ('vuok321','quachvu','as12312',N'Nhân Viên','zzzzz@gmail.com','0988769287','2025-02-14','2025-02-14','Hoat dong'),
     ('minhok123','minh','11111',N'Quản Lý','skbd9999@gmail.com','0999999999','2025-02-14','2025-02-14','Hoat dong')

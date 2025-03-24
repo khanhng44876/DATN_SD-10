@@ -69,7 +69,7 @@ public class QuanLiSanPhamController {
     public String iii(){
         return "san_pham/addsp";
     }
-    @GetMapping("/addctsp")
+    @GetMapping("/addctsp/{id}")
     public String iiie(){
         return "san_pham/them_ctsp";
     }

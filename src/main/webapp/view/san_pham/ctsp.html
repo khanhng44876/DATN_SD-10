@@ -15,7 +15,7 @@
             <div class="pt-3" style="width: calc(100% - 250px);">
                 <div class="container">
                     <h2 style="text-align: center;">Quản Lý Chi Tiết Sản Phẩm</h2>
-                    <a href="/san-pham/addctsp" class="btn btn-success">Thêm sản phẩm</a>
+                    <button onclick="redirectToAdd()" class="btn btn-success">Thêm sản phẩm</button>
                     <table id="example" class="table table-bordered">
                         <thead>
                         <tr>
@@ -256,6 +256,19 @@
                 currency: 'VND',
             });
             return VND.format(money);
+        }
+        function redirectToAdd() {
+            const idSanPham = getIdFromURL();
+            if (!idSanPham || isNaN(idSanPham)) {
+                alert("ID sản phẩm không hợp lệ!");
+                return;
+            }
+            window.location.href = `/san-pham/addctsp/${idSanPham}`;
+        }
+        function getIdFromURL() {
+            const url = window.location.href;
+            const segments = url.split("/");
+            return segments[segments.length - 1];
         }
     </script>
 
