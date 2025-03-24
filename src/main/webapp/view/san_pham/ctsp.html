@@ -16,8 +16,6 @@
                 <div class="container">
                     <h2 style="text-align: center;">Quản Lý Chi Tiết Sản Phẩm</h2>
 
-                    <a href="/san-pham/addctsp" class="btn btn-success">Thêm chi tiet sản phẩm</a>
-
                     <table id="example" class="table table-bordered">
                         <thead>
                         <tr>
@@ -57,6 +55,82 @@
                         </tbody>
                     </table>
                     <br><br>
+                    <a href="/san-pham/addctsp" class="btn btn-success">Thêm sản phẩm</a>
+
+                    <!-- Form Thêm Sản Phẩm -->
+<!--                    <div class="row">-->
+
+<!--                        <div class="col-sm-6">-->
+<!--                            <label class="lb-form">Đơn giá(*)</label>-->
+<!--                            <input id="donGia" class="form-control" required>-->
+<!--                            <span id="errorDonGia" class="text-danger"></span>-->
+<!--                            <br>-->
+
+<!--                            <label class="lb-form">Số lượng(*)</label>-->
+<!--                            <input id="soLuong" class="form-control" required>-->
+<!--                            <span id="errorSoLuong" class="text-danger"></span>-->
+<!--                            <br>-->
+
+<!--                            <label class="lb-form">Ghi chú</label>-->
+<!--                            <input id="moTa" class="form-control" required>-->
+<!--                            <span id="errorMoTa" class="text-danger"></span>-->
+<!--                            <br>-->
+
+<!--                        </div>-->
+<!--                        <div class="col-sm-6">-->
+<!--                            <label class="lb-form">Màu sắc(*)</label>-->
+<!--                            <select id="mauSac" class="form-control">-->
+<!--                                <option value="">Chọn màu sắc</option>-->
+<!--                                <option th:each="mau : ${dsMau}" th:value="${mau.id}" th:text="${mau.ten_mau_sac}"></option>-->
+<!--                            </select>-->
+<!--                            <a th:href="@{/mau-sac/hien-thi}">Thêm màu sắc</a>-->
+<!--                            <br>-->
+<!--                            <span id="errorMauSac" class="text-danger"></span>-->
+<!--                            <br>-->
+
+<!--                            <label class="lb-form">Kích thước(*)</label>-->
+<!--                            <select id="kichThuoc" class="form-control">-->
+<!--                                <option value="">Chọn kích thước</option>-->
+<!--                                <option th:each="size : ${dsKichThuoc}" th:value="${size.id}" th:text="${size.tenKichThuoc}"></option>-->
+<!--                            </select>-->
+<!--                            <span id="errorSize" class="text-danger"></span>-->
+<!--                            <a th:href="@{/san-pham/kich-thuoc}">Thêm kích thước</a>-->
+<!--                            <br>-->
+
+<!--                            <label class="lb-form">Chất liệu(*)</label>-->
+<!--                            <select id="chatLieu" class="form-control">-->
+<!--                                <option value="">Chọn chất liệu</option>-->
+<!--                                <option th:each="chatLieu : ${dsChatLieu}" th:value="${chatLieu.id}" th:text="${chatLieu.tenChatLieu}"></option>-->
+<!--                            </select>-->
+<!--                            <span id="errorChatLieu" class="text-danger"></span>-->
+<!--                            <a th:href="@{/san-pham/chat-lieu}">Thêm chất liệu</a>-->
+<!--                        </div>-->
+<!--                        <br>-->
+
+<!--                        <label class="lb-form">Trạng Thái(*)</label>-->
+<!--                        <select id="trangThai" class="form-control">-->
+<!--                            <option value="">Chọn trạng thái</option>-->
+<!--                            <option value="Còn hàng">Còn Hàng</option>-->
+<!--                            <option value="Hết hàng">Hết Hàng</option>-->
+<!--                        </select>-->
+<!--                        <span id="errorTrangThai" class="text-danger"></span>-->
+<!--                        <br>-->
+<!--                        <div>-->
+<!--                            <label class="lb-form">Ảnh sản phẩm</label>-->
+<!--                            <input id="anhSanPham" type="file" class="form-control" required>-->
+<!--                            <span id="errorAnh" class="text-danger"></span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    <br>-->
+<!--                    <button onclick="validateCtsp('add')" class="btn btn-primary">Add</button>-->
+<!--                    <button onclick="validateCtsp('update')" class="btn btn-warning">Update</button>-->
+<!--                    <br><br>-->
+<!--                    &lt;!&ndash; Nút bấm dưới cùng &ndash;&gt;-->
+
+
+
+
                 </div>
             </div>
         </div>
@@ -67,6 +141,233 @@
     <script>
         $('#example').DataTable();
     </script>
+    <script th:inline="javascript">
+
+        function validateCtsp(action) {
+
+            const soLuong = document.getElementById("soLuong").value;
+            const donGia = document.getElementById("donGia").value;
+            const moTa = document.getElementById("moTa").value;
+            const mauSac = document.getElementById("mauSac").value;
+            const kichThuoc = document.getElementById("kichThuoc").value;
+            const chatLieu = document.getElementById("chatLieu").value;
+            const trangThai = document.getElementById("trangThai").value;
+
+            let isValid = true;
+
+            if (!donGia || isNaN(donGia) || parseFloat(donGia) <= 0) {
+                document.getElementById("errorDonGia").innerText = "Vui lòng nhập đơn giá hợp lệ.";
+                isValid = false;
+            }
+
+            if (!soLuong || isNaN(soLuong) || parseInt(soLuong) <= 0) {
+                document.getElementById("errorSoLuong").innerText = "Vui lòng nhập số lượng hợp lệ.";
+                isValid = false;
+            }
+
+            if (mauSac === "") {
+                document.getElementById("errorMauSac").innerText = "Vui lòng chọn màu sắc.";
+                isValid = false;
+            }
+
+            if (kichThuoc === "") {
+                document.getElementById("errorSize").innerText = "Vui lòng chọn kích thước.";
+                isValid = false;
+            }
+
+            if (chatLieu === "") {
+                document.getElementById("errorChatLieu").innerText = "Vui lòng chọn chất liệu.";
+                isValid = false;
+            }
+            if (trangThai === "") {
+                document.getElementById("errorTrangThai").innerText = "Vui lòng chọn trạng thái.";
+                isValid = false;
+            }
+
+            if (isValid) {
+                if (action === 'add') {
+                    themctspp();
+                } else if (action === 'update') {
+                    capNhatCTSP(window.currentCTSanPhamId);
+                }
+            }
+
+
+        }
+
+        async function loadCtspData(idctsp) {
+            console.log("ID sản phẩm nhận được:", idctsp); // In ra để kiểm tra idsp
+            try {
+                const id = parseInt(idctsp, 10);
+                if (isNaN(id)) {
+                    console.error("ID sản phẩm không hợp lệ:", idctsp);
+                    alert("ID sản phẩm không hợp lệ.");
+                    return;
+                }
+                // Gửi yêu cầu GET đến server để lấy dữ liệu sản phẩm
+                const response = await fetch(`/san-pham/danh-sach-ctsp/${id}`);
+
+                // Kiểm tra nếu phản hồi không thành công
+                if (!response.ok) {
+                    console.error("Lỗi khi tải dữ liệu sản phẩm:", response.statusText);
+                    alert("Không thể tải dữ liệu sản phẩm.");
+                    return;
+                }
+
+                const ctsp = await response.json();
+                console.log(ctsp)
+                // Điền dữ liệu vào form
+                document.getElementById("soLuong").value = ctsp.soLuong;
+                document.getElementById("donGia").value = ctsp.donGia;
+                document.getElementById("moTa").value = ctsp.moTa;
+                document.getElementById("anhSanPham").value = ctsp.anhSanPham;
+                document.getElementById("mauSac").value = ctsp.mauSac.id;
+                document.getElementById("kichThuoc").value = ctsp.kichThuoc.id;
+                document.getElementById("chatLieu").value = ctsp.chatLieu.id;
+                document.getElementById("trangThai").value = ctsp.trangThai;
+
+
+                window.currentCTSanPhamId = idctsp;
+            } catch (error) {
+                console.error("Đã có lỗi xảy ra khi tải dữ liệu sản phẩm:", error);
+                alert("Không thể tải dữ liệu sản phẩm.");
+            }
+        }
+
+
+        async function themctspp() {
+            const idsp = getIdFromURL();
+
+            if (!idsp) {
+                alert("ID sản phẩm không hợp lệ!");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("idsanPham", idsp);
+            formData.append("idmauSac", document.getElementById("mauSac").value);
+            formData.append("idkichThuoc", document.getElementById("kichThuoc").value);
+            formData.append("idchatLieu", document.getElementById("chatLieu").value);
+            formData.append("soLuong", document.getElementById("soLuong").value);
+            formData.append("donGia", document.getElementById("donGia").value);
+            formData.append("moTa", document.getElementById("moTa").value);
+            formData.append("trangThai", document.getElementById("trangThai").value);
+
+            const anhSanPham = document.getElementById("anhSanPham").files[0];
+            if (anhSanPham) {
+                formData.append("anhSanPham", anhSanPham);
+            }
+
+            try {
+                const response = await fetch(`/san-pham/them-ctsp`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    alert("Lỗi: " + (error.message || "Không thể thêm sản phẩm!"));
+                    return;
+                }
+
+                alert("Thêm chi tiết sản phẩm thành công!");
+                window.location.href = `/san-pham/ds-ctsp/${idsp}`;
+            } catch (e) {
+                console.error("Lỗi khi thêm sản phẩm:", e);
+                alert("Đã xảy ra lỗi khi thêm chi tiết sản phẩm.");
+            }
+        }
+
+        async function capNhatCTSP(id) {
+            const idsp = getIdFromURL();
+            var con = window.confirm("Bạn có chắc chắn muốn cập nhật sản phẩm?");
+            if (con == false) {
+                return;
+            }
+
+            // Thu thập dữ liệu từ form
+            var payload = {
+                "soLuong": document.getElementById("soLuong").value,
+                "donGia": document.getElementById("donGia").value,
+                "anhSanPham": document.getElementById("anhSanPham").value,
+                "kichThuoc": document.getElementById("kichThuoc").value,
+                "chatLieu": document.getElementById("chatLieu").value,
+                "mauSac": document.getElementById("mauSac").value,
+                "moTa": document.getElementById("moTa").value,
+                "trangThai": document.getElementById("trangThai").value
+            };
+
+            // Gửi dữ liệu đến server (PUT request)
+            const response = await fetch(`/san-pham/cap-nhat-ctsp/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload) // Chuyển dữ liệu thành JSON
+            });
+
+            // Kiểm tra phản hồi từ server
+            if (response.ok) {
+                alert("Sản phẩm đã được cập nhật thành công!");
+                // Chuyển hướng về trang hiển thị danh sách sản phẩm
+                window.location.href = `/san-pham/ds-ctsp/${idsp}`;
+            } else {
+                alert("Đã có lỗi xảy ra khi cập nhật sản phẩm.");
+            }
+        }
+
+
+        function getIdFromURL() {
+            const url = window.location.href; // Lấy URL hiện tại
+            const segments = url.split("/"); // Tách URL thành các phần dựa trên dấu "/"
+            return segments[segments.length - 1]; // Lấy phần cuối cùng (ID)
+        }
+
+
+
+
+        function formatmoney(money) {
+            const VND = new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+            });
+            return VND.format(money);
+        }
+    </script>
+
+<!--    <div class="modal fade" id="hoadonchitiet" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false">-->
+<!--        <div class="modal-dialog modal-fullscreen"> &lt;!&ndash; Sử dụng modal-fullscreen để làm modal chiếm toàn màn hình &ndash;&gt;-->
+<!--            <div class="modal-content">-->
+<!--                <div class="modal-header">-->
+<!--                    <h5 class="modal-title" id="exampleModalLabel">Sản phẩm chi tiết</h5>-->
+<!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--                </div>-->
+<!--                <div class="modal-body">-->
+
+
+<!--                    &lt;!&ndash; Bảng sản phẩm chi tiết &ndash;&gt;-->
+<!--                    <table class="table">-->
+<!--                        <thead>-->
+<!--                        <tr>-->
+<!--                            <th>Ma CTSP</th>-->
+<!--                            <th>Ten San Pham</th>-->
+<!--                            <th>Mau Sac</th>-->
+<!--                            <th>Kich Thuoc</th>-->
+<!--                            <th>Chat Lieu</th>-->
+<!--                            <th>So Luong</th>-->
+<!--                            <th>Don Gia</th>-->
+<!--                            <th>Ghi chu</th>-->
+<!--                            <th>Anh</th>-->
+<!--                        </tr>-->
+<!--                        </thead>-->
+<!--                        <tbody id="listctsp">-->
+<!--                        &lt;!&ndash; Dữ liệu sẽ được động hiển thị ở đây &ndash;&gt;-->
+<!--                        </tbody>-->
+<!--                    </table>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
 
     <!-- Nội dung dành cho người dùng đã đăng nhập -->
 </div>

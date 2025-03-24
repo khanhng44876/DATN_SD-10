@@ -1,16 +1,18 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.sql.Date;
+import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
+@Data
 @Table(name = "hoa_don")
 public class HoaDon {
     @Id
@@ -19,7 +21,6 @@ public class HoaDon {
 
     @Column(name = "ngay_tao")
     @DateTimeFormat(pattern = "yyyy/MM/dd")
-    @Temporal(TemporalType.DATE)
     private Date ngayTao;
 
     @Column(name = "ngay_sua")
@@ -51,5 +52,7 @@ public class HoaDon {
     @JoinColumn(name = "id_nhan_vien")
     private NhanVien nhanVien;
 
-
+    @ManyToOne
+    @JoinColumn(name = "id_khuyen_mai")
+    private KhuyenMai khuyenMai;
 }
