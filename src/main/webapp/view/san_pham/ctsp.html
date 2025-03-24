@@ -15,7 +15,7 @@
             <div class="pt-3" style="width: calc(100% - 250px);">
                 <div class="container">
                     <h2 style="text-align: center;">Quản Lý Chi Tiết Sản Phẩm</h2>
-
+                    <a href="/san-pham/addctsp" class="btn btn-success">Thêm sản phẩm</a>
                     <table id="example" class="table table-bordered">
                         <thead>
                         <tr>
@@ -55,82 +55,6 @@
                         </tbody>
                     </table>
                     <br><br>
-                    <a href="/san-pham/addctsp" class="btn btn-success">Thêm sản phẩm</a>
-
-                    <!-- Form Thêm Sản Phẩm -->
-<!--                    <div class="row">-->
-
-<!--                        <div class="col-sm-6">-->
-<!--                            <label class="lb-form">Đơn giá(*)</label>-->
-<!--                            <input id="donGia" class="form-control" required>-->
-<!--                            <span id="errorDonGia" class="text-danger"></span>-->
-<!--                            <br>-->
-
-<!--                            <label class="lb-form">Số lượng(*)</label>-->
-<!--                            <input id="soLuong" class="form-control" required>-->
-<!--                            <span id="errorSoLuong" class="text-danger"></span>-->
-<!--                            <br>-->
-
-<!--                            <label class="lb-form">Ghi chú</label>-->
-<!--                            <input id="moTa" class="form-control" required>-->
-<!--                            <span id="errorMoTa" class="text-danger"></span>-->
-<!--                            <br>-->
-
-<!--                        </div>-->
-<!--                        <div class="col-sm-6">-->
-<!--                            <label class="lb-form">Màu sắc(*)</label>-->
-<!--                            <select id="mauSac" class="form-control">-->
-<!--                                <option value="">Chọn màu sắc</option>-->
-<!--                                <option th:each="mau : ${dsMau}" th:value="${mau.id}" th:text="${mau.ten_mau_sac}"></option>-->
-<!--                            </select>-->
-<!--                            <a th:href="@{/mau-sac/hien-thi}">Thêm màu sắc</a>-->
-<!--                            <br>-->
-<!--                            <span id="errorMauSac" class="text-danger"></span>-->
-<!--                            <br>-->
-
-<!--                            <label class="lb-form">Kích thước(*)</label>-->
-<!--                            <select id="kichThuoc" class="form-control">-->
-<!--                                <option value="">Chọn kích thước</option>-->
-<!--                                <option th:each="size : ${dsKichThuoc}" th:value="${size.id}" th:text="${size.tenKichThuoc}"></option>-->
-<!--                            </select>-->
-<!--                            <span id="errorSize" class="text-danger"></span>-->
-<!--                            <a th:href="@{/san-pham/kich-thuoc}">Thêm kích thước</a>-->
-<!--                            <br>-->
-
-<!--                            <label class="lb-form">Chất liệu(*)</label>-->
-<!--                            <select id="chatLieu" class="form-control">-->
-<!--                                <option value="">Chọn chất liệu</option>-->
-<!--                                <option th:each="chatLieu : ${dsChatLieu}" th:value="${chatLieu.id}" th:text="${chatLieu.tenChatLieu}"></option>-->
-<!--                            </select>-->
-<!--                            <span id="errorChatLieu" class="text-danger"></span>-->
-<!--                            <a th:href="@{/san-pham/chat-lieu}">Thêm chất liệu</a>-->
-<!--                        </div>-->
-<!--                        <br>-->
-
-<!--                        <label class="lb-form">Trạng Thái(*)</label>-->
-<!--                        <select id="trangThai" class="form-control">-->
-<!--                            <option value="">Chọn trạng thái</option>-->
-<!--                            <option value="Còn hàng">Còn Hàng</option>-->
-<!--                            <option value="Hết hàng">Hết Hàng</option>-->
-<!--                        </select>-->
-<!--                        <span id="errorTrangThai" class="text-danger"></span>-->
-<!--                        <br>-->
-<!--                        <div>-->
-<!--                            <label class="lb-form">Ảnh sản phẩm</label>-->
-<!--                            <input id="anhSanPham" type="file" class="form-control" required>-->
-<!--                            <span id="errorAnh" class="text-danger"></span>-->
-<!--                        </div>-->
-<!--                    </div>-->
-
-<!--                    <br>-->
-<!--                    <button onclick="validateCtsp('add')" class="btn btn-primary">Add</button>-->
-<!--                    <button onclick="validateCtsp('update')" class="btn btn-warning">Update</button>-->
-<!--                    <br><br>-->
-<!--                    &lt;!&ndash; Nút bấm dưới cùng &ndash;&gt;-->
-
-
-
-
                 </div>
             </div>
         </div>
@@ -334,40 +258,6 @@
             return VND.format(money);
         }
     </script>
-
-<!--    <div class="modal fade" id="hoadonchitiet" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false">-->
-<!--        <div class="modal-dialog modal-fullscreen"> &lt;!&ndash; Sử dụng modal-fullscreen để làm modal chiếm toàn màn hình &ndash;&gt;-->
-<!--            <div class="modal-content">-->
-<!--                <div class="modal-header">-->
-<!--                    <h5 class="modal-title" id="exampleModalLabel">Sản phẩm chi tiết</h5>-->
-<!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-<!--                </div>-->
-<!--                <div class="modal-body">-->
-
-
-<!--                    &lt;!&ndash; Bảng sản phẩm chi tiết &ndash;&gt;-->
-<!--                    <table class="table">-->
-<!--                        <thead>-->
-<!--                        <tr>-->
-<!--                            <th>Ma CTSP</th>-->
-<!--                            <th>Ten San Pham</th>-->
-<!--                            <th>Mau Sac</th>-->
-<!--                            <th>Kich Thuoc</th>-->
-<!--                            <th>Chat Lieu</th>-->
-<!--                            <th>So Luong</th>-->
-<!--                            <th>Don Gia</th>-->
-<!--                            <th>Ghi chu</th>-->
-<!--                            <th>Anh</th>-->
-<!--                        </tr>-->
-<!--                        </thead>-->
-<!--                        <tbody id="listctsp">-->
-<!--                        &lt;!&ndash; Dữ liệu sẽ được động hiển thị ở đây &ndash;&gt;-->
-<!--                        </tbody>-->
-<!--                    </table>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
 
     <!-- Nội dung dành cho người dùng đã đăng nhập -->
 </div>
