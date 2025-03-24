@@ -94,6 +94,59 @@ public class QuanLiSanPhamController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping("/loc-san-pham")
+    @ResponseBody
+    public List<SanPham> locSanPham(
+            @RequestParam(required = false) String maSanPham,
+            @RequestParam(required = false) String tenSanPham,
+            @RequestParam(required = false) String ngayNhap,
+            @RequestParam(required = false) String ngaySua,
+            @RequestParam(required = false) Integer iddanhMuc,
+            @RequestParam(required = false) Integer idhang,
+            @RequestParam(required = false) String trangThai) {
+
+        List<SanPham> danhSach = sanPhamRepository.findAll();
+
+        // Lọc dữ liệu
+        if (maSanPham != null && !maSanPham.isEmpty()) {
+            danhSach = danhSach.stream()
+                    .filter(sp -> sp.getMaSanPham().toLowerCase().contains(maSanPham.toLowerCase()))
+                    .toList();
+        }
+        if (tenSanPham != null && !tenSanPham.isEmpty()) {
+            danhSach = danhSach.stream()
+                    .filter(sp -> sp.getTenSanPham().toLowerCase().contains(tenSanPham.toLowerCase()))
+                    .toList();
+        }
+        if (ngayNhap != null && !ngayNhap.isEmpty()) {
+            danhSach = danhSach.stream()
+                    .filter(sp -> sp.getNgayNhap().toString().equals(ngayNhap))
+                    .toList();
+        }
+        if (ngaySua != null && !ngaySua.isEmpty()) {
+            danhSach = danhSach.stream()
+                    .filter(sp -> sp.getNgaySua().toString().equals(ngaySua))
+                    .toList();
+        }
+        if (iddanhMuc != null) {
+            danhSach = danhSach.stream()
+                    .filter(sp -> sp.getDanhMuc() != null && sp.getDanhMuc().getId().equals(iddanhMuc))
+                    .toList();
+        }
+        if (idhang != null) {
+            danhSach = danhSach.stream()
+                    .filter(sp -> sp.getHang() != null && sp.getHang().getId().equals(idhang))
+                    .toList();
+        }
+        if (trangThai != null && !trangThai.isEmpty()) {
+            danhSach = danhSach.stream()
+                    .filter(sp -> sp.getTrangThai().equalsIgnoreCase(trangThai))
+                    .toList();
+        }
+
+        return danhSach;
+    }
+
 
 
     // Thêm sản phẩm
@@ -228,6 +281,7 @@ public class QuanLiSanPhamController {
             @RequestParam("moTa") String moTa,
             @RequestParam("trangThai") String trangThai,
             @RequestParam(value = "anhSanPham", required = false) MultipartFile anhSanPham) {
+
         try {
             SanPham sanPham = sanPhamRepository.findById(idsanPham)
                     .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại!"));

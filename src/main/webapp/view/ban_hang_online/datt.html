@@ -80,8 +80,9 @@
             document.querySelector('#hoadonchitiet .form-control-plaintext.hinh-thuc-thanh-toan').innerText = hoaDon.hinhThucThanhToan;
             document.querySelector('#hoadonchitiet .form-control-plaintext.ho-ten').innerText = hoaDon.khachHang.tenKhachHang;
             document.querySelector('#hoadonchitiet .form-control-plaintext.s-d-t').innerText = hoaDon.khachHang.soDienThoai;
-            document.querySelector('#hoadonchitiet .form-control-plaintext.ghi-chu').innerText = hoaDon.ghiChu;
             document.querySelector('#hoadonchitiet .form-control-plaintext.tong-tien').innerText = formatmoney(hoaDon.tongTien);
+            document.querySelector('#hoadonchitiet .form-control-plaintext.dia-chi-giao-hang').innerText = hoaDon.khachHang.diaChi;
+
 
             // Làm sạch nội dung bảng chi tiết sản phẩm
             document.getElementById("listctsp").innerHTML = "";
@@ -219,12 +220,19 @@
                         </div>
                     </div>
 
+
                     <div class="row mb-3">
-                        <div class="col-12">
-                            <label class="form-label"><strong>Ghi Chú:</strong></label>
-                            <p class="form-control-plaintext ghi-chu">Chưa cập nhật</p>
+                        <div class="col-sm-6">
+                            <label class="form-label"><strong>Địa chỉ giao hàng:</strong></label>
+                            <p class="form-control-plaintext dia-chi-giao-hang">Chưa cập nhật</p>
                         </div>
+                        <!--                        <div class="col-sm-6">-->
+                        <!--                            <label class="form-label"><strong>Ghi Chú:</strong></label>-->
+                        <!--                            <p class="form-control-plaintext ghi-chu">Chưa cập nhật</p>-->
+                        <!--                        </div>-->
                     </div>
+
+
 
                     <!-- Bảng chi tiết hóa đơn -->
                     <h5 class="mt-4"><strong>Chi Tiết Sản Phẩm</strong></h5>
