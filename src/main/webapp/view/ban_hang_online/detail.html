@@ -3,41 +3,13 @@
 <head>
     <title>Chi Tiết Sản Phẩm</title>
     <meta charset="utf-8">
-    <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
+    <head th:replace="giao_dien_chinh/libCustomer :: libheadercustomer"></head>
     <link rel="stylesheet" type="text/css" href="/css/online.css">
 </head>
 <body>
 <!-- Header -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light py-3">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="#" style="color: #000000;">
-            <img src="images/logo.png" alt="Logo" height="40" class="me-2">
-            <span>Sky Football Fashion</span>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" style="color: black;">
-                        Sản phẩm
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Áo đá bóng</a></li>
-                        <li><a class="dropdown-item" href="#">Quần đá bóng</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" style="color: black;">Liên hệ</a>
-                </li>
-            </ul>
-            <div class="d-flex">
-                <button class="btn btn-outline-success" onclick="viewCart()">Giỏ Hàng</button>
-            </div>
-        </div>
-    </div>
-</nav>
+<div th:replace="giao_dien_chinh/navbarCustomer :: headerCustomer"></div>
+<div th:replace="giao_dien_chinh/navbarCustomer :: navCustomer"></div>
 
 <!-- Nội dung chi tiết sản phẩm -->
 <div class="container mt-5">
