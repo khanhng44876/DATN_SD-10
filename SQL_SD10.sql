@@ -228,23 +228,23 @@ values (N'SP001',N'Bộ áo đấu câu lạc bộ Manchester United','2025-02-1
 
 
 insert into kich_thuoc(ten_kich_thuoc, mo_ta)
-values ('S',N'Size nh?'),
-    ('M',N'Size trung b?nh'),
-    ('L',N'Size l?n'),
-    ('XL',N'Size r?t l?n')
+values ('S',N'Size nhỏ'),
+    ('M',N'Size trung bình'),
+    ('L',N'Size lớn'),
+    ('XL',N'Size rất lớn')
 
 insert into mau_sac(ten_mau_sac, mo_ta)
-values(N'Đen', N'Màu đen sang tr?ng'),
-    (N'Trắng', N'Màu tr?ng tinh khi?t'),
-    (N'Đỏ', N'Màu Đ? Đ?p keng'),
-    (N'Xanh', N'Màu vàng bóng b?y'),
+values(N'Đen', N'Màu đen sang trọng'),
+    (N'Trắng', N'Màu trắng tinh khiết'),
+    (N'Đỏ', N'Màu Đỏ Đẹp keng'),
+    (N'Xanh', N'Màu vàng bóng bẩy'),
     (N'Xanh lá', N'Màu xa lánh');
 
 
 insert into chat_lieu(ten_chat_lieu, mo_ta)
-values(N'Polyester', N'V?i Polyester thoáng khí'),
-      (N'Cotton', N'V?i Cotton m?m m?i'),
-      (N'Spandex', N'V?i Spandex co gi?n t?t');
+values(N'Polyester', N'Vải Polyester thoáng khí'),
+      (N'Cotton', N'Vải Cotton mềm mại'),
+      (N'Spandex', N'Vải Spandex co giãn tốt');
 
 
 
@@ -293,9 +293,9 @@ values (N'Khách l?',null,null,null,null,null,null,null),
 
 
 insert into nhan_vien(tai_khoan,ten_nhan_vien, mat_khau,chuc_vu, email,sdt, ngay_tao, ngay_sua,trang_thai)
-values ('khanhok123','khanh','SA12342',N'Nhân Viên','jdk1234@gmail.com','0987654321','2025-02-14','2025-02-14','Hoat dong'),
-    ('vuok321','quachvu','as12312',N'Nhân Viên','zzzzz@gmail.com','0988769287','2025-02-14','2025-02-14','Hoat dong'),
-    ('minhok123','minh','11111',N'Qu?n L?','skbd9999@gmail.com','0999999999','2025-02-14','2025-02-14','Hoat dong')
+values ('khanhok123','khanh','SA12342','NHAN_VIEN','jdk1234@gmail.com','0987654321','2025-02-14','2025-02-14','Hoat dong'),
+    ('vuok321','quachvu','as12312','QUAN_LY','zzzzz@gmail.com','0988769287','2025-02-14','2025-02-14','Hoat dong'),
+    ('minhok123','minh','11111','QUAN_LY','skbd9999@gmail.com','0999999999','2025-02-14','2025-02-14','Hoat dong')
 
 
 
