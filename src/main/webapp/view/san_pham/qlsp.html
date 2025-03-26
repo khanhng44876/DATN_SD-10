@@ -1,94 +1,95 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<div th:if="${session.nhanVien != null}">
-    <head>
-        <title>Quan Ly San Pham</title>
-        <meta charset="utf-8">
-        <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
-        <link rel="stylesheet" href="css/styles.css" />
-    </head>
-    <body>
-    <div>
-        <div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
-        <div class="d-flex">
-            <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
-            <div class="pt-3" style="width: calc(100% - 250px);">
-                <div class="container">
-                    <h2 style="text-align: center;">Quản Lý Sản Phẩm</h2>
 
-                    <div class="row mb-3">
-                        <div class="col-md-3">
-                            <label for="filterMaSanPham">Mã sản phẩm:</label>
-                            <input type="text" class="form-control" id="filterMaSanPham" placeholder="Nhập mã sản phẩm">
-                        </div>
-                        <div class="col-md-3">
-                            <label for="filterTenSanPham">Tên sản phẩm:</label>
-                            <input type="text" class="form-control" id="filterTenSanPham" placeholder="Nhập tên sản phẩm">
-                        </div>
-                        <div class="col-md-3">
-                            <label for="filterNgayNhap">Ngày nhập:</label>
-                            <input type="date" class="form-control" id="filterNgayNhap">
-                        </div>
-                        <div class="col-md-3">
-                            <label for="filterNgaySua">Ngày sửa:</label>
-                            <input type="date" class="form-control" id="filterNgaySua">
-                        </div>
+<head>
+    <title>Quan Ly San Pham</title>
+    <meta charset="utf-8">
+    <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
+    <link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+<div>
+    <div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
+    <div class="d-flex">
+        <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
+        <div class="pt-3" style="width: calc(100% - 250px);">
+            <div class="container">
+                <h2 style="text-align: center;">Quản Lý Sản Phẩm</h2>
+
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label for="filterMaSanPham">Mã sản phẩm:</label>
+                        <input type="text" class="form-control" id="filterMaSanPham" placeholder="Nhập mã sản phẩm">
                     </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-3">
-                            <label for="filterDanhMuc">Danh mục:</label>
-                            <select class="form-control" id="filterDanhMuc">
-                                <option value="">Tất cả</option>
-                                <option th:each="dm : ${dsDanhMuc}" th:value="${dm.tendanhmuc}" th:text="${dm.tendanhmuc}"></option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="filterHang">Hãng:</label>
-                            <select class="form-control" id="filterHang">
-                                <option value="">Tất cả</option>
-                                <option th:each="h : ${dsHang}" th:value="${h.tenHang}" th:text="${h.tenHang}"></option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="filterTrangThai">Trạng thái:</label>
-                            <select class="form-control" id="filterTrangThai">
-                                <option value="">Tất cả</option>
-                                <option value="Còn hàng">Còn hàng</option>
-                                <option value="Hết hàng">Hết hàng</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3 d-flex align-items-end">
-                            <button class="btn btn-primary w-100" onclick="filterSanPham()">Lọc</button>
-                        </div>
+                    <div class="col-md-3">
+                        <label for="filterTenSanPham">Tên sản phẩm:</label>
+                        <input type="text" class="form-control" id="filterTenSanPham" placeholder="Nhập tên sản phẩm">
                     </div>
-                    <a href="/san-pham/addsp" class="btn btn-success">Thêm sản phẩm</a>
+                    <div class="col-md-3">
+                        <label for="filterNgayNhap">Ngày nhập:</label>
+                        <input type="date" class="form-control" id="filterNgayNhap">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filterNgaySua">Ngày sửa:</label>
+                        <input type="date" class="form-control" id="filterNgaySua">
+                    </div>
+                </div>
 
-                    <table id="example" class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th>Mã sản phẩm</th>
-                            <th>Tên sản phẩm</th>
-                            <th>Ngày nhập</th>
-                            <th>Ngày sửa</th>
-                            <th>Danh mục</th>
-                            <th>Hãng</th>
-                            <th>Trạng thái</th>
-                            <th>Hoạt động</th>
-                        </tr>
-                        </thead>
-                        <tbody id="productTableBody">
-                        <tr th:each="d : ${dataSP}">
-                            <td th:text="${d.maSanPham}"></td>
-                            <td th:text="${d.tenSanPham}"></td>
-                            <td th:text="${d.ngayNhap}"></td>
-                            <td th:text="${d.ngaySua}"></td>
-                            <td th:text="${d.danhMuc != null ? d.danhMuc.tendanhmuc : 'Chưa có danh mục'}"></td>
-                            <td th:text="${d.hang != null ? d.hang.tenHang : 'Chưa có hãng'}"></td>
-<!--                            <td style="text-align: center; vertical-align: middle;"  >-->
-<!--                                <span th:text="${d.trangThai}" th:classappend="${d.trangThai == 'Còn hàng'?'status-ongoing':'status-ended'}" class="badge rounded-pill"></span>-->
-<!--                            </td>-->
-                            <td style="text-align: center; vertical-align: middle;">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label for="filterDanhMuc">Danh mục:</label>
+                        <select class="form-control" id="filterDanhMuc">
+                            <option value="">Tất cả</option>
+                            <option th:each="dm : ${dsDanhMuc}" th:value="${dm.tendanhmuc}"
+                                    th:text="${dm.tendanhmuc}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filterHang">Hãng:</label>
+                        <select class="form-control" id="filterHang">
+                            <option value="">Tất cả</option>
+                            <option th:each="h : ${dsHang}" th:value="${h.tenHang}" th:text="${h.tenHang}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filterTrangThai">Trạng thái:</label>
+                        <select class="form-control" id="filterTrangThai">
+                            <option value="">Tất cả</option>
+                            <option value="Còn hàng">Còn hàng</option>
+                            <option value="Hết hàng">Hết hàng</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button class="btn btn-primary w-100" onclick="filterSanPham()">Lọc</button>
+                    </div>
+                </div>
+                <a href="/san-pham/addsp" class="btn btn-success">Thêm sản phẩm</a>
+
+                <table id="example" class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Mã sản phẩm</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Ngày nhập</th>
+                        <th>Ngày sửa</th>
+                        <th>Danh mục</th>
+                        <th>Hãng</th>
+                        <th>Trạng thái</th>
+                        <th>Hoạt động</th>
+                    </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                    <tr th:each="d : ${dataSP}">
+                        <td th:text="${d.maSanPham}"></td>
+                        <td th:text="${d.tenSanPham}"></td>
+                        <td th:text="${d.ngayNhap}"></td>
+                        <td th:text="${d.ngaySua}"></td>
+                        <td th:text="${d.danhMuc != null ? d.danhMuc.tendanhmuc : 'Chưa có danh mục'}"></td>
+                        <td th:text="${d.hang != null ? d.hang.tenHang : 'Chưa có hãng'}"></td>
+                        <!--                            <td style="text-align: center; vertical-align: middle;"  >-->
+                        <!--                                <span th:text="${d.trangThai}" th:classappend="${d.trangThai == 'Còn hàng'?'status-ongoing':'status-ended'}" class="badge rounded-pill"></span>-->
+                        <!--                            </td>-->
+                        <td style="text-align: center; vertical-align: middle;">
     <span style=" background-color: #e6f9e6; /* Xanh nhạt */
     color: #28a745; /* Xanh lá */
     border: 1px solid #90ee90;" th:text="${d.trangThai}"
@@ -97,67 +98,77 @@
                            'status-ended'}"
           class="badge rounded-pill">
     </span>
-                            </td>
-                            <td>
-                                <a th:href="@{/san-pham/chinh-sua/{id}(id=${d.id})}" class="btn btn-warning"><i class="fa fa-pencil-alt"></i></a>
-                                <a th:href="@{/san-pham/ds-ctsp/{id}(id=${d.id})}" class="btn btn-info"><i class="fa fa-eye"></i></a>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <script>
-                    $(document).ready(function () {
-                        var table = $('#example').DataTable();
-
-                        window.filterSanPham = function () {
-                            table.search('').draw();
-
-                            let maSanPham = $('#filterMaSanPham').val().toLowerCase();
-                            let tenSanPham = $('#filterTenSanPham').val().toLowerCase();
-                            let ngayNhap = $('#filterNgayNhap').val();
-                            let ngaySua = $('#filterNgaySua').val();
-                            let danhMuc = $('#filterDanhMuc option:selected').text().trim().toLowerCase();
-                            let hang = $('#filterHang option:selected').text().trim().toLowerCase();
-                            let trangThai = $('#filterTrangThai').val().trim().toLowerCase();
-
-                            console.log("Dữ liệu nhập:", { maSanPham, tenSanPham, ngayNhap, ngaySua, danhMuc, hang, trangThai });
-
-                            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-                                let rowDanhMuc = data[4].trim().toLowerCase();
-                                let rowHang = data[5].trim().toLowerCase();
-                                let rowTrangThai = data[6].trim().toLowerCase();
-
-                                console.log("Dữ liệu dòng:", { rowDanhMuc, rowHang, rowTrangThai });
-
-                                return (
-                                    (maSanPham === "" || data[0].toLowerCase().includes(maSanPham)) &&
-                                    (tenSanPham === "" || data[1].toLowerCase().includes(tenSanPham)) &&
-                                    (ngayNhap === "" || data[2] === ngayNhap) &&
-                                    (ngaySua === "" || data[3] === ngaySua) &&
-                                    (danhMuc === "tất cả" || rowDanhMuc.includes(danhMuc)) &&
-                                    (hang === "tất cả" || rowHang.includes(hang)) &&
-                                    (trangThai === "tất cả" || rowTrangThai.includes(trangThai))
-                                );
-                            });
-
-                            table.draw();
-                            $.fn.dataTable.ext.search.pop();
-                        }
-                    });
-                </script>
-
-
+                        </td>
+                        <td>
+                            <a th:href="@{/san-pham/chinh-sua/{id}(id=${d.id})}" class="btn btn-warning"><i
+                                    class="fa fa-pencil-alt"></i></a>
+                            <a th:href="@{/san-pham/ds-ctsp/{id}(id=${d.id})}" class="btn btn-info"><i
+                                    class="fa fa-eye"></i></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
+
+            <script>
+                $(document).ready(function () {
+                    var table = $('#example').DataTable();
+
+                    window.filterSanPham = function () {
+                        table.search('').draw();
+
+                        let maSanPham = $('#filterMaSanPham').val().toLowerCase();
+                        let tenSanPham = $('#filterTenSanPham').val().toLowerCase();
+                        let ngayNhap = $('#filterNgayNhap').val();
+                        let ngaySua = $('#filterNgaySua').val();
+                        let danhMuc = $('#filterDanhMuc option:selected').text().trim().toLowerCase();
+                        let hang = $('#filterHang option:selected').text().trim().toLowerCase();
+                        let trangThai = $('#filterTrangThai').val().trim().toLowerCase();
+
+                        console.log("Dữ liệu nhập:", {
+                            maSanPham,
+                            tenSanPham,
+                            ngayNhap,
+                            ngaySua,
+                            danhMuc,
+                            hang,
+                            trangThai
+                        });
+
+                        $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                            let rowDanhMuc = data[4].trim().toLowerCase();
+                            let rowHang = data[5].trim().toLowerCase();
+                            let rowTrangThai = data[6].trim().toLowerCase();
+
+                            console.log("Dữ liệu dòng:", {rowDanhMuc, rowHang, rowTrangThai});
+
+                            return (
+                                (maSanPham === "" || data[0].toLowerCase().includes(maSanPham)) &&
+                                (tenSanPham === "" || data[1].toLowerCase().includes(tenSanPham)) &&
+                                (ngayNhap === "" || data[2] === ngayNhap) &&
+                                (ngaySua === "" || data[3] === ngaySua) &&
+                                (danhMuc === "tất cả" || rowDanhMuc.includes(danhMuc)) &&
+                                (hang === "tất cả" || rowHang.includes(hang)) &&
+                                (trangThai === "tất cả" || rowTrangThai.includes(trangThai))
+                            );
+                        });
+
+                        table.draw();
+                        $.fn.dataTable.ext.search.pop();
+                    }
+                });
+            </script>
+
+
         </div>
-    </body>
+    </div>
 </div>
+</body>
 
 
-    <script>
-        $('#example').DataTable();
-    </script>
+<script>
+    $('#example').DataTable();
+</script>
 
 
 <script th:inline="javascript">
@@ -171,11 +182,6 @@
 
 
 </script>
-<!--    Nội dung dành cho người dùng đã đăng nhập-->
-</div>
-
-<div th:if="${session.nhanVien == null}">
-    <p>Vui lòng <a th:href="@{/dang-nhap/login}"> đăng nhập</a>.</p>
 </div>
 </html>
 

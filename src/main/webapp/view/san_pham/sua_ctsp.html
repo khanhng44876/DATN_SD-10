@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<div th:if="${session.nhanVien != null}">
+
     <head>
         <title>Quan Ly San Pham</title>
         <meta charset="utf-8">
@@ -81,9 +81,8 @@
                 </div>
             </div>
         </div>
+    </div>
     </body>
-</div>
-
 <script>
     $('#example').DataTable();
 </script>
@@ -291,44 +290,4 @@
         return VND.format(money);
     }
 </script>
-
-<!--    <div class="modal fade" id="hoadonchitiet" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false">-->
-<!--        <div class="modal-dialog modal-fullscreen"> &lt;!&ndash; Sử dụng modal-fullscreen để làm modal chiếm toàn màn hình &ndash;&gt;-->
-<!--            <div class="modal-content">-->
-<!--                <div class="modal-header">-->
-<!--                    <h5 class="modal-title" id="exampleModalLabel">Sản phẩm chi tiết</h5>-->
-<!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-<!--                </div>-->
-<!--                <div class="modal-body">-->
-
-
-<!--                    &lt;!&ndash; Bảng sản phẩm chi tiết &ndash;&gt;-->
-<!--                    <table class="table">-->
-<!--                        <thead>-->
-<!--                        <tr>-->
-<!--                            <th>Ma CTSP</th>-->
-<!--                            <th>Ten San Pham</th>-->
-<!--                            <th>Mau Sac</th>-->
-<!--                            <th>Kich Thuoc</th>-->
-<!--                            <th>Chat Lieu</th>-->
-<!--                            <th>So Luong</th>-->
-<!--                            <th>Don Gia</th>-->
-<!--                            <th>Ghi chu</th>-->
-<!--                            <th>Anh</th>-->
-<!--                        </tr>-->
-<!--                        </thead>-->
-<!--                        <tbody id="listctsp">-->
-<!--                        &lt;!&ndash; Dữ liệu sẽ được động hiển thị ở đây &ndash;&gt;-->
-<!--                        </tbody>-->
-<!--                    </table>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!-- Nội dung dành cho người dùng đã đăng nhập -->
-</div>
-<div th:if="${session.nhanVien == null}">
-    <p>Vui lòng <a th:href="@{/dang-nhap/login}">đăng nhập</a>.</p>
-</div>
 </html>

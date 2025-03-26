@@ -1,98 +1,42 @@
 package com.example.demo.controller;
-
-import com.example.demo.entity.NhanVien;
-import com.example.demo.repository.NhanVienRepository;
-import com.example.demo.repository.SanPhamRepository;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-
 @Controller
-@RequestMapping("/dang-nhap")
+@RequestMapping
 public class DangNhapController {
 
-    @Autowired
-    NhanVienRepository repo;
-    @Autowired
-    SanPhamRepository sanPhamRepository;
-
+    private String getRedirectUrl(Authentication authentication) {
+        if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("QUAN_LY"))) {
+            return "/nhan-vien/hien-thi";
+        } else if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("NHAN_VIEN"))) {
+            return "/ban-hang-off/hien-thi";
+        } else {
+            return "/ban-hang-online"; // Mặc định cho khách hàng
+        }
+    }
     @GetMapping("/login")
-    public String showLoginForm(Model model) {
-        model.addAttribute("Nhân Viên", new NhanVien());
-        return "dang_nhap/login";
-    }
-
-    @PostMapping("/LoginServlet")
-    public String login(@RequestParam("username") String username,
-                        @RequestParam("password") String password,
-                        HttpSession session, Model model) {
-        Optional<NhanVien> optionalTaiKhoan = repo.findByTaiKhoan(username);
-
-        if (optionalTaiKhoan.isPresent()) {
-            NhanVien taiKhoan = optionalTaiKhoan.get();
-            if (taiKhoan.getMatKhau().equals(password)) {
-                session.setAttribute("nhanVien", taiKhoan);
-                System.out.println("Đăng nhập thành công: " + taiKhoan.getTaiKhoan()); // Debug
-
-                return "redirect:/dang-nhap/index";
-            }
+    public String showLoginForm(Authentication authentication) {
+        // Nếu user đã đăng nhập, chuyển hướng đến trang phù hợp
+        if (authentication != null && authentication.isAuthenticated()) {
+            return "redirect:" + getRedirectUrl(authentication); // Hoặc điều hướng đúng trang theo quyền
         }
-
-        model.addAttribute("error", "Tài khoản hoặc mật khẩu không đúng.");
-        return "dang_nhap/login";
+        return "dang_nhap/Login_Form";
     }
-
-
-
     @GetMapping("/index")
-    public String home(HttpSession session, Model model) {
-        NhanVien nhanVien = (NhanVien) session.getAttribute("nhanVien");
-
-        if (nhanVien == null) {
-            System.out.println("Session không có nhân viên, chuyển hướng về login"); // Debug
-            return "redirect:/dang-nhap/login";
-        }
-
-        model.addAttribute("nhanVien", nhanVien);
+    public String home(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        model.addAttribute("nhanVien", auth.getName());
         return "dang_nhap/index";
     }
-
-
-    @GetMapping("/hien-thi")
-    public String hienThi(HttpSession session, Model model) {
-        // Lấy thông tin người dùng từ session
-        NhanVien taiKhoan = (NhanVien) session.getAttribute("nhanVien");
-
-        // Nếu chưa đăng nhập, chuyển hướng về trang login
-        if (taiKhoan == null) {
-            return "redirect:/dang-nhap/login";
+        @GetMapping("/logout")
+        public String logout() {
+            return "redirect:/login";
         }
 
-        // Nếu không phải quản lý, hiển thị thông báo thay vì redirect để tránh vòng lặp
-        if (taiKhoan.getChucVu() == null || !taiKhoan.getChucVu().equalsIgnoreCase("Quản Lý")) {
-            model.addAttribute("error", "Bạn không có quyền truy cập trang này.");
-            return "error/forbidden";  // Hiển thị trang lỗi thay vì redirect
-        }
 
-        // Nếu là Quản Lý, trả về danh sách nhân viên
-        List<NhanVien> ls = repo.findAll();
-        model.addAttribute("listtk", ls);
-        return "nhan_vien/index";
+
     }
-
-
-
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/dang-nhap/login";
-    }
-
-
-}

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<div th:if="${session.nhanVien != null}">
     <head>
         <title>Danh sách đơn hàng</title>
         <meta charset="utf-8">
@@ -14,17 +13,12 @@
             <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
             <div class="pt-3" style="width: calc(100% - 250px);">
                 <div class="container">
-                    <h2 style="text-align: center;">Quản Lý Hóa Đơn</h2>
 
                 </div>
             </div>
         </div>
     </div>
     </body>
-<!--    Nội dung dành cho người dùng đã đăng nhập-->
 </div>
 
-<div th:if="${session.nhanVien == null}">
-    <p>Vui lòng <a th:href="@{/login}"> đăng nhập</a>.</p>
-</div>
 </html>

@@ -292,9 +292,9 @@ values (N'Khách lẻ',null,null,null,null,null,null,null),
 
 
 insert into nhan_vien(tai_khoan,ten_nhan_vien, mat_khau,chuc_vu, email,sdt, ngay_tao, ngay_sua,trang_thai)
-values ('khanhok123','khanh','SA12342',N'Nhân Viên','jdk1234@gmail.com','0987654321','2025-02-14','2025-02-14','Hoat dong'),
-    ('vuok321','quachvu','as12312',N'Nhân Viên','zzzzz@gmail.com','0988769287','2025-02-14','2025-02-14','Hoat dong'),
-    ('minhok123','minh','11111',N'Quản Lý','skbd9999@gmail.com','0999999999','2025-02-14','2025-02-14','Hoat dong')
+values ('khanhok123','khanh','SA12342','NHAN_VIEN','jdk1234@gmail.com','0987654321','2025-02-14','2025-02-14','Hoat dong'),
+    ('vuok321','quachvu','as12312','QUAN_LY','zzzzz@gmail.com','0988769287','2025-02-14','2025-02-14','Hoat dong'),
+    ('minhok123','minh','11111','QUAN_LY','skbd9999@gmail.com','0999999999','2025-02-14','2025-02-14','Hoat dong')
 
 
 

@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,13 +32,18 @@ public class BanHangOnlineController {
     private HoaDonCTRepository hdctRepository;
     @Autowired
     private DanhMucRepository danhMucRepository;
-    @RequestMapping("/ban-hang-online")
-    public String iddd(){
 
+    @RequestMapping("/ban-hang-online")
+    public String iddd(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return "ban_hang_online/home";    // Nếu chưa đăng nhập
+        }
         return "ban_hang_online/index";
+        // Nếu đã đăng nhập
     }
+
     @RequestMapping("/ban-hang-online/cart")
-    public String idd(){
+    public String idd() {
 
         return "ban_hang_online/giohang";
     }
@@ -55,9 +62,9 @@ public class BanHangOnlineController {
         try {
             NhanVien taiKhoan = (NhanVien) session.getAttribute("nhanVien");
 
-            if (taiKhoan == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Chưa đăng nhập!");
-            }
+//            if (taiKhoan == null) {
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Chưa đăng nhập!");
+//            }
 
             Float tongTien = 0F;
             for (SpctDto d : request.getSpct()) {
@@ -120,9 +127,6 @@ public class BanHangOnlineController {
     }
 
 
-
-
-
     @GetMapping("ban-hang-online/don-hang")
     public String xac(Model model) {
         // Danh sách trạng thái cần lọc
@@ -136,6 +140,7 @@ public class BanHangOnlineController {
 
         return "ban_hang_online/donhang";
     }
+
     //    @GetMapping("ban-hang-online/da-thanh-toan")
 //    public String dttt(Model model){
 //        List<HoaDon> dtt = this.hoaDonrepo.findByTrangThaiThanhToan("Giao hang thanh cong");
@@ -190,11 +195,6 @@ public class BanHangOnlineController {
     }
 
 
-
-
-
-
-
     @PutMapping("/ban-hang-online/hoa-don/{id}")
     @ResponseBody
     public ResponseEntity<?> updateTrangThaiHoaDon(
@@ -227,6 +227,7 @@ public class BanHangOnlineController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping("/ban-hang-online/detail")
     public String detailPage(@RequestParam("id") Integer id, Model model) {
         Optional<SanPhamChiTiet> optionalCtsp = ctsp_repository.findById(id);
@@ -251,6 +252,7 @@ public class BanHangOnlineController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi lấy danh sách danh mục: " + e.getMessage());
         }
     }
+
     // Thêm phương thức mới để lấy chi tiết sản phẩm theo ID
     @GetMapping("/ban-hang-online/ctsp/{id}")
     @ResponseBody

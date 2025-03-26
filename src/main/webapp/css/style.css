@@ -121,3 +121,54 @@ td {
     color: #dc3545; /* Đỏ */
     border: 1px solid #f5c6cb;
 }
+/*css user ìnfo ===============================*/
+.custom-auth-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    text-decoration: none;
+    border: 2px solid transparent;
+}
+
+.custom-auth-btn i {
+    font-size: 16px;
+    margin-right: 5px;
+}
+
+/* Nút Đăng nhập */
+.custom-auth-btn.login {
+    background-color: #28a745; /* Xanh lá */
+    color: white;
+    border-color: #28a745;
+}
+
+.custom-auth-btn.login:hover {
+    background-color: #218838; /* Màu hover đậm hơn */
+    border-color: #218838;
+}
+
+/* Nút Đăng xuất */
+.custom-auth-btn.logout {
+    background-color: #dc3545; /* Đỏ */
+    color: white;
+    border-color: #dc3545;
+}
+
+.custom-auth-btn.logout:hover {
+    background-color: #c82333; /* Màu hover đậm hơn */
+    border-color: #c82333;
+}
+/*admin==================================*/
+.submenu {
+    display: none;
+    padding-left: 20px;
+    transition: all 0.3s ease-in-out;
+}
+
+.submenu.show {
+    display: block;
+}
