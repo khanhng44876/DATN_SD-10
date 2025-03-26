@@ -13,6 +13,7 @@ CREATE TABLE san_pham (
                           id_danh_muc INT,
                           id_hang INT
 );
+go
 CREATE TABLE san_pham_chi_tiet (
                                    id INT IDENTITY(1,1) PRIMARY KEY,
                                    don_gia DECIMAL(10, 2),
