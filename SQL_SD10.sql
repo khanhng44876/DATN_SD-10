@@ -1,4 +1,5 @@
-﻿create database DATN_SD10;
+﻿
+create database DATN_SD10;
 go
 use DATN_SD10;
 go
@@ -102,7 +103,7 @@ CREATE TABLE nhan_vien (
                            gioi_tinh NVARCHAR(10),
                            ngay_tao DATETIME DEFAULT GETDATE(),
                            ngay_sua DATETIME DEFAULT GETDATE(),
-                           trang_thai NVARCHAR(50) DEFAULT 'Đang hoạt động'
+                           trang_thai NVARCHAR(50) DEFAULT 'Đang ho?t đ?ng'
 );
 CREATE TABLE kich_thuoc (
                             id INT IDENTITY(1,1) PRIMARY KEY,
@@ -178,130 +179,130 @@ ALTER TABLE hoa_don ALTER COLUMN id_khuyen_mai INT NULL;
 
 --------------------------------------------------------------------
 insert into danh_muc(ten_danh_muc, mo_ta, trang_thai)
-values (N'Bộ áo đấu Câu lạc bộ',N'CLB', N'Hoạt Động'),
-       (N'Bộ áo đấu Đội tuyển quốc gia',N'Đội tuyển quốc gia',N'Hoạt Động'),
-       (N'Bộ áo đấu Không logo',N'Không có logo đội tuyển', N'Hoạt Động'),
-       (N'Bộ áo đấu Dài tay',N'Mùa đông/thu/xuân', N'Hoạt Động')
+values (N'B? áo đ?u Câu l?c b?',N'CLB', N'Ho?t Đ?ng'),
+       (N'B? áo đ?u Đ?i tuy?n qu?c gia',N'Đ?i tuy?n qu?c gia',N'Ho?t Đ?ng'),
+       (N'B? áo đ?u Không logo',N'Không có logo đ?i tuy?n', N'Ho?t Đ?ng'),
+       (N'B? áo đ?u Dài tay',N'Mùa đông/thu/xuân', N'Ho?t Đ?ng')
 
-insert into hang(ten_hang,trang_thai)
-values('Adidas','Còn'),
-    ('Nike',N'Còn'),
-    ('Puma',N'Còn'),
-    ('Kappa',N'Còn'),
-    ('New Balance',N'Còn'),
-    ('Wika',N'Còn'),
-    ('Bulbal',N'Còn'),
-    ('Kamito',N'Còn')
+    insert into hang(ten_hang,trang_thai)
+values('Adidas','C?n'),
+    ('Nike',N'C?n'),
+    ('Puma',N'C?n'),
+    ('Kappa',N'C?n'),
+    ('New Balance',N'C?n'),
+    ('Wika',N'C?n'),
+    ('Bulbal',N'C?n'),
+    ('Kamito',N'C?n')
 
 
 insert into san_pham(ma_san_pham, ten_san_pham, ngay_nhap, trang_thai, id_danh_muc, id_hang)
-values (N'SP001',N'Bộ áo đấu câu lạc bộ Manchester United','2025-02-12',N'Còn hàng',1,1),
-    (N'SP003', N'Bộ áo đấu câu lạc bộ Real Madrid', '2025-02-12', N'Còn hàng', 1, 1),
-    (N'SP005', N'Bộ áo đấu câu lạc bộ Bayern Munich', '2025-02-12', N'Còn hàng', 1, 1),
-    (N'SP011', N'Bộ áo đấu câu lạc bộ Arsenal', '2025-02-12', N'Còn hàng', 1, 1),
-    (N'SP004', N'Bộ áo đấu câu lạc bộ Barcelona', '2025-02-12', N'Còn hàng', 1, 2),
-    (N'SP007', N'Bộ áo đấu câu lạc bộ Chelsea', '2025-02-12', N'Còn hàng', 1, 2),
-    (N'SP012', N'Bộ áo đấu câu lạc bộ Tottenham Hotspur', '2025-02-12', N'Còn hàng', 1, 2),
-    (N'SP009', N'Bộ áo đấu câu lạc bộ AC Milan', '2025-02-12', N'Còn hàng', 1, 3),
-    (N'SP013', N'Bộ áo đấu câu lạc bộ Borussia Dortmund', '2025-02-12', N'Còn hàng', 1, 3),
-    (N'SP002', N'Bộ áo đấu câu lạc bộ Manchester City', '2025-02-12', N'Còn hàng', 1, 3),
-    (N'SP014', N'Bộ áo đấu câu lạc bộ FC Porto', '2025-02-12', N'Còn hàng', 1, 5),
-    (N'SP015', N'Bộ áo đấu đội tuyển Anh', '2025-02-12', N'Còn hàng', 2, 2),
-    (N'SP016', N'Bộ áo đấu đội tuyển Pháp', '2025-02-12', N'Còn hàng', 2, 2),
-    (N'SP017', N'Bộ áo đấu đội tuyển Bồ Đào Nha', '2025-02-12', N'Còn hàng', 2, 2),
-    (N'SP018', N'Bộ áo đấu đội tuyển Brazil', '2025-02-12', N'Còn hàng', 2, 2),
-    (N'SP019', N'Bộ áo đấu đội tuyển Đức', '2025-02-12', N'Còn hàng', 2, 1),
-    (N'SP020', N'Bộ áo đấu đội tuyển Tây Ban Nha', '2025-02-12', N'Còn hàng', 2, 1),
-    (N'SP021', N'Bộ áo đấu đội tuyển Ý', '2025-02-12', N'Còn hàng', 2, 1),
-    (N'SP022', N'Bộ áo đấu đội tuyển Argentina', '2025-02-12', N'Còn hàng', 2, 1),
-    (N'SP023', N'Bộ áo đấu đội tuyển Thụy Sĩ', '2025-02-12', N'Còn hàng', 2, 3),
-    (N'SP024', N'Bộ áo đấu đội tuyển Serbia', '2025-02-12', N'Còn hàng', 2, 3),
-    (N'SP025', N'Bộ áo đấu đội tuyển Uruguay', '2025-02-12', N'Còn hàng', 2, 3),
-    (N'SP026', N'Bộ áo đá bóng Wika Tornado', '2025-02-12', N'Còn hàng', 3, 1),
-    (N'SP027', N'Bộ áo đá bóng Wika Blueming', '2025-02-12', N'Còn hàng', 3, 6),
-    (N'SP028', N'Bộ áo đá bóng Bulbal Predator', '2025-02-12', N'Còn hàng', 3, 7),
-    (N'SP029', N'Bộ áo đá bóng Bulbal Hunter 2', '2025-02-12', N'Còn hàng', 3, 7),
-    (N'SP030', N'Bộ áo đá bóng Kamito Artista 01', '2025-02-12', N'Còn hàng', 3, 8),
-    (N'SP031', N'Bộ áo đá bóng Kamito Galaxy 1.0', '2025-02-12', N'Còn hàng', 3, 8)
+values (N'SP001',N'B? áo đ?u câu l?c b? Manchester United','2025-02-12',N'C?n hàng',1,1),
+    (N'SP002', N'B? áo đ?u câu l?c b? Real Madrid', '2025-02-12', N'C?n hàng', 1, 1),
+    (N'SP003', N'B? áo đ?u câu l?c b? Bayern Munich', '2025-02-12', N'C?n hàng', 1, 1),
+    (N'SP004', N'B? áo đ?u câu l?c b? Arsenal', '2025-02-12', N'C?n hàng', 1, 1),
+    (N'SP005', N'B? áo đ?u câu l?c b? Barcelona', '2025-02-12', N'C?n hàng', 1, 2),
+    (N'SP006', N'B? áo đ?u câu l?c b? Chelsea', '2025-02-12', N'C?n hàng', 1, 2),
+    (N'SP007', N'B? áo đ?u câu l?c b? Tottenham Hotspur', '2025-02-12', N'C?n hàng', 1, 2),
+    (N'SP008', N'B? áo đ?u câu l?c b? AC Milan', '2025-02-12', N'C?n hàng', 1, 3),
+    (N'SP009', N'B? áo đ?u câu l?c b? Borussia Dortmund', '2025-02-12', N'C?n hàng', 1, 3),
+    (N'SP010', N'B? áo đ?u câu l?c b? Manchester City', '2025-02-12', N'C?n hàng', 1, 3),
+    (N'SP011', N'B? áo đ?u câu l?c b? FC Porto', '2025-02-12', N'C?n hàng', 1, 5),
+    (N'SP012', N'B? áo đ?u đ?i tuy?n Anh', '2025-02-12', N'C?n hàng', 2, 2),
+    (N'SP013', N'B? áo đ?u đ?i tuy?n Pháp', '2025-02-12', N'C?n hàng', 2, 2),
+    (N'SP014', N'B? áo đ?u đ?i tuy?n B? Đào Nha', '2025-02-12', N'C?n hàng', 2, 2),
+    (N'SP015', N'B? áo đ?u đ?i tuy?n Brazil', '2025-02-12', N'C?n hàng', 2, 2),
+    (N'SP016', N'B? áo đ?u đ?i tuy?n Đ?c', '2025-02-12', N'C?n hàng', 2, 1),
+    (N'SP017', N'B? áo đ?u đ?i tuy?n Tây Ban Nha', '2025-02-12', N'C?n hàng', 2, 1),
+    (N'SP018', N'B? áo đ?u đ?i tuy?n ?', '2025-02-12', N'C?n hàng', 2, 1),
+    (N'SP019', N'B? áo đ?u đ?i tuy?n Argentina', '2025-02-12', N'C?n hàng', 2, 1),
+    (N'SP020', N'B? áo đ?u đ?i tuy?n Th?y S?', '2025-02-12', N'C?n hàng', 2, 3),
+    (N'SP021', N'B? áo đ?u đ?i tuy?n Serbia', '2025-02-12', N'C?n hàng', 2, 3),
+    (N'SP022', N'B? áo đ?u đ?i tuy?n Uruguay', '2025-02-12', N'C?n hàng', 2, 3),
+    (N'SP023', N'B? áo đá bóng Wika Tornado', '2025-02-12', N'C?n hàng', 3, 1),
+    (N'SP024', N'B? áo đá bóng Wika Blueming', '2025-02-12', N'C?n hàng', 3, 6),
+    (N'SP025', N'B? áo đá bóng Bulbal Predator', '2025-02-12', N'C?n hàng', 3, 7),
+    (N'SP026', N'B? áo đá bóng Bulbal Hunter 2', '2025-02-12', N'C?n hàng', 3, 7),
+    (N'SP027', N'B? áo đá bóng Kamito Artista 01', '2025-02-12', N'C?n hàng', 3, 8),
+    (N'SP028', N'B? áo đá bóng Kamito Galaxy 1.0', '2025-02-12', N'C?n hàng', 3, 8)
 
 
 
 insert into kich_thuoc(ten_kich_thuoc, mo_ta)
-values ('S',N'Size nhỏ'),
-       ('M',N'Size trung bình'),
-       ('L',N'Size lớn'),
-       ('XL',N'Size rất lớn')
+values ('S',N'Size nh?'),
+    ('M',N'Size trung b?nh'),
+    ('L',N'Size l?n'),
+    ('XL',N'Size r?t l?n')
 
 insert into mau_sac(ten_mau_sac, mo_ta)
-values(N'Đen', N'Màu đen sang trọng'),
-    (N'Trắng', N'Màu trắng tinh khiết'),
-    (N'Đỏ', N'Màu Đỏ Đẹp keng'),
-    (N'Xanh', N'Màu vàng bóng bẩy'),
+values(N'Đen', N'Màu đen sang tr?ng'),
+    (N'Tr?ng', N'Màu tr?ng tinh khi?t'),
+    (N'Đ?', N'Màu Đ? Đ?p keng'),
+    (N'Xanh', N'Màu vàng bóng b?y'),
     (N'Xanh lá', N'Màu xa lánh');
 
 
 insert into chat_lieu(ten_chat_lieu, mo_ta)
-values(N'Polyester', N'Vải Polyester thoáng khí'),
-      (N'Cotton', N'Vải Cotton mềm mại'),
-      (N'Spandex', N'Vải Spandex co giãn tốt');
+values(N'Polyester', N'V?i Polyester thoáng khí'),
+      (N'Cotton', N'V?i Cotton m?m m?i'),
+      (N'Spandex', N'V?i Spandex co gi?n t?t');
 
 
 
 
 
 insert into san_pham_chi_tiet(don_gia, so_luong, id_san_pham, id_kich_thuoc, id_mau_sac, id_chat_lieu, mo_ta, hinh_anh,trang_thai)
-values (500000, 100, 1, 1,3,1, NULL, NULL, N'Còn hàng'),
-       (550000, 80, 2, 2,2,1, NULL, NULL, N'Còn hàng'),
-       (600000, 90, 3, 3,3,2,NULL, NULL, N'Còn hàng'),
-       (580000, 120, 4, 4,3,2, NULL, NULL, N'Còn hàng'),
-       (620000, 110, 5, 4,1,3, NULL, NULL, N'Còn hàng'),
-       (530000, 95, 6, 3,4,3, NULL, NULL, N'Còn hàng'),
-       (570000, 85, 7, 2,2,1, NULL, NULL, N'Còn hàng'),
-       (590000, 105, 8, 1,3,1, NULL, NULL, N'Còn hàng'),
-       (540000, 115, 9, 1,4,2, NULL, NULL, N'Còn hàng'),
-       (560000, 100, 10, 2,4,2, NULL, NULL, N'Còn hàng'),
-       (510000, 130, 11, 3,4,3, NULL, NULL, N'Còn hàng'),
-       (495000, 125, 12, 4,2,3, NULL, NULL, N'Còn hàng'),
-       (505000, 110, 13, 4,4,4, NULL, NULL, N'Còn hàng'),
-       (515000, 90, 14, 3,3,4, NULL, NULL, N'Còn hàng'),
-       (525000, 105, 15, 2,5,1, NULL, NULL, N'Còn hàng'),
-       (535000, 95, 16, 1,2,1, NULL, NULL, N'Còn hàng'),
-       (545000, 85, 17, 1,3, NULL, NULL, N'Còn hàng'),
-       (555000, 100, 18, 2,4,2, NULL, NULL, N'Còn hàng'),
-       (565000, 80, 19, 3,2,3, NULL, NULL, N'Còn hàng'),
-       (575000, 120, 20, 4,3,3, NULL, NULL, N'Còn hàng'),
-       (585000, 110, 21, 4,2,4, NULL, NULL, N'Còn hàng'),
-       (595000, 90, 22, 3,4,4, NULL, NULL, N'Còn hàng'),
-       (605000, 100, 23, 2,2,1, NULL, NULL, N'Còn hàng'),
-       (615000, 85, 24, 1,4,1, NULL, NULL, N'Còn hàng'),
-       (625000, 95, 25, 1,1,2, NULL, NULL, N'Còn hàng'),
-       (635000, 105, 26, 2,2,2, NULL, NULL, N'Còn hàng'),
-       (645000, 115, 27, 3,3,3, NULL, NULL, N'Còn hàng'),
-       (655000, 125, 28, 4,1,3, NULL, NULL, N'Còn hàng')
+values (500000, 100, 1, 1,3,1, NULL,'Ao_MU.png', N'C?n hàng'),
+       (550000, 80, 2, 2,2,1, NULL, 'Ao_real.png', N'C?n hàng'),
+       (600000, 90, 3, 3,3,2,NULL, 'Ao_bayern.png', N'C?n hàng'),
+       (580000, 120, 4, 4,3,2, NULL, 'Ao_Barca.jpg', N'C?n hàng'),
+       (620000, 110, 5, 4,1,3, NULL, 'Ao_chelsea.jpg', N'C?n hàng'),
+       (530000, 95, 6, 3,4,3, NULL, 'Ao_Tot.png', N'C?n hàng'),
+       (570000, 85, 7, 2,2,1, NULL, 'ao_acmilan.png', N'C?n hàng'),
+       (590000, 105, 8, 1,3,1, NULL, 'Ao_dotmund.png', N'C?n hàng'),
+       (540000, 115, 9, 1,4,2, NULL, 'ao_mancity.png', N'C?n hàng'),
+       (560000, 100, 10, 2,4,2, NULL, 'ao_porto.jpg', N'C?n hàng'),
+       (510000, 130, 11, 3,4,3, NULL, 'ao_england.png', N'C?n hàng'),
+       (495000, 125, 12, 4,2,3, NULL, 'ao_phap.jpg', N'C?n hàng'),
+       (505000, 110, 13, 4,4,1, NULL, 'ao_bo_dao_nha.png', N'C?n hàng'),
+       (515000, 90, 14, 3,3,2, NULL, 'ao_brazil.png', N'C?n hàng'),
+       (525000, 105, 15, 2,5,1, NULL, 'ao_duc.png', N'C?n hàng'),
+       (535000, 95, 16, 1,2,1, NULL, 'ao_tbn.png', N'C?n hàng'),
+       (545000, 85, 17, 1,3, 3, NULL, 'ao_italia.png',N'C?n hàng'),
+       (555000, 100, 18, 2,4,2, NULL, 'ao_argentina.png', N'C?n hàng'),
+       (565000, 80, 19, 3,2,3, NULL, 'ao_thuy_si.png', N'C?n hàng'),
+       (575000, 120, 20, 4,3,3, NULL, 'ao_serbia.jpg', N'C?n hàng'),
+       (585000, 110, 21, 4,2,2, NULL, 'ao_urugay.jpg', N'C?n hàng'),
+       (595000, 90, 22, 3,4,3, NULL, 'ao_wikatornado.jpg', N'C?n hàng'),
+       (605000, 100, 23, 2,2,1, NULL, 'ao_blueming.png', N'C?n hàng'),
+       (615000, 85, 24, 1,4,1, NULL, 'predator.jpg', N'C?n hàng'),
+       (625000, 95, 25, 1,1,2, NULL, 'hunter 2.jpg', N'C?n hàng'),
+       (635000, 105, 26, 2,2,2, NULL, 'artista.png', N'C?n hàng'),
+       (645000, 115, 27, 3,3,3, NULL, 'galaxy.png', N'C?n hàng'),
+       (655000, 125, 28, 4,1,3, NULL, 'ao_bo_dao_nha.png', N'C?n hàng')
 
 
 
-insert into khach_hang(ten_khach_hang, email, so_dien_thoai, dia_chi,ngay_sinh, gioi_tinh,tai_khoan, mat_khau)
-values (N'Khách lẻ',null,null,null,null,null,null,null),
-        ('Nguyen Gia Khanh', 'khanhngph44876@fpt.edu.vn','0345760481','Dai Mo, HN','1998-02-12','Nam','khanh123', '123456'),
-       ('Nguyen Quach Vu', 'vunqph45621@fpt.edu.vn','0396311217','Nhon, HN','1995-12-22','Nam','vu123', '123456'),
-       ('Vi Cong Minh', 'minhvcph45103@fpt.edu.vn','0702202307','Huu Lung, LS','2004-05-09','Nam','minh123', '123456'),
-       ('Nguyen Van Sao', 'saonvph45620@fpt.edu.vn','0879913025','n, BN','2003-05-09','Nam','sao123', '123456'),
-       ('Tran Thi Thu phuong', 'phuongtttph45219@fpt.edu.vn','0947052726','n, LS','2003-05-09',N'Nữ','phuong123', '123456')
+    insert into khach_hang(ten_khach_hang, email, so_dien_thoai, dia_chi,ngay_sinh, gioi_tinh,tai_khoan, mat_khau)
+values (N'Khách l?',null,null,null,null,null,null,null),
+    ('Nguyen Gia Khanh', 'khanhngph44876@fpt.edu.vn','0345760481','Dai Mo, HN','1998-02-12','Nam','khanh123', '123456'),
+    ('Nguyen Quach Vu', 'vunqph45621@fpt.edu.vn','0396311217','Nhon, HN','1995-12-22','Nam','vu123', '123456'),
+    ('Vi Cong Minh', 'minhvcph45103@fpt.edu.vn','0702202307','Huu Lung, LS','2004-05-09','Nam','minh123', '123456'),
+    ('Nguyen Van Sao', 'saonvph45620@fpt.edu.vn','0879913025','n, BN','2003-05-09','Nam','sao123', '123456'),
+    ('Tran Thi Thu phuong', 'phuongtttph45219@fpt.edu.vn','0947052726','n, LS','2003-05-09',N'N?','phuong123', '123456')
 
 
 
-    insert into nhan_vien(tai_khoan,ten_nhan_vien, mat_khau,chuc_vu, email,sdt, ngay_tao, ngay_sua,trang_thai)
+insert into nhan_vien(tai_khoan,ten_nhan_vien, mat_khau,chuc_vu, email,sdt, ngay_tao, ngay_sua,trang_thai)
 values ('khanhok123','khanh','SA12342',N'Nhân Viên','jdk1234@gmail.com','0987654321','2025-02-14','2025-02-14','Hoat dong'),
     ('vuok321','quachvu','as12312',N'Nhân Viên','zzzzz@gmail.com','0988769287','2025-02-14','2025-02-14','Hoat dong'),
-    ('minhok123','minh','11111',N'Quản Lý','skbd9999@gmail.com','0999999999','2025-02-14','2025-02-14','Hoat dong')
+    ('minhok123','minh','11111',N'Qu?n L?','skbd9999@gmail.com','0999999999','2025-02-14','2025-02-14','Hoat dong')
 
 
 
 insert into khuyen_mai(so_luong,ten_khuyen_mai, mo_ta, ma_khuyen_mai, muc_giam, ngay_bat_dau,ngay_ket_thuc,dieu_kien,giam_toi_da,id_hoa_don,trang_thai,so_luong_sd)
-values(10,'Monday','abc','SP012345',10,'2025-02-14','2025-03-01',100,30,1,'Đang kích hoạt',0),
-    (20,'friday','abc','SP015645',10,'2025-02-14','2025-03-01',200,50,1,'Đang kích hoạt',0),
-    (30,'sunday','abc','SP23415',15,'2025-02-14','2025-03-01',150,40,1,'Đang kích hoạt',0)
+values(10,'Monday','abc','SP012345',10,'2025-02-14','2025-03-01',100,30,1,'Đang kích ho?t',0),
+    (20,'friday','abc','SP015645',10,'2025-02-14','2025-03-01',200,50,1,'Đang kích ho?t',0),
+    (30,'sunday','abc','SP23415',15,'2025-02-14','2025-03-01',150,40,1,'Đang kích ho?t',0)
 
 insert into hoa_don(id_khuyen_mai,id_nhan_vien, id_khach_hang, ngay_tao,ngay_sua, tong_tien, trang_thai_thanh_toan, hinh_thuc_thanh_toan)
 values (1,3,1,'2025-02-14','2025-02-14',22222222,'Da thanh toan','Chuyen Khoan'),

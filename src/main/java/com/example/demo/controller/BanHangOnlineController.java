@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 
 public class BanHangOnlineController {
     @Autowired
+    private SanPhamRepository spRepository;
+    @Autowired
     private SanPhamCTRepository ctsp_repository;
     @Autowired
     private KhachHangRepository khachHangRepository;
@@ -31,8 +33,24 @@ public class BanHangOnlineController {
     @Autowired
     private DanhMucRepository danhMucRepository;
     @RequestMapping("/ban-hang-online")
-    public String iddd(){
-
+    public String iddd(Model model) {
+        List<SanPhamChiTiet> spClb = ctsp_repository.findAll().stream()
+                .filter(sp->sp.getSanPham().getDanhMuc().getId() == 1)
+                .filter(sp->sp.getSanPham().getTrangThai().equals("Còn hàng"))
+                .toList();
+        List<SanPhamChiTiet> spDtqg = ctsp_repository.findAll().stream()
+                .filter(sp->sp.getSanPham().getDanhMuc().getId() == 2)
+                .filter(sp->sp.getSanPham().getTrangThai().equals("Còn hàng"))
+                .limit(5)
+                .toList();
+        List<SanPhamChiTiet> spNologo = ctsp_repository.findAll().stream()
+                .filter(sp->sp.getSanPham().getDanhMuc().getId() == 3)
+                .filter(sp->sp.getSanPham().getTrangThai().equals("Còn hàng"))
+                .limit(5)
+                .toList();
+        model.addAttribute("spDtqg",spDtqg);
+        model.addAttribute("spNologo",spNologo);
+        model.addAttribute("spClb", spClb);
         return "ban_hang_online/index";
     }
     @RequestMapping("/ban-hang-online/cart")
@@ -40,14 +58,12 @@ public class BanHangOnlineController {
 
         return "ban_hang_online/giohang";
     }
-
-
-    @GetMapping("/ban-hang-online/ctsp")
-    @ResponseBody
-    public ResponseEntity<?> index1() {
-        List<SanPhamChiTiet> result = this.ctsp_repository.findAll();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    @RequestMapping("/ban-hang-online/sp")
+    public String iddsp(Model model){
+        model.addAttribute("listSp", ctsp_repository.findAll());
+        return "ban_hang_online/product.html";
     }
+
 
     @PostMapping("/ban-hang-online/hoa-don")
     @ResponseBody
