@@ -22,6 +22,9 @@ import java.util.stream.Collectors;
 @Controller
 
 public class BanHangOnlineController {
+
+    @Autowired
+    private NhanVienRepository nhanVienRepository;
     @Autowired
     private SanPhamRepository spRepository;
     @Autowired
@@ -67,11 +70,21 @@ public class BanHangOnlineController {
         return "ban_hang_online/index";  // Trang đã đăng nhập
     }
 
-    @RequestMapping("/ban-hang-online/cart")
-    public String idd(){
+    @GetMapping("/ban-hang-online/cart")
+    public String showCart(Model model, HttpSession session) {
+        KhachHang khachHang = (KhachHang) session.getAttribute("khachHang");
 
+        if (khachHang == null) {
+            khachHang = new KhachHang(); // tránh lỗi null
+            khachHang.setTenKhachHang("");
+            khachHang.setSoDienThoai("");
+            khachHang.setDiaChi("");
+        }
+
+        model.addAttribute("khachHang", khachHang);
         return "ban_hang_online/giohang";
     }
+
     @RequestMapping("/ban-hang-online/sp")
     public String iddsp(Model model){
         model.addAttribute("listSp", ctsp_repository.findAll());
@@ -79,75 +92,135 @@ public class BanHangOnlineController {
     }
 
 
-    @PostMapping("/ban-hang-online/hoa-don")
-    @ResponseBody
-    public ResponseEntity<?> createHoaDon(@RequestBody HoaDonRequest request, HttpSession session) {
-        try {
-            NhanVien taiKhoan = (NhanVien) session.getAttribute("nhanVien");
+//    @PostMapping("/ban-hang-online/hoa-don")
+//    @ResponseBody
+//    public ResponseEntity<?> createHoaDon(@RequestBody HoaDonRequest request, HttpSession session) {
+//        try {
+//            KhachHang khachHang = (KhachHang) session.getAttribute("khachHang");
+//
+//            if (khachHang == null) {
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Chưa đăng nhập!");
+//            }
+//
+//            Float tongTien = 0F;
+//            for (SpctDto d : request.getSpct()) {
+//                Optional<SanPhamChiTiet> ctspOptional = ctsp_repository.findById(d.getIdCtsp());
+//
+//                if (!ctspOptional.isPresent()) {
+//                    return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm chi tiết ID: " + d.getIdCtsp());
+//                }
+//
+//                SanPhamChiTiet ctsp = ctspOptional.get();
+//                if (ctsp.getSoLuong() < d.getQuantity()) {
+//                    return ResponseEntity.badRequest().body("Sản phẩm [" + ctsp.getSanPham().getTenSanPham() + "] chỉ còn: " + ctsp.getSoLuong());
+//                }
+//                tongTien += ctsp.getDonGia() * d.getQuantity();
+//            }
+//
+//            HoaDon hoaDon = new HoaDon();
+//            hoaDon.setNgayTao(new Date(System.currentTimeMillis()));
+//            hoaDon.setNgaySua(new Date(System.currentTimeMillis()));
+//            hoaDon.setTongTien(tongTien);
+//            hoaDon.setHinhThucThanhToan(request.getHinhThucThanhToan());
+//            hoaDon.setTrangThaiThanhToan("Cho giao hang");
+//            hoaDon.setKhachHang(khachHang); // ✔ đúng
+//            hoaDon.setNhanVien(null);       // ✔ đơn online không cần nhân viên
+//            hoaDon = hoaDonrepo.save(hoaDon);
+//
+//            for (SpctDto d : request.getSpct()) {
+//                SanPhamChiTiet ctsp = ctsp_repository.findById(d.getIdCtsp()).get();
+//
+//                HoaDonCT hdct = new HoaDonCT();
+//                hdct.setHoaDon(hoaDon);
+//                hdct.setDonGia(ctsp.getDonGia());
+//                hdct.setHoaDon_id(hoaDon.getId());
+//                hdct.setCtsp_id(ctsp.getId());
+//                hdct.setSanPhamChiTiet(ctsp);
+//                hdct.setTongTien(tongTien);
+//                hdct.setSoLuong(d.getQuantity());
+//                hdct.setThanhTien(ctsp.getDonGia() * d.getQuantity());
+//
+//                hdctRepository.save(hdct);
+//
+//                ctsp.setSoLuong(ctsp.getSoLuong() - d.getQuantity());
+//                ctsp_repository.save(ctsp);
+//            }
+//
+//            return new ResponseEntity<>(hoaDon, HttpStatus.CREATED);
+//
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body("Lỗi khi đặt hàng: " + e.getMessage());
+//        }
+//    }
+@PostMapping("/ban-hang-online/hoa-don")
+@ResponseBody
+public ResponseEntity<?> createHoaDon(@RequestBody HoaDonRequest request, HttpSession session) {
+    try {
+        KhachHang khachHang = (KhachHang) session.getAttribute("khachHang");
 
-            if (taiKhoan == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Chưa đăng nhập!");
-            }
-
-            Float tongTien = 0F;
-            for (SpctDto d : request.getSpct()) {
-                Optional<SanPhamChiTiet> ctspOptional = ctsp_repository.findById(d.getIdCtsp());
-
-                if (!ctspOptional.isPresent()) {
-                    return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm chi tiết ID: " + d.getIdCtsp());
-                }
-
-                SanPhamChiTiet ctsp = ctspOptional.get();
-                if (ctsp.getSoLuong() < d.getQuantity()) {
-                    return ResponseEntity.badRequest().body("Sản phẩm [" + ctsp.getSanPham().getTenSanPham() + "] chỉ còn: " + ctsp.getSoLuong());
-                }
-                tongTien += ctsp.getDonGia() * d.getQuantity();
-            }
-
-            KhachHang khachHang = new KhachHang();
-            khachHang.setTenKhachHang(request.getTenKhachHang() != null ? request.getTenKhachHang() : "Khách hàng không rõ");
-            khachHang.setSoDienThoai(request.getSoDienThoai());
-            khachHang.setDiaChi(request.getDiaChi());
-            khachHang = khachHangRepository.save(khachHang);
-
-            HoaDon hoaDon = new HoaDon();
-            hoaDon.setNgayTao(new Date(System.currentTimeMillis()));
-            hoaDon.setNgaySua(new Date(System.currentTimeMillis()));
-            hoaDon.setTongTien(tongTien);
-            hoaDon.setHinhThucThanhToan(request.getHinhThucThanhToan());
-            hoaDon.setTrangThaiThanhToan("Cho giao hang");
-            hoaDon.setKhachHang(khachHang);
-            hoaDon.setNhanVien(taiKhoan);
-            hoaDon = hoaDonrepo.save(hoaDon);
-
-            for (SpctDto d : request.getSpct()) {
-                SanPhamChiTiet ctsp = ctsp_repository.findById(d.getIdCtsp()).get();
-
-                HoaDonCT hdct = new HoaDonCT();
-                hdct.setHoaDon(hoaDon);
-                hdct.setDonGia(ctsp.getDonGia());
-                hdct.setHoaDon_id(hoaDon.getId());
-                hdct.setCtsp_id(ctsp.getId());
-                hdct.setSanPhamChiTiet(ctsp);
-                hdct.setTongTien(tongTien);
-                hdct.setSoLuong(d.getQuantity());
-
-                // Đảm bảo tính toán và set giá trị thanhTien
-                hdct.setThanhTien(ctsp.getDonGia() * d.getQuantity());
-
-                hdctRepository.save(hdct);
-
-                // Cập nhật số lượng tồn kho
-                ctsp.setSoLuong(ctsp.getSoLuong() - d.getQuantity());
-                ctsp_repository.save(ctsp);
-            }
-
-
-            return new ResponseEntity<>(hoaDon, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Lỗi khi đặt hàng: " + e.getMessage());
+        if (khachHang == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Chưa đăng nhập!");
         }
+
+        Float tongTien = 0F;
+        for (SpctDto d : request.getSpct()) {
+            Optional<SanPhamChiTiet> ctspOptional = ctsp_repository.findById(d.getIdCtsp());
+
+            if (!ctspOptional.isPresent()) {
+                return ResponseEntity.badRequest().body("Không tìm thấy sản phẩm chi tiết ID: " + d.getIdCtsp());
+            }
+
+            SanPhamChiTiet ctsp = ctspOptional.get();
+            if (ctsp.getSoLuong() < d.getQuantity()) {
+                return ResponseEntity.badRequest().body("Sản phẩm [" + ctsp.getSanPham().getTenSanPham() + "] chỉ còn: " + ctsp.getSoLuong());
+            }
+            tongTien += ctsp.getDonGia() * d.getQuantity();
+        }
+
+        // 👉 Gán nhân viên mặc định (minhok123)
+        NhanVien taiKhoan = (NhanVien) session.getAttribute("nhanVien");
+
+        if (taiKhoan == null) {
+            taiKhoan = nhanVienRepository.findByTaiKhoan("minhok123").orElse(null);
+        }
+
+
+        HoaDon hoaDon = new HoaDon();
+        hoaDon.setNgayTao(new Date(System.currentTimeMillis()));
+        hoaDon.setNgaySua(new Date(System.currentTimeMillis()));
+        hoaDon.setTongTien(tongTien);
+        hoaDon.setHinhThucThanhToan(request.getHinhThucThanhToan());
+        hoaDon.setTrangThaiThanhToan("Cho giao hang");
+        hoaDon.setKhachHang(khachHang);
+        hoaDon.setNhanVien(taiKhoan); // luôn có NV
+        hoaDon = hoaDonrepo.save(hoaDon);
+
+        for (SpctDto d : request.getSpct()) {
+            SanPhamChiTiet ctsp = ctsp_repository.findById(d.getIdCtsp()).get();
+
+            HoaDonCT hdct = new HoaDonCT();
+            hdct.setHoaDon(hoaDon);
+            hdct.setDonGia(ctsp.getDonGia());
+            hdct.setHoaDon_id(hoaDon.getId());
+            hdct.setCtsp_id(ctsp.getId());
+            hdct.setSanPhamChiTiet(ctsp);
+            hdct.setTongTien(tongTien);
+            hdct.setSoLuong(d.getQuantity());
+            hdct.setThanhTien(ctsp.getDonGia() * d.getQuantity());
+
+            hdctRepository.save(hdct);
+
+            ctsp.setSoLuong(ctsp.getSoLuong() - d.getQuantity());
+            ctsp_repository.save(ctsp);
+        }
+
+        return new ResponseEntity<>(hoaDon, HttpStatus.CREATED);
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body("Lỗi khi đặt hàng: " + e.getMessage());
     }
+}
+
+
 
 
 

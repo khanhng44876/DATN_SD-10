@@ -38,15 +38,19 @@
     <form id="checkout-form" onsubmit="processCheckout(event)">
         <div class="mb-3">
             <label for="customer-name" class="form-label">Họ Tên<span style="color: red;">*</span></label>
-            <input type="text" class="form-control" id="customer-name" placeholder="Nhập họ tên" required>
+            <input type="text" class="form-control" id="customer-name"
+                   th:value="${khachHang.tenKhachHang}" readonly>
         </div>
+
         <div class="mb-3">
             <label for="customer-phone" class="form-label">Số Điện Thoại<span style="color: red;">*</span></label>
-            <input type="tel" class="form-control" id="customer-phone" placeholder="Nhập số điện thoại" required>
+            <input type="tel" class="form-control" id="customer-phone"
+                   th:value="${khachHang.soDienThoai}" readonly>
         </div>
         <div class="mb-3">
             <label for="customer-address" class="form-label">Địa Chỉ<span style="color: red;">*</span></label>
-            <input type="text" class="form-control" id="customer-address" placeholder="Nhập địa chỉ" required>
+            <input type="tel" class="form-control" id="customer-address"
+                   th:value="${khachHang.diaChi}" readonly>
         </div>
         <div class="mb-3">
             <label for="payment-method" class="form-label">Hình Thức Thanh Toán<span style="color: red;">*</span></label>
@@ -203,6 +207,7 @@
     // Hiển thị giỏ hàng khi tải trang
     window.onload = function () {
         displayCart();
+
     };
 </script>
 </body>

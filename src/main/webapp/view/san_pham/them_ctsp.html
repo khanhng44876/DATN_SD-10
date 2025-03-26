@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<div th:if="${session.nhanVien != null}">
     <head>
         <title>Quan Ly San Pham</title>
         <meta charset="utf-8">
@@ -295,22 +294,6 @@
         }
     }
 
-    // Hàm lấy id từ URL
-    function getIdFromURL() {
-        const segments = window.location.href.split("/");
-        return segments[segments.length - 1];
-    }
-
-
-
-    function getIdFromURL() {
-        const url = window.location.href;
-        const segments = url.split("/");
-        return segments[segments.length - 1];
-    }
-
-
-
 
 
     function formatmoney(money) {
@@ -334,7 +317,4 @@
     }
 </script>
 
-
-<!-- Nội dung dành cho người dùng đã đăng nhập -->
-</div>
 </html>
