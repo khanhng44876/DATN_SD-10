@@ -13,7 +13,6 @@ CREATE TABLE san_pham (
                           id_danh_muc INT,
                           id_hang INT
 );
-go
 CREATE TABLE san_pham_chi_tiet (
                                    id INT IDENTITY(1,1) PRIMARY KEY,
                                    don_gia DECIMAL(10, 2),
@@ -180,51 +179,51 @@ ALTER TABLE hoa_don ALTER COLUMN id_khuyen_mai INT NULL;
 
 --------------------------------------------------------------------
 insert into danh_muc(ten_danh_muc, mo_ta, trang_thai)
-values (N'B? áo đ?u Câu l?c b?',N'CLB', N'Ho?t Đ?ng'),
-       (N'B? áo đ?u Đ?i tuy?n qu?c gia',N'Đ?i tuy?n qu?c gia',N'Ho?t Đ?ng'),
-       (N'B? áo đ?u Không logo',N'Không có logo đ?i tuy?n', N'Ho?t Đ?ng'),
-       (N'B? áo đ?u Dài tay',N'Mùa đông/thu/xuân', N'Ho?t Đ?ng')
+values (N'Bộ áo đấu Câu Lạc Bộ',N'CLB', N'Hoạt động'),
+       (N'Bộ áo đấu Đội tuyển quốc gia',N'Đội tuyển quốc gia',N'Hoạt Động'),
+       (N'Bộ áo đấu Không logo',N'Không có logo đội tuyển', N'Hoạt Động'),
+       (N'Bộ áo đấu Dài tay',N'Mùa đông/thu/xuân', N'Hoạt Động')
 
     insert into hang(ten_hang,trang_thai)
-values('Adidas','C?n'),
-    ('Nike',N'C?n'),
-    ('Puma',N'C?n'),
-    ('Kappa',N'C?n'),
-    ('New Balance',N'C?n'),
-    ('Wika',N'C?n'),
-    ('Bulbal',N'C?n'),
-    ('Kamito',N'C?n')
+values('Adidas','Còn'),
+    ('Nike',N'Còn'),
+    ('Puma',N'Còn'),
+    ('Kappa',N'Còn'),
+    ('New Balance',N'Còn'),
+    ('Wika',N'Còn'),
+    ('Bulbal',N'Còn'),
+    ('Kamito',N'Còn')
 
 
 insert into san_pham(ma_san_pham, ten_san_pham, ngay_nhap, trang_thai, id_danh_muc, id_hang)
-values (N'SP001',N'B? áo đ?u câu l?c b? Manchester United','2025-02-12',N'C?n hàng',1,1),
-    (N'SP002', N'B? áo đ?u câu l?c b? Real Madrid', '2025-02-12', N'C?n hàng', 1, 1),
-    (N'SP003', N'B? áo đ?u câu l?c b? Bayern Munich', '2025-02-12', N'C?n hàng', 1, 1),
-    (N'SP004', N'B? áo đ?u câu l?c b? Arsenal', '2025-02-12', N'C?n hàng', 1, 1),
-    (N'SP005', N'B? áo đ?u câu l?c b? Barcelona', '2025-02-12', N'C?n hàng', 1, 2),
-    (N'SP006', N'B? áo đ?u câu l?c b? Chelsea', '2025-02-12', N'C?n hàng', 1, 2),
-    (N'SP007', N'B? áo đ?u câu l?c b? Tottenham Hotspur', '2025-02-12', N'C?n hàng', 1, 2),
-    (N'SP008', N'B? áo đ?u câu l?c b? AC Milan', '2025-02-12', N'C?n hàng', 1, 3),
-    (N'SP009', N'B? áo đ?u câu l?c b? Borussia Dortmund', '2025-02-12', N'C?n hàng', 1, 3),
-    (N'SP010', N'B? áo đ?u câu l?c b? Manchester City', '2025-02-12', N'C?n hàng', 1, 3),
-    (N'SP011', N'B? áo đ?u câu l?c b? FC Porto', '2025-02-12', N'C?n hàng', 1, 5),
-    (N'SP012', N'B? áo đ?u đ?i tuy?n Anh', '2025-02-12', N'C?n hàng', 2, 2),
-    (N'SP013', N'B? áo đ?u đ?i tuy?n Pháp', '2025-02-12', N'C?n hàng', 2, 2),
-    (N'SP014', N'B? áo đ?u đ?i tuy?n B? Đào Nha', '2025-02-12', N'C?n hàng', 2, 2),
-    (N'SP015', N'B? áo đ?u đ?i tuy?n Brazil', '2025-02-12', N'C?n hàng', 2, 2),
-    (N'SP016', N'B? áo đ?u đ?i tuy?n Đ?c', '2025-02-12', N'C?n hàng', 2, 1),
-    (N'SP017', N'B? áo đ?u đ?i tuy?n Tây Ban Nha', '2025-02-12', N'C?n hàng', 2, 1),
-    (N'SP018', N'B? áo đ?u đ?i tuy?n ?', '2025-02-12', N'C?n hàng', 2, 1),
-    (N'SP019', N'B? áo đ?u đ?i tuy?n Argentina', '2025-02-12', N'C?n hàng', 2, 1),
-    (N'SP020', N'B? áo đ?u đ?i tuy?n Th?y S?', '2025-02-12', N'C?n hàng', 2, 3),
-    (N'SP021', N'B? áo đ?u đ?i tuy?n Serbia', '2025-02-12', N'C?n hàng', 2, 3),
-    (N'SP022', N'B? áo đ?u đ?i tuy?n Uruguay', '2025-02-12', N'C?n hàng', 2, 3),
-    (N'SP023', N'B? áo đá bóng Wika Tornado', '2025-02-12', N'C?n hàng', 3, 1),
-    (N'SP024', N'B? áo đá bóng Wika Blueming', '2025-02-12', N'C?n hàng', 3, 6),
-    (N'SP025', N'B? áo đá bóng Bulbal Predator', '2025-02-12', N'C?n hàng', 3, 7),
-    (N'SP026', N'B? áo đá bóng Bulbal Hunter 2', '2025-02-12', N'C?n hàng', 3, 7),
-    (N'SP027', N'B? áo đá bóng Kamito Artista 01', '2025-02-12', N'C?n hàng', 3, 8),
-    (N'SP028', N'B? áo đá bóng Kamito Galaxy 1.0', '2025-02-12', N'C?n hàng', 3, 8)
+values (N'SP001',N'Bộ áo đấu câu lạc bộ Manchester United','2025-02-12',N'Còn hàng',1,1),
+    (N'SP002', N'Bộ áo đấu câu lạc bộ Real Madrid', '2025-02-12', N'Còn hàng', 1, 1),
+    (N'SP003', N'Bộ áo đấu câu lạc bộ Bayern Munich', '2025-02-12', N'Còn hàng', 1, 1),
+    (N'SP004', N'Bộ áo đấu câu lạc bộ Arsenal', '2025-02-12', N'Còn hàng', 1, 1),
+    (N'SP005', N'Bộ áo đấu câu lạc bộ Barcelona', '2025-02-12', N'Còn hàng', 1, 2),
+    (N'SP006', N'Bộ áo đấu câu lạc bộ Chelsea', '2025-02-12', N'Còn hàng', 1, 2),
+    (N'SP007', N'Bộ áo đấu câu lạc bộ Tottenham Hotspur', '2025-02-12', N'Còn hàng', 1, 2),
+    (N'SP008', N'Bộ áo đấu câu lạc bộ AC Milan', '2025-02-12', N'Còn hàng', 1, 3),
+    (N'SP009', N'Bộ áo đấu câu lạc bộ Borussia Dortmund', '2025-02-12', N'Còn hàng', 1, 3),
+    (N'SP010', N'Bộ áo đấu câu lạc bộ Manchester City', '2025-02-12', N'Còn hàng', 1, 3),
+    (N'SP011', N'Bộ áo đấu câu lạc bộ FC Porto', '2025-02-12', N'Còn hàng', 1, 5),
+    (N'SP012', N'Bộ áo đấu đội tuyển Anh', '2025-02-12', N'Còn hàng', 2, 2),
+    (N'SP013', N'Bộ áo đấu đội tuyển Pháp', '2025-02-12', N'CCòn hàng', 2, 2),
+    (N'SP014', N'Bộ áo đấu đội tuyển Bồ Đào Nha', '2025-02-12', N'Còn hàng', 2, 2),
+    (N'SP015', N'Bộ áo đấu đội tuyển Brazil', '2025-02-12', N'Còn hàng', 2, 2),
+    (N'SP016', N'Bộ áo đấu đội tuyểnn Đức', '2025-02-12', N'Còn hàng', 2, 1),
+    (N'SP017', N'Bộ áo đấu đội tuyển Tây Ban Nha', '2025-02-12', N'Còn hàng', 2, 1),
+    (N'SP018', N'Bộ áo đấu đội tuyển Italia', '2025-02-12', N'Còn hàng', 2, 1),
+    (N'SP019', N'Bộ áo đấu đội tuyển Argentina', '2025-02-12', N'Còn hàng', 2, 1),
+    (N'SP020', N'Bộ áo đấu đội tuyển Thụy Sĩ', '2025-02-12', N'Còn hàng', 2, 3),
+    (N'SP021', N'Bộ áo đấu đội tuyển Serbia', '2025-02-12', N'Còn hàng', 2, 3),
+    (N'SP022', N'Bộ áo đấu đội tuyển Uruguay', '2025-02-12', N'Còn hàng', 2, 3),
+    (N'SP023', N'Bộ áo đá bóng Wika Tornado', '2025-02-12', N'Còn hàng', 3, 1),
+    (N'SP024', N'Bộ áo đá bóng Wika Blueming', '2025-02-12', N'Còn hàng', 3, 6),
+    (N'SP025', N'Bộ áo đá bóng Bulbal Predator', '2025-02-12', N'Còn hàng', 3, 7),
+    (N'SP026', N'Bộ áo đá bóng Bulbal Hunter 2', '2025-02-12', N'Còn hàng', 3, 7),
+    (N'SP027', N'Bộ áo đá bóng Kamito Artista 01', '2025-02-12', N'Còn hàng', 3, 8),
+    (N'SP028', N'Bộ áo đá bóng Kamito Galaxy 1.0', '2025-02-12', N'Còn hàng', 3, 8)
 
 
 
@@ -236,8 +235,8 @@ values ('S',N'Size nh?'),
 
 insert into mau_sac(ten_mau_sac, mo_ta)
 values(N'Đen', N'Màu đen sang tr?ng'),
-    (N'Tr?ng', N'Màu tr?ng tinh khi?t'),
-    (N'Đ?', N'Màu Đ? Đ?p keng'),
+    (N'Trắng', N'Màu tr?ng tinh khi?t'),
+    (N'Đỏ', N'Màu Đ? Đ?p keng'),
     (N'Xanh', N'Màu vàng bóng b?y'),
     (N'Xanh lá', N'Màu xa lánh');
 
@@ -252,34 +251,34 @@ values(N'Polyester', N'V?i Polyester thoáng khí'),
 
 
 insert into san_pham_chi_tiet(don_gia, so_luong, id_san_pham, id_kich_thuoc, id_mau_sac, id_chat_lieu, mo_ta, hinh_anh,trang_thai)
-values (500000, 100, 1, 1,3,1, NULL,'Ao_MU.png', N'C?n hàng'),
-       (550000, 80, 2, 2,2,1, NULL, 'Ao_real.png', N'C?n hàng'),
-       (600000, 90, 3, 3,3,2,NULL, 'Ao_bayern.png', N'C?n hàng'),
-       (580000, 120, 4, 4,3,2, NULL, 'Ao_Barca.jpg', N'C?n hàng'),
-       (620000, 110, 5, 4,1,3, NULL, 'Ao_chelsea.jpg', N'C?n hàng'),
-       (530000, 95, 6, 3,4,3, NULL, 'Ao_Tot.png', N'C?n hàng'),
-       (570000, 85, 7, 2,2,1, NULL, 'ao_acmilan.png', N'C?n hàng'),
-       (590000, 105, 8, 1,3,1, NULL, 'Ao_dotmund.png', N'C?n hàng'),
-       (540000, 115, 9, 1,4,2, NULL, 'ao_mancity.png', N'C?n hàng'),
-       (560000, 100, 10, 2,4,2, NULL, 'ao_porto.jpg', N'C?n hàng'),
-       (510000, 130, 11, 3,4,3, NULL, 'ao_england.png', N'C?n hàng'),
-       (495000, 125, 12, 4,2,3, NULL, 'ao_phap.jpg', N'C?n hàng'),
-       (505000, 110, 13, 4,4,1, NULL, 'ao_bo_dao_nha.png', N'C?n hàng'),
-       (515000, 90, 14, 3,3,2, NULL, 'ao_brazil.png', N'C?n hàng'),
-       (525000, 105, 15, 2,5,1, NULL, 'ao_duc.png', N'C?n hàng'),
-       (535000, 95, 16, 1,2,1, NULL, 'ao_tbn.png', N'C?n hàng'),
-       (545000, 85, 17, 1,3, 3, NULL, 'ao_italia.png',N'C?n hàng'),
-       (555000, 100, 18, 2,4,2, NULL, 'ao_argentina.png', N'C?n hàng'),
-       (565000, 80, 19, 3,2,3, NULL, 'ao_thuy_si.png', N'C?n hàng'),
-       (575000, 120, 20, 4,3,3, NULL, 'ao_serbia.jpg', N'C?n hàng'),
-       (585000, 110, 21, 4,2,2, NULL, 'ao_urugay.jpg', N'C?n hàng'),
-       (595000, 90, 22, 3,4,3, NULL, 'ao_wikatornado.jpg', N'C?n hàng'),
-       (605000, 100, 23, 2,2,1, NULL, 'ao_blueming.png', N'C?n hàng'),
-       (615000, 85, 24, 1,4,1, NULL, 'predator.jpg', N'C?n hàng'),
-       (625000, 95, 25, 1,1,2, NULL, 'hunter 2.jpg', N'C?n hàng'),
-       (635000, 105, 26, 2,2,2, NULL, 'artista.png', N'C?n hàng'),
-       (645000, 115, 27, 3,3,3, NULL, 'galaxy.png', N'C?n hàng'),
-       (655000, 125, 28, 4,1,3, NULL, 'ao_bo_dao_nha.png', N'C?n hàng')
+values (500000, 100, 1, 1,3,1, NULL,'Ao_MU.png', N'Còn hàng'),
+       (550000, 80, 2, 2,2,1, NULL, 'Ao_real.png', N'Còn hàng'),
+       (600000, 90, 3, 3,3,2,NULL, 'Ao_bayern.png', N'Còn hàng'),
+       (580000, 120, 4, 4,3,2, NULL, 'Ao_Barca.jpg', N'Còn hàng'),
+       (620000, 110, 5, 4,1,3, NULL, 'Ao_chelsea.jpg', N'Còn hàng'),
+       (530000, 95, 6, 3,4,3, NULL, 'Ao_Tot.png', N'Còn hàng'),
+       (570000, 85, 7, 2,2,1, NULL, 'ao_acmilan.png', N'Còn hàng'),
+       (590000, 105, 8, 1,3,1, NULL, 'Ao_dotmund.png', N'Còn hàng'),
+       (540000, 115, 9, 1,4,2, NULL, 'ao_mancity.png', N'Còn hàng'),
+       (560000, 100, 10, 2,4,2, NULL, 'ao_porto.jpg', N'Còn hàng'),
+       (510000, 130, 11, 3,4,3, NULL, 'ao_england.png', N'Còn hàng'),
+       (495000, 125, 12, 4,2,3, NULL, 'ao_phap.jpg', N'Còn hàng'),
+       (505000, 110, 13, 4,4,1, NULL, 'ao_bo_dao_nha.png', N'Còn hàng'),
+       (515000, 90, 14, 3,3,2, NULL, 'ao_brazil.png', N'Còn hàng'),
+       (525000, 105, 15, 2,5,1, NULL, 'ao_duc.png', N'Còn hàng'),
+       (535000, 95, 16, 1,2,1, NULL, 'ao_tbn.png', N'Còn hàng'),
+       (545000, 85, 17, 1,3, 3, NULL, 'ao_italia.png',N'Còn hàng'),
+       (555000, 100, 18, 2,4,2, NULL, 'ao_argentina.png', N'Còn hàng'),
+       (565000, 80, 19, 3,2,3, NULL, 'ao_thuy_si.png', N'Còn hàng'),
+       (575000, 120, 20, 4,3,3, NULL, 'ao_serbia.jpg', N'Còn hàng'),
+       (585000, 110, 21, 4,2,2, NULL, 'ao_urugay.jpg', N'Còn hàng'),
+       (595000, 90, 22, 3,4,3, NULL, 'ao_wikatornado.jpg', N'Còn hàng'),
+       (605000, 100, 23, 2,2,1, NULL, 'ao_blueming.png', N'Còn hàng'),
+       (615000, 85, 24, 1,4,1, NULL, 'predator.jpg', N'Còn hàng'),
+       (625000, 95, 25, 1,1,2, NULL, 'hunter 2.jpg', N'Còn hàng'),
+       (635000, 105, 26, 2,2,2, NULL, 'artista.png', N'Còn hàng'),
+       (645000, 115, 27, 3,3,3, NULL, 'galaxy.png', N'Còn hàng'),
+       (655000, 125, 28, 4,1,3, NULL, 'ao_bo_dao_nha.png', N'Còn hàng')
 
 
 
@@ -316,7 +315,6 @@ insert into hoa_don_chi_tiet(id_hoa_don, id_san_pham_chi_tiet, so_luong,don_gia,
 values (1,3,100,1900,111111.0,22222.0),
     (2,2,120,1500,100000.0,1266628.0),
     (3,1,180,1000,1333333.0,1976128.0)
-
 
 
 
