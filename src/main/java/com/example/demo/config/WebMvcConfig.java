@@ -9,7 +9,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:D:/DATN_SD-10/src/main/webapp/images/");
+                .addResourceLocations("file:D:/DATN_SD-10/uploads/");
 
     }
 }

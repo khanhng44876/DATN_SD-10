@@ -49,7 +49,7 @@
         const productDetail = document.getElementById('product-detail');
         let html = `
         <div class="col-md-6">
-            <img src="@{'../../images/' + ${product.anhSanPham}}" class="img-fluid" alt="${product.sanPham.tenSanPham}">
+            <img th:src="@{'/uploads/'+${product.anhSanPham}}" class="img-fluid" alt="${product.sanPham.tenSanPham}">
         </div>
         <div class="col-md-6">
             <h2>${product.sanPham.tenSanPham}</h2>

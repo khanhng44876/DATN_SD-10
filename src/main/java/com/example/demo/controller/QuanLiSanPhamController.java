@@ -304,13 +304,13 @@ public class QuanLiSanPhamController {
             ctsp.setTrangThai(trangThai);
 
             if (anhSanPham != null && !anhSanPham.isEmpty()) {
-                String uploadDir = "D:\\DATN_SD-10\\src\\main\\webapp\\images";
+                String uploadDir = "D:/DATN_SD-10/uploads/";
                 System.out.println(uploadDir);
                 String fileName = System.currentTimeMillis() + "_" + anhSanPham.getOriginalFilename();
                 Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
                 Files.copy(anhSanPham.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-                ctsp.setAnhSanPham("/uploads/" + fileName);
+                ctsp.setAnhSanPham( fileName);
             } else {
                 ctsp.setAnhSanPham(null);
             }
@@ -371,12 +371,12 @@ public class QuanLiSanPhamController {
             ctsp.setTrangThai(trangThai);
 
             if (anhSanPham != null && !anhSanPham.isEmpty()) {
-                String uploadDir = "D:\\DATN_SD-10\\src\\main\\webapp\\images";
+                String uploadDir = "D:/DATN_SD-10/uploads/";
                 String fileName = System.currentTimeMillis() + "_" + anhSanPham.getOriginalFilename();
                 Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
                 Files.copy(anhSanPham.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-                ctsp.setAnhSanPham("/uploads/" + fileName);
+                ctsp.setAnhSanPham(fileName);
             }
 
             sanPhamCTRepository.save(ctsp);
