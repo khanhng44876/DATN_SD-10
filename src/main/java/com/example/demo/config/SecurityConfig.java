@@ -28,7 +28,8 @@ public class SecurityConfig {
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**").permitAll() // Cho phép truy cập file tĩnh
                         .requestMatchers("/ban-hang-online/**").permitAll()
                         .requestMatchers("/hoa-don/**","/ban-hang-online/don-hang","/san-pham/**","/khach-hang/**","/mau-sac/**","/ban-hang-off/**").hasAnyAuthority("QUAN_LY", "NHAN_VIEN") // Nhân viên, admin vào được
-                        .requestMatchers("/nhan-vien/**","/doanh-thu/**").hasAuthority("QUAN_LY") // Chỉ quản lý mới vào được
+                        .requestMatchers("/nhan-vien/**","/doanh-thu/**").hasAuthority("QUAN_LY")
+                        .requestMatchers("/ban-hang-online/cart").hasAuthority("KHACH_HANG")// Chỉ quản lý mới vào được
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -63,7 +64,6 @@ public class SecurityConfig {
 
                 boolean isNhanVien = authentication.getAuthorities().stream()
                         .anyMatch(auth -> auth.getAuthority().equals("NHAN_VIEN"));
-
                 if (isQuanLy) {
                     response.sendRedirect("/nhan-vien/hien-thi");
                 } else if (isNhanVien) {
