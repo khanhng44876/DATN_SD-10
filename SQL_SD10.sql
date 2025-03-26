@@ -13,7 +13,6 @@ CREATE TABLE san_pham (
                           id_danh_muc INT,
                           id_hang INT
 );
-go
 CREATE TABLE san_pham_chi_tiet (
                                    id INT IDENTITY(1,1) PRIMARY KEY,
                                    don_gia DECIMAL(10, 2),
@@ -180,51 +179,51 @@ ALTER TABLE hoa_don ALTER COLUMN id_khuyen_mai INT NULL;
 
 --------------------------------------------------------------------
 insert into danh_muc(ten_danh_muc, mo_ta, trang_thai)
-values (N'B? áo đ?u Câu l?c b?',N'CLB', N'Ho?t Đ?ng'),
-       (N'B? áo đ?u Đ?i tuy?n qu?c gia',N'Đ?i tuy?n qu?c gia',N'Ho?t Đ?ng'),
-       (N'B? áo đ?u Không logo',N'Không có logo đ?i tuy?n', N'Ho?t Đ?ng'),
-       (N'B? áo đ?u Dài tay',N'Mùa đông/thu/xuân', N'Ho?t Đ?ng')
+values (N'Bộ áo đấu Câu Lạc Bộ',N'CLB', N'Hoạt động'),
+       (N'Bộ áo đấu Đội tuyển quốc gia',N'Đội tuyển quốc gia',N'Hoạt Động'),
+       (N'Bộ áo đấu Không logo',N'Không có logo đội tuyển', N'Hoạt Động'),
+       (N'Bộ áo đấu Dài tay',N'Mùa đông/thu/xuân', N'Hoạt Động')
 
     insert into hang(ten_hang,trang_thai)
-values('Adidas','C?n'),
-    ('Nike',N'C?n'),
-    ('Puma',N'C?n'),
-    ('Kappa',N'C?n'),
-    ('New Balance',N'C?n'),
-    ('Wika',N'C?n'),
-    ('Bulbal',N'C?n'),
-    ('Kamito',N'C?n')
+values('Adidas','Còn'),
+    ('Nike',N'Còn'),
+    ('Puma',N'Còn'),
+    ('Kappa',N'Còn'),
+    ('New Balance',N'Còn'),
+    ('Wika',N'Còn'),
+    ('Bulbal',N'Còn'),
+    ('Kamito',N'Còn')
 
 
 insert into san_pham(ma_san_pham, ten_san_pham, ngay_nhap, trang_thai, id_danh_muc, id_hang)
-values (N'SP001',N'B? áo đ?u câu l?c b? Manchester United','2025-02-12',N'C?n hàng',1,1),
-    (N'SP002', N'B? áo đ?u câu l?c b? Real Madrid', '2025-02-12', N'C?n hàng', 1, 1),
-    (N'SP003', N'B? áo đ?u câu l?c b? Bayern Munich', '2025-02-12', N'C?n hàng', 1, 1),
-    (N'SP004', N'B? áo đ?u câu l?c b? Arsenal', '2025-02-12', N'C?n hàng', 1, 1),
-    (N'SP005', N'B? áo đ?u câu l?c b? Barcelona', '2025-02-12', N'C?n hàng', 1, 2),
-    (N'SP006', N'B? áo đ?u câu l?c b? Chelsea', '2025-02-12', N'C?n hàng', 1, 2),
-    (N'SP007', N'B? áo đ?u câu l?c b? Tottenham Hotspur', '2025-02-12', N'C?n hàng', 1, 2),
-    (N'SP008', N'B? áo đ?u câu l?c b? AC Milan', '2025-02-12', N'C?n hàng', 1, 3),
-    (N'SP009', N'B? áo đ?u câu l?c b? Borussia Dortmund', '2025-02-12', N'C?n hàng', 1, 3),
-    (N'SP010', N'B? áo đ?u câu l?c b? Manchester City', '2025-02-12', N'C?n hàng', 1, 3),
-    (N'SP011', N'B? áo đ?u câu l?c b? FC Porto', '2025-02-12', N'C?n hàng', 1, 5),
-    (N'SP012', N'B? áo đ?u đ?i tuy?n Anh', '2025-02-12', N'C?n hàng', 2, 2),
-    (N'SP013', N'B? áo đ?u đ?i tuy?n Pháp', '2025-02-12', N'C?n hàng', 2, 2),
-    (N'SP014', N'B? áo đ?u đ?i tuy?n B? Đào Nha', '2025-02-12', N'C?n hàng', 2, 2),
-    (N'SP015', N'B? áo đ?u đ?i tuy?n Brazil', '2025-02-12', N'C?n hàng', 2, 2),
-    (N'SP016', N'B? áo đ?u đ?i tuy?n Đ?c', '2025-02-12', N'C?n hàng', 2, 1),
-    (N'SP017', N'B? áo đ?u đ?i tuy?n Tây Ban Nha', '2025-02-12', N'C?n hàng', 2, 1),
-    (N'SP018', N'B? áo đ?u đ?i tuy?n ?', '2025-02-12', N'C?n hàng', 2, 1),
-    (N'SP019', N'B? áo đ?u đ?i tuy?n Argentina', '2025-02-12', N'C?n hàng', 2, 1),
-    (N'SP020', N'B? áo đ?u đ?i tuy?n Th?y S?', '2025-02-12', N'C?n hàng', 2, 3),
-    (N'SP021', N'B? áo đ?u đ?i tuy?n Serbia', '2025-02-12', N'C?n hàng', 2, 3),
-    (N'SP022', N'B? áo đ?u đ?i tuy?n Uruguay', '2025-02-12', N'C?n hàng', 2, 3),
-    (N'SP023', N'B? áo đá bóng Wika Tornado', '2025-02-12', N'C?n hàng', 3, 1),
-    (N'SP024', N'B? áo đá bóng Wika Blueming', '2025-02-12', N'C?n hàng', 3, 6),
-    (N'SP025', N'B? áo đá bóng Bulbal Predator', '2025-02-12', N'C?n hàng', 3, 7),
-    (N'SP026', N'B? áo đá bóng Bulbal Hunter 2', '2025-02-12', N'C?n hàng', 3, 7),
-    (N'SP027', N'B? áo đá bóng Kamito Artista 01', '2025-02-12', N'C?n hàng', 3, 8),
-    (N'SP028', N'B? áo đá bóng Kamito Galaxy 1.0', '2025-02-12', N'C?n hàng', 3, 8)
+values (N'SP001',N'Bộ áo đấu câu lạc bộ Manchester United','2025-02-12',N'Còn hàng',1,1),
+    (N'SP002', N'Bộ áo đấu câu lạc bộ Real Madrid', '2025-02-12', N'Còn hàng', 1, 1),
+    (N'SP003', N'Bộ áo đấu câu lạc bộ Bayern Munich', '2025-02-12', N'Còn hàng', 1, 1),
+    (N'SP004', N'Bộ áo đấu câu lạc bộ Arsenal', '2025-02-12', N'Còn hàng', 1, 1),
+    (N'SP005', N'Bộ áo đấu câu lạc bộ Barcelona', '2025-02-12', N'Còn hàng', 1, 2),
+    (N'SP006', N'Bộ áo đấu câu lạc bộ Chelsea', '2025-02-12', N'Còn hàng', 1, 2),
+    (N'SP007', N'Bộ áo đấu câu lạc bộ Tottenham Hotspur', '2025-02-12', N'Còn hàng', 1, 2),
+    (N'SP008', N'Bộ áo đấu câu lạc bộ AC Milan', '2025-02-12', N'Còn hàng', 1, 3),
+    (N'SP009', N'Bộ áo đấu câu lạc bộ Borussia Dortmund', '2025-02-12', N'Còn hàng', 1, 3),
+    (N'SP010', N'Bộ áo đấu câu lạc bộ Manchester City', '2025-02-12', N'Còn hàng', 1, 3),
+    (N'SP011', N'Bộ áo đấu câu lạc bộ FC Porto', '2025-02-12', N'Còn hàng', 1, 5),
+    (N'SP012', N'Bộ áo đấu đội tuyển Anh', '2025-02-12', N'Còn hàng', 2, 2),
+    (N'SP013', N'Bộ áo đấu đội tuyển Pháp', '2025-02-12', N'CCòn hàng', 2, 2),
+    (N'SP014', N'Bộ áo đấu đội tuyển Bồ Đào Nha', '2025-02-12', N'Còn hàng', 2, 2),
+    (N'SP015', N'Bộ áo đấu đội tuyển Brazil', '2025-02-12', N'Còn hàng', 2, 2),
+    (N'SP016', N'Bộ áo đấu đội tuyểnn Đức', '2025-02-12', N'Còn hàng', 2, 1),
+    (N'SP017', N'Bộ áo đấu đội tuyển Tây Ban Nha', '2025-02-12', N'Còn hàng', 2, 1),
+    (N'SP018', N'Bộ áo đấu đội tuyển Italia', '2025-02-12', N'Còn hàng', 2, 1),
+    (N'SP019', N'Bộ áo đấu đội tuyển Argentina', '2025-02-12', N'Còn hàng', 2, 1),
+    (N'SP020', N'Bộ áo đấu đội tuyển Thụy Sĩ', '2025-02-12', N'Còn hàng', 2, 3),
+    (N'SP021', N'Bộ áo đấu đội tuyển Serbia', '2025-02-12', N'Còn hàng', 2, 3),
+    (N'SP022', N'Bộ áo đấu đội tuyển Uruguay', '2025-02-12', N'Còn hàng', 2, 3),
+    (N'SP023', N'Bộ áo đá bóng Wika Tornado', '2025-02-12', N'Còn hàng', 3, 1),
+    (N'SP024', N'Bộ áo đá bóng Wika Blueming', '2025-02-12', N'Còn hàng', 3, 6),
+    (N'SP025', N'Bộ áo đá bóng Bulbal Predator', '2025-02-12', N'Còn hàng', 3, 7),
+    (N'SP026', N'Bộ áo đá bóng Bulbal Hunter 2', '2025-02-12', N'Còn hàng', 3, 7),
+    (N'SP027', N'Bộ áo đá bóng Kamito Artista 01', '2025-02-12', N'Còn hàng', 3, 8),
+    (N'SP028', N'Bộ áo đá bóng Kamito Galaxy 1.0', '2025-02-12', N'Còn hàng', 3, 8)
 
 
 
