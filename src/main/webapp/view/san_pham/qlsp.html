@@ -1,73 +1,178 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<div th:if="${session.nhanVien != null}">
-    <head>
-        <title>Quan Ly San Pham</title>
-        <meta charset="utf-8">
-        <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
-        <link rel="stylesheet" href="css/styles.css" />
-    </head>
-    <body>
-    <div>
-        <div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
-        <div class="d-flex">
-            <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
-            <div class="pt-3" style="width: calc(100% - 250px);">
-                <div class="container">
-                    <h2 style="text-align: center;">Quản Lý Sản Phẩm</h2>
 
+<head>
+    <title>Quan Ly San Pham</title>
+    <meta charset="utf-8">
+    <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
+    <link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+<div>
+    <div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
+    <div class="d-flex">
+        <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
+        <div class="pt-3" style="width: calc(100% - 250px);">
+            <div class="container">
+                <h2 style="text-align: center;">Quản Lý Sản Phẩm</h2>
 
-                    <table id="example" class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th>Mã sản phẩm</th>
-                            <th>Tên sản phẩm</th>
-                            <th>Ngày nhập</th>
-                            <th>Ngày sửa</th>
-                            <th>Danh mục</th>
-                            <th>Hãng</th>
-                            <th>Trạng thái</th>
-                            <th colspan="1">Hoạt động</th>
-                        </tr>
-
-                        </thead>
-                        <tbody>
-                        <tr th:each="d : ${dataSP}">
-                            <td th:text="${d.maSanPham}"></td>
-                            <td th:text="${d.tenSanPham}"></td>
-                            <td th:text="${d.ngayNhap}"></td>
-                            <td th:text="${d.ngaySua}"></td>
-                            <td th:text="${d.danhMuc != null ? d.danhMuc.tendanhmuc : 'Chưa có danh mục'}"></td>
-                            <td th:text="${d.hang != null ? d.hang.tenHang : 'Chưa có hãng'}"></td>
-                            <td th:text="${d.trangThai}"></td>
-                            <td>
-                                <!--                            <button th:attr="onclick=|openChiTietModal('${d.id}')|" data-bs-toggle="modal" data-bs-target="#hoadonchitiet" class="edit-btn"><i class="fa fa-eye"></i></button>-->
-                                <a th:href="@{/san-pham/chinh-sua/{id}(id=${d.id})}" class="btn btn-warning"><i class="fa fa-pencil-alt"></i></a>
-
-                                <a th:href="@{/san-pham/ds-ctsp/{id}(id=${d.id})}" class="btn btn-warning"><i class="fa fa-eye"></i></a>
-
-                            </td>
-
-                        </tr>
-                        </tbody>
-                    </table>
-                    <br><br>
-                    <!-- Form Thêm Sản Phẩm -->
-                    <a th:href="@{/san-pham/addsp}" class="btn btn-success"> Thêm sản phẩm</a>
-
-
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label for="filterMaSanPham">Mã sản phẩm:</label>
+                        <input type="text" class="form-control" id="filterMaSanPham" placeholder="Nhập mã sản phẩm">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filterTenSanPham">Tên sản phẩm:</label>
+                        <input type="text" class="form-control" id="filterTenSanPham" placeholder="Nhập tên sản phẩm">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filterNgayNhap">Ngày nhập:</label>
+                        <input type="date" class="form-control" id="filterNgayNhap">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filterNgaySua">Ngày sửa:</label>
+                        <input type="date" class="form-control" id="filterNgaySua">
+                    </div>
                 </div>
-            </div>
-        </div>
-    </body>
-</div>
 
-    <script>
-        $('#example').DataTable();
-    </script>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label for="filterDanhMuc">Danh mục:</label>
+                        <select class="form-control" id="filterDanhMuc">
+                            <option value="">Tất cả</option>
+                            <option th:each="dm : ${dsDanhMuc}" th:value="${dm.tendanhmuc}"
+                                    th:text="${dm.tendanhmuc}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filterHang">Hãng:</label>
+                        <select class="form-control" id="filterHang">
+                            <option value="">Tất cả</option>
+                            <option th:each="h : ${dsHang}" th:value="${h.tenHang}" th:text="${h.tenHang}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filterTrangThai">Trạng thái:</label>
+                        <select class="form-control" id="filterTrangThai">
+                            <option value="">Tất cả</option>
+                            <option value="Còn hàng">Còn hàng</option>
+                            <option value="Hết hàng">Hết hàng</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button class="btn btn-primary w-100" onclick="filterSanPham()">Lọc</button>
+                    </div>
+                </div>
+                <a href="/san-pham/addsp" class="btn btn-success">Thêm sản phẩm</a>
+
+                <table id="example" class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Mã sản phẩm</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Ngày nhập</th>
+                        <th>Ngày sửa</th>
+                        <th>Danh mục</th>
+                        <th>Hãng</th>
+                        <th>Trạng thái</th>
+                        <th>Hoạt động</th>
+                    </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                    <tr th:each="d : ${dataSP}">
+                        <td th:text="${d.maSanPham}"></td>
+                        <td th:text="${d.tenSanPham}"></td>
+                        <td th:text="${d.ngayNhap}"></td>
+                        <td th:text="${d.ngaySua}"></td>
+                        <td th:text="${d.danhMuc != null ? d.danhMuc.tendanhmuc : 'Chưa có danh mục'}"></td>
+                        <td th:text="${d.hang != null ? d.hang.tenHang : 'Chưa có hãng'}"></td>
+                        <!--                            <td style="text-align: center; vertical-align: middle;"  >-->
+                        <!--                                <span th:text="${d.trangThai}" th:classappend="${d.trangThai == 'Còn hàng'?'status-ongoing':'status-ended'}" class="badge rounded-pill"></span>-->
+                        <!--                            </td>-->
+                        <td style="text-align: center; vertical-align: middle;">
+    <span style=" background-color: #e6f9e6; /* Xanh nhạt */
+    color: #28a745; /* Xanh lá */
+    border: 1px solid #90ee90;" th:text="${d.trangThai}"
+          th:classappend="${d.trangThai == 'Còn hàng' ? 'status-ongoing' :
+
+                           'status-ended'}"
+          class="badge rounded-pill">
+    </span>
+                        </td>
+                        <td>
+                            <a th:href="@{/san-pham/chinh-sua/{id}(id=${d.id})}" class="btn btn-warning"><i
+                                    class="fa fa-pencil-alt"></i></a>
+                            <a th:href="@{/san-pham/ds-ctsp/{id}(id=${d.id})}" class="btn btn-info"><i
+                                    class="fa fa-eye"></i></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <script>
+                $(document).ready(function () {
+                    var table = $('#example').DataTable();
+
+                    window.filterSanPham = function () {
+                        table.search('').draw();
+
+                        let maSanPham = $('#filterMaSanPham').val().toLowerCase();
+                        let tenSanPham = $('#filterTenSanPham').val().toLowerCase();
+                        let ngayNhap = $('#filterNgayNhap').val();
+                        let ngaySua = $('#filterNgaySua').val();
+                        let danhMuc = $('#filterDanhMuc option:selected').text().trim().toLowerCase();
+                        let hang = $('#filterHang option:selected').text().trim().toLowerCase();
+                        let trangThai = $('#filterTrangThai').val().trim().toLowerCase();
+
+                        console.log("Dữ liệu nhập:", {
+                            maSanPham,
+                            tenSanPham,
+                            ngayNhap,
+                            ngaySua,
+                            danhMuc,
+                            hang,
+                            trangThai
+                        });
+
+                        $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                            let rowDanhMuc = data[4].trim().toLowerCase();
+                            let rowHang = data[5].trim().toLowerCase();
+                            let rowTrangThai = data[6].trim().toLowerCase();
+
+                            console.log("Dữ liệu dòng:", {rowDanhMuc, rowHang, rowTrangThai});
+
+                            return (
+                                (maSanPham === "" || data[0].toLowerCase().includes(maSanPham)) &&
+                                (tenSanPham === "" || data[1].toLowerCase().includes(tenSanPham)) &&
+                                (ngayNhap === "" || data[2] === ngayNhap) &&
+                                (ngaySua === "" || data[3] === ngaySua) &&
+                                (danhMuc === "tất cả" || rowDanhMuc.includes(danhMuc)) &&
+                                (hang === "tất cả" || rowHang.includes(hang)) &&
+                                (trangThai === "tất cả" || rowTrangThai.includes(trangThai))
+                            );
+                        });
+
+                        table.draw();
+                        $.fn.dataTable.ext.search.pop();
+                    }
+                });
+            </script>
+
+
+        </div>
+    </div>
+</div>
+</body>
+
+
+<script>
+    $('#example').DataTable();
+</script>
 
 
 <script th:inline="javascript">
+
 
     function hasNegativeNumber(str) {
         // Regex to check if the string contains a negative number
@@ -76,294 +181,7 @@
     }
 
 
-
-    async function validateForm(action) {
-        // Clear error messages
-        document.getElementById("errorMaSanPham").innerText = "";
-        document.getElementById("errorTenSanPham").innerText = "";
-        document.getElementById("errorNgayNhap").innerText = "";
-        document.getElementById("errorDanhMuc").innerText = "";
-        document.getElementById("errorHang").innerText = "";
-        document.getElementById("errorNgaySua").innerText = "";
-        document.getElementById("errorTrangThai").innerText = "";
-
-        // Get values
-        const maSanPham = document.getElementById("maSanPham").value;
-        const tenSanPham = document.getElementById("tenSanPham").value;
-        const ngayNhap = document.getElementById("ngayNhap").value;
-        const ngaySua = document.getElementById("ngaySua").value;
-        const danhMuc = document.getElementById("danhMuc").value;
-        const hang = document.getElementById("hang").value;
-        const trangThai = document.getElementById("trangThai").value;
-
-        let isValid = true;
-
-        // Validate mã sản phẩm (bỏ qua khi hành động là update)
-        if (maSanPham.trim() === "") {
-            document.getElementById("errorMaSanPham").innerText = "Mã sản phẩm không được để trống.";
-            isValid = false;
-        } else if (hasNegativeNumber(maSanPham)) {
-            document.getElementById("errorMaSanPham").innerText = "Mã sản phẩm không được chứa số âm.";
-            isValid = false;
-        }
-        else if (action !== 'update') {
-            // Check mã sản phẩm trùng chỉ khi không phải hành động update
-            const isDuplicate = await checkMaSanPham(maSanPham);
-            if (isDuplicate) {
-                document.getElementById("errorMaSanPham").innerText = "Mã sản phẩm đã tồn tại.";
-                isValid = false;
-            }
-        }
-
-        // Validate tên sản phẩm
-        if (tenSanPham.trim() === "") {
-            document.getElementById("errorTenSanPham").innerText = "Tên sản phẩm không được để trống.";
-            isValid = false;
-        } else if (hasNegativeNumber(tenSanPham)) {
-            document.getElementById("errorTenSanPham").innerText = "Tên sản phẩm không được chứa số âm.";
-            isValid = false;
-        }
-
-        // Validate ngày nhập
-
-        if (ngayNhap === "") {
-            document.getElementById("errorNgayNhap").innerText = "Ngày nhập không được để trống.";
-            isValid = false;
-        } else if (isNaN(Date.parse(ngayNhap))) {
-            document.getElementById("errorNgayNhap").innerText = "Ngày nhập không hợp lệ.";
-            isValid = false;
-        } else {
-            const today = new Date().toISOString().split("T")[0]; // Lấy ngày hiện tại theo định dạng YYYY-MM-DD
-            if (ngayNhap > today) {
-                document.getElementById("errorNgayNhap").innerText = "Ngày nhập không được là ngày trong tương lai.";
-                isValid = false;
-            }
-        }
-        // Validate ngày sửa
-
-
-        if (ngaySua === "") {
-            document.getElementById("errorNgaySua").innerText = "Ngày sửa không được để trống.";
-            isValid = false;
-        } else if (isNaN(Date.parse(ngaySua))) {
-            document.getElementById("errorNgaySua").innerText = "Ngày sửa không hợp lệ.";
-            isValid = false;
-        } else {
-            const today = new Date().toISOString().split("T")[0]; // Lấy ngày hiện tại theo định dạng YYYY-MM-DD
-            if (ngaySua > today) {
-                document.getElementById("errorNgaySua").innerText = "Ngày sửa không được là ngày trong tương lai.";
-                isValid = false;
-            }
-        }
-
-
-
-        // Validate danh mục
-        if (danhMuc === "") {
-            document.getElementById("errorDanhMuc").innerText = "Vui lòng chọn danh mục.";
-            isValid = false;
-        }
-
-        if (hang === "") {
-            document.getElementById("errorHang").innerText = "Vui lòng chọn hãng.";
-            isValid = false;
-        }
-
-        // Validate trạng thái
-        if (trangThai === "") {
-            document.getElementById("errorTrangThai").innerText = "Vui lòng chọn trạng thái.";
-            isValid = false;
-        }
-
-        // If all fields are valid, proceed with action
-        if (isValid) {
-            if (action === 'ADD') {
-                themSP();
-            } else if (action === 'update') {
-                capNhatSP(window.currentSanPhamId);
-            }
-        }
-    }
-
-
-
-
-    async function themSP() {
-        var con = window.confirm("Bạn có chắc chắn muốn thêm sản phẩm?");
-        if (con == false) {
-            return;
-        }
-
-        // Thu thập dữ liệu từ form
-        const danhMucValue = document.getElementById("danhMuc").value;
-        const iddanhMuc = danhMucValue === "" ? null : parseInt(danhMucValue);
-
-        const hangValue = document.getElementById("hang").value;
-        const idhang = hangValue === "" ? null : parseInt(hangValue);
-
-        const payload = {
-            maSanPham: document.getElementById("maSanPham").value,
-            tenSanPham: document.getElementById("tenSanPham").value,
-            ngayNhap: document.getElementById("ngayNhap").value,
-            ngaySua: document.getElementById("ngaySua").value,
-            iddanhMuc: iddanhMuc,
-            idhang: idhang,
-            trangThai: document.getElementById("trangThai").value
-        };
-
-        const response = await fetch("/san-pham/them-san-pham", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        const result = await response.text();
-        alert(result);
-        if (response.ok) {
-            window.location.href = "/san-pham/hien-thi";
-        } else {
-            alert("Đã có lỗi xảy ra khi thêm sản phẩm.");
-        }
-    }
-
-    async function loadSanPhamData(idsp) {
-        console.log("ID sản phẩm nhận được:", idsp); // In ra để kiểm tra idsp
-        try {
-            const id = parseInt(idsp, 10);
-            if (isNaN(id)) {
-                console.error("ID sản phẩm không hợp lệ:", idsp);
-                alert("ID sản phẩm không hợp lệ.");
-                return;
-            }
-            // Gửi yêu cầu GET đến server để lấy dữ liệu sản phẩm
-            const response = await fetch(`/san-pham/danh-sach-san-pham/${id}`);
-
-            // Kiểm tra nếu phản hồi không thành công
-            if (!response.ok) {
-                console.error("Lỗi khi tải dữ liệu sản phẩm:", response.statusText);
-                alert("Không thể tải dữ liệu sản phẩm.");
-                return;
-            }
-
-
-            const sanPham = await response.json();
-
-            // Điền dữ liệu vào form
-            document.getElementById("maSanPham").value = sanPham.maSanPham;
-            document.getElementById("tenSanPham").value = sanPham.tenSanPham;
-            document.getElementById("ngayNhap").value = sanPham.ngayNhap;
-            document.getElementById("ngaySua").value = sanPham.ngaySua;
-            document.getElementById("danhMuc").value = sanPham.danhMuc.id;
-            document.getElementById("hang").value = sanPham.hang.id;
-            document.getElementById("trangThai").value = sanPham.trangThai;
-
-            window.currentSanPhamId = idsp;
-        } catch (error) {
-            console.error("Đã có lỗi xảy ra khi tải dữ liệu sản phẩm:", error);
-            alert("Không thể tải dữ liệu sản phẩm.");
-        }
-    }
-
-
-    // Hàm gọi API kiểm tra mã sản phẩm trùng
-    async function checkMaSanPham(maSanPham) {
-        try {
-            const response = await fetch(`/san-pham/check-ma-san-pham?maSanPham=${encodeURIComponent(maSanPham)}`);
-            if (response.ok) {
-                return await response.json(); // Trả về true nếu mã trùng
-            }
-            console.error("Failed to check mã sản phẩm.");
-            return false;
-        } catch (error) {
-            console.error("Error checking mã sản phẩm:", error);
-            return false;
-        }
-    }
-
-
-
-
-    async function openChiTietModal(sanPhamId){
-        var url = '/san-pham/ctsp?idctsp='+sanPhamId
-        const response = await fetch(url, {
-            method: 'GET'
-        });
-        var result = await response.json();
-        console.log(result)
-        var main = '';
-        for(var i=0; i< result.length; i++){
-            main += `
-                <tr>
-                    <td>${result[i].id}</td>
-                    <td>${result[i].sanPham.tenSanPham}</td>
-                    <td>${result[i].mauSac.tenMau}</td>
-                    <td>${result[i].kichThuoc.tenKichThuoc}</td>
-                    <td>${result[i].chatLieu.tenChatLieu}</td>
-                    <td>${result[i].soLuong}</td>
-                    <td>${formatmoney(result[i].donGia)}</td>
-                    <td>${result[i].moTa}</td>
-                    <td><img th:src="${result[i].anhSanPham}" style="width: 100px; height: 100px; object-fit: cover;"></td>
-
-                </tr>
-            `
-        }
-        document.getElementById("listctsp").innerHTML = main
-    }
-
-
-
-
-
-    async function capNhatSP(idsp) {
-        var con = window.confirm("Bạn có chắc chắn muốn cập nhật sản phẩm?");
-        if (con == false) {
-            return;
-        }
-
-        // Thu thập dữ liệu từ form
-        const payload = {
-            maSanPham :document.getElementById("maSanPham").value,
-            tenSanPham :document.getElementById("tenSanPham").value,
-            ngayNhap :document.getElementById("ngayNhap").value,
-            ngaySua: document.getElementById("ngaySua").value,
-            iddanhMuc: document.getElementById("danhMuc").value,
-            idhang: document.getElementById("hang").value,
-            trangThai: document.getElementById("trangThai").value,
-        };
-
-        // Gửi dữ liệu đến server (PUT request)
-        const response = await fetch(`/san-pham/cap-nhat-san-pham/${idsp}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload) // Chuyển dữ liệu thành JSON
-        });
-
-        // Kiểm tra phản hồi từ server
-        if (response.ok) {
-            alert("Sản phẩm đã được cập nhật thành công!");
-            // Chuyển hướng về trang hiển thị danh sách sản phẩm
-            window.location.href = "/san-pham/hien-thi";
-        } else {
-            alert("Đã có lỗi xảy ra khi cập nhật sản phẩm.");
-        }
-    }
-
-
-
-    function formatmoney(money) {
-        const VND = new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-        });
-        return VND.format(money);
-    }
 </script>
-<!--    Nội dung dành cho người dùng đã đăng nhập-->
-</div>
-
-<div th:if="${session.nhanVien == null}">
-    <p>Vui lòng <a th:href="@{/dang-nhap/login}"> đăng nhập</a>.</p>
 </div>
 </html>
 

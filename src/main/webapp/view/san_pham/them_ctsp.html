@@ -16,14 +16,11 @@
                 <div class="container">
                     <h2 style="text-align: center;">Quản Lý Chi Tiết Sản Phẩm</h2>
 
-
-
-                     Form Thêm Sản Phẩm
                     <label class="lb-form">Sản phẩm(*)</label>
-                    <select id="idsanPham" class="form-control" required>
-                        <option value="">Chọn sản phẩm</option>
-                        <option th:each="sp : ${dataSP}" th:value="${sp.id}" th:text="${sp.tenSanPham}"></option>
-                    </select>
+                    <select id="idsanPham" class="form-control" disabled>
+                    <option value="">Chọn sản phẩm</option>
+                    <option th:each="sp : ${dataSP}" th:value="${sp.id}" th:text="${sp.tenSanPham}"></option>
+                </select>
                     <span id="errorSanPham" class="text-danger"></span>
 
                     <div class="row">
@@ -163,56 +160,53 @@
     }
 
     async function loadCtspData(idctsp) {
-        console.log("ID sản phẩm nhận được:", idctsp); // In ra để kiểm tra idsp
+        console.log("ID chi tiết sản phẩm nhận được:", idctsp);
         try {
             const id = parseInt(idctsp, 10);
             if (isNaN(id)) {
-                console.error("ID sản phẩm không hợp lệ:", idctsp);
-                alert("ID sản phẩm không hợp lệ.");
+                console.error("ID không hợp lệ:", idctsp);
+                alert("ID chi tiết sản phẩm không hợp lệ.");
                 return;
             }
-            // Gửi yêu cầu GET đến server để lấy dữ liệu sản phẩm
-            const response = await fetch(`/san-pham/danh-sach-ctsp/${id}`);
 
-            // Kiểm tra nếu phản hồi không thành công
+            // Gửi yêu cầu GET đến server
+            const response = await fetch(`/san-pham/danh-sach-ctsp/${id}`);
             if (!response.ok) {
-                console.error("Lỗi khi tải dữ liệu sản phẩm:", response.statusText);
-                alert("Không thể tải dữ liệu sản phẩm.");
+                console.error("Lỗi khi tải dữ liệu:", response.statusText);
+                alert("Không thể tải dữ liệu chi tiết sản phẩm.");
                 return;
             }
 
             const ctsp = await response.json();
+            console.log("Dữ liệu nhận được:", ctsp);
 
             // Điền dữ liệu vào form
+            document.getElementById("idsanPham").value = ctsp.sanPham.id; // Chọn sản phẩm trong dropdown
             document.getElementById("soLuong").value = ctsp.soLuong;
             document.getElementById("donGia").value = ctsp.donGia;
             document.getElementById("moTa").value = ctsp.moTa;
-            document.getElementById("anhSanPham").value = ctsp.anhSanPham;
             document.getElementById("mauSac").value = ctsp.mauSac.id;
             document.getElementById("kichThuoc").value = ctsp.kichThuoc.id;
             document.getElementById("chatLieu").value = ctsp.chatLieu.id;
             document.getElementById("trangThai").value = ctsp.trangThai;
 
-
-            window.currentCTSanPhamId = idctsp;
         } catch (error) {
-            console.error("Đã có lỗi xảy ra khi tải dữ liệu sản phẩm:", error);
-            alert("Không thể tải dữ liệu sản phẩm.");
+            console.error("Lỗi khi tải dữ liệu:", error);
+            alert("Không thể tải dữ liệu chi tiết sản phẩm.");
         }
     }
 
 
     async function themctspp() {
+        let idsp = document.getElementById("idsanPham").value || getIdFromURL();
 
-        const idsanPham = document.getElementById("idsanPham").value;
-
-        if (!idsanPham || isNaN(idsanPham)) {
-            alert("Vui lòng chọn sản phẩm!");
+        if (!idsp || isNaN(idsp)) {
+            alert("ID sản phẩm không hợp lệ!");
             return;
         }
 
         const formData = new FormData();
-        formData.append("idsanPham", idsanPham);
+        formData.append("idsanPham", idsp);
         formData.append("idmauSac", document.getElementById("mauSac").value);
         formData.append("idkichThuoc", document.getElementById("kichThuoc").value);
         formData.append("idchatLieu", document.getElementById("chatLieu").value);
@@ -232,15 +226,16 @@
                 body: formData
             });
 
-            if (response.ok) {
-                alert("Thêm chi tiết sản phẩm thành công!");
-                window.location.href = `/san-pham/ds-ctsp/${idsanPham}`;
-            } else {
-                const result = await response.text();
-                alert("Lỗi: " + result);
+            if (!response.ok) {
+                const error = await response.json();
+                alert("Lỗi: " + (error.message || "Không thể thêm sản phẩm!"));
+                return;
             }
+
+            alert("Thêm chi tiết sản phẩm thành công!");
+            window.location.href = `/san-pham/ds-ctsp/${idsp}`;
         } catch (e) {
-            console.error(e);
+            console.error("Lỗi khi thêm sản phẩm:", e);
             alert("Đã xảy ra lỗi khi thêm chi tiết sản phẩm.");
         }
     }
@@ -325,12 +320,21 @@
         });
         return VND.format(money);
     }
+    document.addEventListener("DOMContentLoaded", function() {
+        const idSanPham = getIdFromURL();
+        if (idSanPham && !isNaN(idSanPham)) {
+            document.getElementById("idsanPham").value = idSanPham;
+        }
+    });
+
+    function getIdFromURL() {
+        const url = window.location.href;
+        const segments = url.split("/");
+        return segments[segments.length - 1];
+    }
 </script>
 
 
 <!-- Nội dung dành cho người dùng đã đăng nhập -->
-</div>
-<div th:if="${session.nhanVien == null}">
-    <p>Vui lòng <a th:href="@{/dang-nhap/login}">đăng nhập</a>.</p>
 </div>
 </html>
