@@ -219,12 +219,6 @@ public class BanHangOnlineController {
         return "ban_hang_online/dhh";
     }
 
-
-
-
-
-
-
     @PutMapping("/ban-hang-online/hoa-don/{id}")
     @ResponseBody
     public ResponseEntity<?> updateTrangThaiHoaDon(
@@ -257,30 +251,7 @@ public class BanHangOnlineController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping("/ban-hang-online/detail")
-    public String detailPage(@RequestParam("id") Integer id, Model model) {
-        Optional<SanPhamChiTiet> optionalCtsp = ctsp_repository.findById(id);
-        if (optionalCtsp.isPresent()) {
-            model.addAttribute("product", optionalCtsp.get()); // Truyền dữ liệu nếu cần dùng Thymeleaf
-            return "ban_hang_online/detail"; // Trả về file detail.html
-        } else {
-            return "ban_hang_online/error"; // Trang lỗi nếu không tìm thấy sản phẩm
-        }
-    }
 
-    @GetMapping("/ban-hang-online/danh-muc")
-    @ResponseBody
-    public ResponseEntity<?> getAllDanhMuc() {
-        try {
-            List<DanhMuc> danhMucList = danhMucRepository.findAll();
-            if (danhMucList.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy danh mục nào.");
-            }
-            return new ResponseEntity<>(danhMucList, HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi lấy danh sách danh mục: " + e.getMessage());
-        }
-    }
     // Thêm phương thức mới để lấy chi tiết sản phẩm theo ID
     @GetMapping("/ban-hang-online/ctsp/{id}")
     @ResponseBody
@@ -296,4 +267,16 @@ public class BanHangOnlineController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi lấy chi tiết sản phẩm: " + e.getMessage());
         }
     }
+    @GetMapping("/ban-hang-online/detail")
+    public String detailPage(@RequestParam("id") Integer id, Model model) {
+        Optional<SanPhamChiTiet> optionalCtsp = ctsp_repository.findById(id);
+        if (!optionalCtsp.isPresent()) {
+            return "ban_hang_online/error";
+        }
+        model.addAttribute("product", optionalCtsp.get());
+        return "ban_hang_online/detail"; // Hiển thị trang Thymeleaf
+    }
+
+
+
 }
