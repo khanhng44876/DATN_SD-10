@@ -96,4 +96,45 @@
     padding: 0 15px;
     text-decoration: underline;
 }
+.spCard {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.spCard img{
+    height: 300px;
+}
+.spCard-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.breadcrumb {
+    font-size: 18px; /* Chỉnh kích thước chữ */
+    font-weight: 500; /* Làm đậm chữ */
+    color: black;
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Tạo khoảng cách giữa icon và chữ */
+}
+
+.breadcrumb a {
+    color: black; /* Màu chữ của link */
+    text-decoration: none !important;  /* Bỏ gạch chân */
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline; /* Chỉ gạch chân khi hover */
+}
+
+.breadcrumb-item {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb-item i {
+    font-size: 20px; /* Chỉnh kích thước icon */
+    margin-right: 5px;
+}
 

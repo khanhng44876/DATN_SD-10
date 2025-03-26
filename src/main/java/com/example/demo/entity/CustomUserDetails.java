@@ -8,12 +8,14 @@ import java.util.Collection;
 import java.util.List;
 
 public class CustomUserDetails implements UserDetails{
+    public final Integer id;
     private final String username;
     private final String password;
     private final String hoTen;
     private final List<GrantedAuthority> authorities;
 
     public CustomUserDetails(NhanVien nhanVien) {
+        this.id = nhanVien.getId();
         this.hoTen = nhanVien.getTenNhanVien();
         this.username = nhanVien.getTaiKhoan();
         this.password = nhanVien.getMatKhau();
@@ -21,11 +23,15 @@ public class CustomUserDetails implements UserDetails{
     }
 
     public CustomUserDetails(KhachHang khachHang) {
+        this.id = khachHang.getId();
         this.hoTen = khachHang.getTenKhachHang();
         this.username = khachHang.getTaiKhoan();
         this.password = khachHang.getMatKhau();
         this.authorities = List.of(new SimpleGrantedAuthority("KHACH_HANG"));
     }
+
+    public Integer getId() {return id;}
+
     public String getHoTen() {
         return hoTen;
     }

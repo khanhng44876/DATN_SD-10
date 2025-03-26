@@ -8,6 +8,7 @@ import com.example.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +43,9 @@ public class BanHangController {
 
     @GetMapping("/hien-thi")
     public String hienThi(Model model) {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer idnv = userDetails.getId();
+        model.addAttribute("idnv", idnv);
         model.addAttribute("listCTSP", ctRepository.findAll());
         model.addAttribute("listKH", khRepository.findAll());
         return "/sell/index.html";

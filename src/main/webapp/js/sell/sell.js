@@ -19,7 +19,7 @@ async function renderOrders() {
 
                 productItem.innerHTML = `
                     <div class="col-3">
-                        <img src="" alt="${product.ten_san_pham}" class="img-fluid">
+                        <img src="../../images/${product.anh_san_pham}" alt="${product.ten_san_pham}" style="width: 150px;height: 150px;" class="img-fluid">
                     </div>
                     <div class="col-5">
                         <h5 class="mb-1">${product.ten_san_pham}</h5>
@@ -43,6 +43,7 @@ async function renderOrders() {
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>
+                    <hr>
                 `;
                 productList.appendChild(productItem)
             });
@@ -232,6 +233,7 @@ function openModalQuantity(button){
         .then(data => {
             console.log(data)
             document.getElementById("ctsp_id").value = data.id
+            document.getElementById("anhsp_id").value = data.anhSanPham
             document.getElementById("ten_sp").innerText = data.sanPham.tenSanPham;
             document.getElementById("mau_sac").innerText = data.mauSac.ten_mau_sac;
             document.getElementById("kich_thuoc").innerText = data.kichThuoc.tenKichThuoc;
@@ -327,16 +329,22 @@ document.addEventListener("input", function (event) {
 });
 
 async function confirmOrder(orderId) {
+
     let order = orders.find(o => o.id === orderId);
-    if (!order.product.length > 0) {
+    if (order.product.length === 0) {
         alert("Vui lòng thêm sản phẩm vào đơn hàng");
         return;
     }
-
+    if(!validateOrder(order.id)){
+        alert("Vui lòng nhập đủ thông tin thanh toán")
+        return
+    }
+    idnv = document.getElementById("idNv").value
+    let paymentMethods = document.querySelector(`input[name="hinhthuctt"]:checked`)?.value;
     let today = new Date().toISOString().split("T")[0];
 
     let hdJson = {
-        id_nhan_vien:1,
+        id_nhan_vien:idnv,
         id_khach_hang:order.customer.id,
         id_khuyen_mai:order.discount.id,
         ngay_tao: today,
@@ -344,7 +352,7 @@ async function confirmOrder(orderId) {
         don_gia: null,
         tong_tien: parseFloat(order.totalAmount),
         trang_thai_thanh_toan: "Đã thanh toán",
-        hinh_thuc_thanh_toan: "Tiền mặt",
+        hinh_thuc_thanh_toan: paymentMethods,
         dia_chi_giao_hang: "Tại cửa hàng",
         ghi_chu: null
     };
@@ -379,7 +387,7 @@ async function confirmOrder(orderId) {
                 so_luong:p.so_luong,
                 don_gia:p.don_gia,
                 tong_tien:p.tong_tien,
-                thanh_tien:null,
+                thanh_tien:p.tong_tien,
                 ngay_tao: today,
                 ngay_sua: null,
                 trang_thai: "Đã thanh toán"
@@ -410,6 +418,10 @@ async function confirmOrder(orderId) {
         await Promise.all(requests.flat());
 
         alert("Xác nhận đơn hàng thành công!");
+        printInvoice(order.id)
+        orders = orders.filter(o => o.id !== order.id);
+        saveOrderToLocalStorage()
+        await renderOrders()
     } catch (error) {
         console.error("Lỗi:", error);
         alert("Đã xảy ra lỗi khi xác nhận đơn hàng!");
@@ -522,16 +534,18 @@ function printInvoice(orderId) {
     printWindow.document.close();
 }
 
+
 // Lấy thông tin ở form nhập số lượng truyền vào order.product
 document.querySelector("#quantityModal .btn-primary").addEventListener("click",function (){
     let productId = document.getElementById("ctsp_id").value
+    let inpQuantity = document.getElementById("inp_so_luong").value
+    let imgId = document.getElementById("anhsp_id").value
     let tenSp = document.getElementById("ten_sp").textContent
     let mauSac = document.getElementById("mau_sac").textContent
     let kichThuoc = document.getElementById("kich_thuoc").textContent
     let donGia = parseFloat(document.getElementById("don_gia").textContent)
-    let soLuong = parseInt(document.getElementById("inp_so_luong").value)
+    let soLuong = parseInt(document.getElementById("so_luong").innerText)
     let tongTien = parseInt(soLuong) * parseFloat(donGia)
-
     let activeTab = document.querySelector("#nav-tab .nav-link.active");
     if (!activeTab) {
         alert("Vui lòng chọn một đơn hàng trước!");
@@ -545,7 +559,18 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
         console.error("Không tìm thấy đơn hàng!");
         return;
     }
-
+    if(inpQuantity === ""){
+        document.getElementById("errQuantityMes").innerText = "Không được để trống trường này!"
+        return;
+    }
+    if(inpQuantity < 0){
+        document.getElementById("errQuantityMes").innerText = "Vui lòng nhập số lớn hơn 0"
+        return;
+    }
+    if(inpQuantity > soLuong){
+        document.getElementById("errQuantityMes").innerText = "Vượt quá số lượng trong kho"
+        return;
+    }
     let existingProduct = order.product.find(p => Number(p.id) === Number(productId))
     if(existingProduct){
         existingProduct.so_luong += soLuong
@@ -553,6 +578,7 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
     }else{
         order.product.push({
             id:productId,
+            anh_san_pham:imgId,
             ten_san_pham:tenSp,
             mau_sac:mauSac,
             kich_thuoc:kichThuoc,
@@ -563,6 +589,8 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
     }
     saveOrderToLocalStorage()
     renderOrders()
+    let modal = bootstrap.Modal.getInstance(document.getElementById('quantityModal'));
+    modal.hide()
 })
 document.getElementById("quantityModal").addEventListener("hidden.bs.modal", function () {
     console.log("đóng rồi")
@@ -571,5 +599,6 @@ document.getElementById("quantityModal").addEventListener("hidden.bs.modal", fun
     document.getElementById("kich_thuoc").innerText = "";
     document.getElementById("don_gia").innerText = "";
     document.getElementById("so_luong").innerText = "";
+    document.getElementById("errQuantityMes").innerText="";
 });
 renderOrders()

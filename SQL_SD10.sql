@@ -283,7 +283,7 @@ values (500000, 100, 1, 1,3,1, NULL,'Ao_MU.png', N'Còn hàng'),
 
 
     insert into khach_hang(ten_khach_hang, email, so_dien_thoai, dia_chi,ngay_sinh, gioi_tinh,tai_khoan, mat_khau)
-values (N'Khách l?',null,null,null,null,null,null,null),
+values (N'Khách lẻ',null,null,null,null,null,null,null),
     ('Nguyen Gia Khanh', 'khanhngph44876@fpt.edu.vn','0345760481','Dai Mo, HN','1998-02-12','Nam','khanh123', '123456'),
     ('Nguyen Quach Vu', 'vunqph45621@fpt.edu.vn','0396311217','Nhon, HN','1995-12-22','Nam','vu123', '123456'),
     ('Vi Cong Minh', 'minhvcph45103@fpt.edu.vn','0702202307','Huu Lung, LS','2004-05-09','Nam','minh123', '123456'),

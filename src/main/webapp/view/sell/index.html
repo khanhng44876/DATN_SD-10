@@ -11,6 +11,7 @@
 <div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
 <div class="d-flex">
     <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
+    <input type="hidden" id="idNv" th:value="${idnv}">
     <div class="pt-3" style="width: calc(100% - 250px);">
         <div class="container">
             <div class="d-flex justify-content-between">
@@ -66,7 +67,7 @@
                                     <td th:text="${d.soLuong}"></td>
                                     <td><span th:inline="text">[[${#numbers.formatDecimal(d.donGia, 0, 'COMMA', 0, 'POINT')}]]</span></td>
                                     <td th:text="${d.moTa}"></td>
-                                    <td><img th:src="${d.anhSanPham}" alt="Ảnh sản phẩm" style="width: 100px; height: 100px;"></td>
+                                    <td><img th:src="@{'../../images/' + ${d.anhSanPham}}" alt="Ảnh sản phẩm" style="width: 100px; height: 100px;"></td>
                                     <td>
                                         <button type="button" id="save" class="btn btn-primary" th:attr="data-id=${d.id}" data-bs-toggle="modal" data-bs-target="#quantityModal" onclick="openModalQuantity(this)">Chọn</button>
                                     </td>
@@ -90,6 +91,7 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" id="ctsp_id">
+                            <input type="hidden" id="anhsp_id">
                             <p>
                                 <strong id="ten_sp"></strong>
                             </p>
@@ -108,7 +110,8 @@
                                 <strong style="color: red">Số lượng :
                                     <span id="so_luong"></span>
                                 </strong>
-                                <input type="number" id="inp_so_luong">
+                                <input type="number" id="inp_so_luong"> <br>
+                                <span id="errQuantityMes" style="color: red"></span>
                             </p>
                         </div>
                         <div class="modal-footer">
