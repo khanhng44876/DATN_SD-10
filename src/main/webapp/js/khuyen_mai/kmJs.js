@@ -72,7 +72,14 @@ function themKm(){
                         <td>${data.dieu_kien}</td>
                         <td>${data.ngay_bat_dau}</td>
                         <td>${data.ngay_ket_thuc}</td>
-                        <td>${data.trang_thai}</td>
+                        <td style="text-align: center; vertical-align: middle;">
+                            <span class="badge rounded-pill 
+                                    ${data.trang_thai === 'Đang diễn ra' ? 'status-ongoing' :
+                                    data.trang_thai === 'Sắp diễn ra' ? 'status-upcoming' :
+                                     'status-ended'}">
+                                ${data.trang_thai}
+                            </span>
+                        </td>
                         <td>${data.so_luong_sd}</td>
                         <td>
                             <button type="button" data-id=${data.id} value="update" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kmModal" onclick="openModal(this)">

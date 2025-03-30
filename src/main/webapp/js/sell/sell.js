@@ -544,8 +544,8 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
     let mauSac = document.getElementById("mau_sac").textContent
     let kichThuoc = document.getElementById("kich_thuoc").textContent
     let donGia = parseFloat(document.getElementById("don_gia").textContent)
-    let soLuong = parseInt(document.getElementById("so_luong").innerText)
-    let tongTien = parseInt(soLuong) * parseFloat(donGia)
+    let soLuong = parseInt(document.getElementById("so_luong").textContent)
+    let tongTien = parseInt(inpQuantity) * parseFloat(donGia)
     let activeTab = document.querySelector("#nav-tab .nav-link.active");
     if (!activeTab) {
         alert("Vui lòng chọn một đơn hàng trước!");
@@ -573,7 +573,7 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
     }
     let existingProduct = order.product.find(p => Number(p.id) === Number(productId))
     if(existingProduct){
-        existingProduct.so_luong += soLuong
+        existingProduct.so_luong += inpQuantity
         existingProduct.tong_tien = existingProduct.so_luong * donGia
     }else{
         order.product.push({
@@ -583,7 +583,7 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
             mau_sac:mauSac,
             kich_thuoc:kichThuoc,
             don_gia:donGia,
-            so_luong:soLuong,
+            so_luong:inpQuantity,
             tong_tien:tongTien
         })
     }

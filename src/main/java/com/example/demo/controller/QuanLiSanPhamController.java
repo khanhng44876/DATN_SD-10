@@ -310,7 +310,7 @@ public class QuanLiSanPhamController {
                 Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
                 Files.copy(anhSanPham.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-                ctsp.setAnhSanPham("/uploads/" + fileName);
+                ctsp.setAnhSanPham(fileName);
             } else {
                 ctsp.setAnhSanPham(null);
             }

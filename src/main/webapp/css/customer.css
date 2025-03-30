@@ -118,6 +118,9 @@
     align-items: center;
     gap: 5px; /* Tạo khoảng cách giữa icon và chữ */
 }
+.breadcrumb-item::before {
+    content: none !important;
+}
 
 .breadcrumb a {
     color: black; /* Màu chữ của link */
@@ -137,4 +140,49 @@
     font-size: 20px; /* Chỉnh kích thước icon */
     margin-right: 5px;
 }
+.payment-option {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    gap: 15px; /* Tạo khoảng cách giữa ảnh và văn bản */
+    transition: all 0.3s ease-in-out;
+    background: #fff;
+}
+
+.payment-option:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.payment-option img {
+    width: 50px; /* Đảm bảo kích thước ảnh đều */
+    height: 50px;
+    object-fit: contain;
+}
+
+.payment-option div {
+    display: flex;
+    flex-direction: column;
+}
+
+.payment-option h5 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.payment-option p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #666;
+}
+.payment-option.active {
+    border-color: #007bff; /* Màu xanh dương */
+    box-shadow: 0 8px 16px rgba(0, 123, 255, 0.3);
+    transform: translateY(-4px);
+}
+
 

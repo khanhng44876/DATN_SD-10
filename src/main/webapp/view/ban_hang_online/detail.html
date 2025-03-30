@@ -66,6 +66,7 @@
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
+    localStorage.setItem('total_price',JSON.stringify(0))
 
     async function loadProductDetail() {
         const response = await fetch(`/ban-hang-online/ctsp/${productId}`);
@@ -74,10 +75,11 @@
     }
 
     function renderProductDetail(product) {
+
         const productDetail = document.getElementById('product-detail');
         let html = `
         <div class="col-md-6">
-            <img src="@{'../../images/' + ${product.anhSanPham}}" class="img-fluid" alt="${product.sanPham.tenSanPham}">
+            <img src='../../images/${product.anhSanPham}' class="img-fluid" alt="${product.sanPham.tenSanPham}">
         </div>
         <div class="col-md-6">
             <h2>${product.sanPham.tenSanPham}</h2>
@@ -89,6 +91,7 @@
             </div>
         </div>`;
         productDetail.innerHTML = html;
+
     }
 
     function formatMoney(money) {
@@ -110,11 +113,15 @@
 
     function addToCart(id, name, price, image, size) {
         const cart = getCartFromLocalStorage();
+
         const existingProduct = cart.find(item => item.id === id && item.size === size);
         if (existingProduct) {
             existingProduct.quantity += 1;
+            existingProduct.total = existingProduct.price * existingProduct.quantity
         } else {
-            cart.push({ id, name, size, price, image, quantity: 1 });
+            let total = 1*price
+            let active = false
+            cart.push({ id, name, size, price, image, quantity: 1,total,active});
         }
         saveCartToLocalStorage(cart);
         alert(`Đã thêm ${name} (Size: ${size}) vào giỏ hàng!`);
