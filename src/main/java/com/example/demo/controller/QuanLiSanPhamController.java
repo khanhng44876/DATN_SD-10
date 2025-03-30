@@ -310,7 +310,7 @@ public class QuanLiSanPhamController {
                 Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
                 Files.copy(anhSanPham.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-                ctsp.setAnhSanPham(fileName);
+                ctsp.setAnhSanPham( fileName);
             } else {
                 ctsp.setAnhSanPham(null);
             }
@@ -324,6 +324,22 @@ public class QuanLiSanPhamController {
     }
 
 
+// check trung san pham chi tiet
+@GetMapping("/kiem-tra-trung-ctsp")
+public ResponseEntity<Boolean> kiemTraTrungCtsp(
+        @RequestParam("idSanPham") Integer idSanPham,
+        @RequestParam("idMauSac") Integer idMauSac,
+        @RequestParam("idKichThuoc") Integer idKichThuoc,
+        @RequestParam(value = "excludeId", required = false) Integer excludeId
+) {
+    boolean exists;
+    if (excludeId == null) {
+        exists = sanPhamCTRepository.existsBySanPhamIdAndMauSacIdAndKichThuocId(idSanPham, idMauSac, idKichThuoc);
+    } else {
+        exists = sanPhamCTRepository.existsBySanPhamIdAndMauSacIdAndKichThuocIdAndIdNot(idSanPham, idMauSac, idKichThuoc, excludeId);
+    }
+    return ResponseEntity.ok(exists);
+}
 
 
 
@@ -376,7 +392,7 @@ public class QuanLiSanPhamController {
                 Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
                 Files.copy(anhSanPham.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-                ctsp.setAnhSanPham("/uploads/" + fileName);
+                ctsp.setAnhSanPham(fileName);
             }
 
             sanPhamCTRepository.save(ctsp);

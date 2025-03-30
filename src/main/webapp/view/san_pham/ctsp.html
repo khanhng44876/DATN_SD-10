@@ -14,7 +14,7 @@
             <div class="pt-3" style="width: calc(100% - 250px);">
                 <div class="container">
                     <h2 style="text-align: center;">Quản Lý Chi Tiết Sản Phẩm</h2>
-                    <button onclick="redirectToAdd()" class="btn btn-success">Thêm sản phẩm</button>
+                    <button onclick="redirectToAdd()" class="btn btn-success">Thêm sản phẩm chi tiết</button>
                     <table id="example" class="table table-bordered">
                         <thead>
                         <tr>
@@ -42,7 +42,7 @@
                             <td><span th:inline="text">[[${#numbers.formatDecimal(d.donGia, 0, 'COMMA', 0, 'POINT')}]]</span></td>
                             <td th:text="${d.moTa}"></td>
                             <td>
-                                <img th:src="@{'../../images/' + ${d.anhSanPham}}" class="avatar-img rounded" alt="Ảnh sản phẩm" style="width: 100px; height: 100px;"/>
+                                <img th:src="@{'/images/' + ${d.anhSanPham}}" class="avatar-img rounded" alt="Ảnh sản phẩm" style="width: 100px; height: 100px;"/>
                             </td>
                             <td th:text="${d.trangThai}"></td>
 

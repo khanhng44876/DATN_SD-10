@@ -1,5 +1,7 @@
 package com.example.demo.config;
 
+import com.example.demo.entity.KhachHang;
+import com.example.demo.repository.KhachHangRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import java.io.IOException;
+import java.util.Optional;
 
 
 @Configuration
@@ -57,13 +60,24 @@ public class SecurityConfig {
             @Override
             public void onAuthenticationSuccess(HttpServletRequest request,
                                                 HttpServletResponse response,
-                                                Authentication authentication) throws IOException, ServletException {
-                // Kiểm tra user có quyền nào phù hợp không
+                                                Authentication authentication) throws IOException {
                 boolean isQuanLy = authentication.getAuthorities().stream()
                         .anyMatch(auth -> auth.getAuthority().equals("QUAN_LY"));
-
                 boolean isNhanVien = authentication.getAuthorities().stream()
                         .anyMatch(auth -> auth.getAuthority().equals("NHAN_VIEN"));
+
+                // ✅ Nếu là khách hàng
+                if (!isQuanLy && !isNhanVien) {
+                    String taiKhoan = authentication.getName();
+
+                    // Lấy repository từ context
+                    KhachHangRepository khachHangRepo = SpringContext.getBean(KhachHangRepository.class);
+                    Optional<KhachHang> optionalKH = khachHangRepo.findByTaiKhoan(taiKhoan);
+
+                    optionalKH.ifPresent(kh -> request.getSession().setAttribute("khachHang", kh));
+                }
+
+                // Giữ nguyên điều hướng
                 if (isQuanLy) {
                     response.sendRedirect("/nhan-vien/hien-thi");
                 } else if (isNhanVien) {
@@ -74,5 +88,6 @@ public class SecurityConfig {
             }
         };
     }
+
 
 }

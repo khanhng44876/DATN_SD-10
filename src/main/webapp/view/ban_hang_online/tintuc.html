@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <head th:replace="giao_dien_chinh/libCustomer :: libheadercustomer"></head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sky Fashion Football - TIN TUC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .section-header {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6600;
+        }
+        .divider {
+            width: 100%;
+            height: 4px;
+            background-color: #007bff;
+            margin: 10px 0;
+        }
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 300px;
+            max-width: 100%;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        .card-content {
+            padding: 15px;
+            text-align: left;
+            font-family: 'Roboto', sans-serif; /* Ví dụ sử dụng font Roboto */
+            font-weight: 400; /* Điều chỉnh độ đậm của chữ nếu cần */
+            font-style: normal; /* Kiểu chữ: normal hoặc italic */
+        }
+        .card-title a {
+            pointer-events: auto; /* Cho phép click */
+            text-decoration: underline; /* Hiển thị gạch chân */
+            color: blue; /* Hoặc màu khác để dễ nhận biết */
+            font-size: 16px; /* Điều chỉnh kích thước tùy ý */
+        }
+
+        .card-text {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+            text-align: left;
+            min-height: 40px;
+        }
+        @media (max-width: 768px) {
+            .grid {
+                flex-direction: column;
+                align-items: center;
+            }
+            .card {
+                width: 90%;
+            }
+        }
+        .section-header h2 {
+            color: #1e40af;
+        }
+        .breadcrumb-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Căn nội dung về bên trái */
+            background: #f8f9fa;
+            padding: 8px 16px;
+        }
+        nav {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<nav th:fragment="headerCustomer" class="navbar navbar-expand-sm bg-light shadow">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between w-100 align-items-center">
+            <!-- Logo -->
+            <div class="d-flex align-items-center">
+                <a href="/hoa-don/doanh-thu">
+                    <img src="/images/logo.png" alt="Logo" style="max-height: 60px;">
+                </a>
+                <h3 class="ms-2">Sky Football Fashion</h3>
+            </div>
+
+            <!-- Ô tìm kiếm -->
+            <div class="flex-grow-1 mx-4">
+                <form class="d-flex position-relative">
+                    <input class="form-control rounded-pill ps-3 pe-5" type="search"
+                           placeholder="Tìm kiếm sản phẩm..." aria-label="Search">
+                    <button class="btn position-absolute end-0 top-50 translate-middle-y me-2"
+                            type="submit" style="border: none; background: none;">
+                        <i class="bi bi-search fs-5"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Hotline, giỏ hàng và tài khoản -->
+            <div class="d-flex align-items-center">
+                <!-- Hotline -->
+                <div class="me-4">
+                    <i class="bi bi-telephone-fill me-1 text-primary"></i>
+                    <span class="fw-bold">Hotline: 0123 456 789</span>
+                </div>
+
+                <!-- Giỏ hàng -->
+                <div class="me-4 position-relative">
+                    <a href="/ban-hang-online/cart" class="text-dark">
+                        <i class="bi bi-cart4 fs-4"></i>
+                    </a>
+                    <span class="position-absolute top-0 start-100 translate-middle badge bg-danger">3</span>
+                </div>
+
+                <!-- Tài khoản -->
+                <div>
+                    <ul class="navbar-nav align-items-center">
+                        <!-- Hiển thị thông tin người dùng -->
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a id="auth-button" class="nav-link btn btn-outline-light" href="/login">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> Đăng nhập
+                                </a>
+                            </li>
+                        </ul>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<div th:replace="giao_dien_chinh/navbarCustomer :: navCustomer"></div>
+<!--icon trang chủ>>tin tức-->
+<!-- Breadcrumb hiển thị icon trang chủ và tin tức -->
+<div class="breadcrumb-container" style="background: #f8f9fa; padding: 8px 16px;">
+    <a href="/ban-hang-online" class="breadcrumb-link" style="text-decoration: none; color: #1e40af; font-weight: bold;">
+        <i class="bi bi-house-door-fill"></i> Trang chủ
+    </a>
+    <span class="breadcrumb-separator" style="margin: 0 8px;">&raquo;</span>
+    <span class="breadcrumb-current" style="color: #6c757d;">Tin tức</span>
+</div>
+
+<div class="container">
+    <div class="section-header">
+        <h2 class="title">TIN KHUYẾN MẠI ÁO BÓNG ĐÁ</h2>
+        <div class="divider"></div>
+    </div>
+    <div class="grid">
+        <div class="card">
+            <img src="/images/a1.jpg" alt="Áo Đá Bóng Tập Luyện" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://aobongda.net/top-cac-loai-vot-pickleball-tot-nhat-hien-nay-lua-chon-hoan-hao-cho-moi-tran-dau" target="_blank">
+                        TOP CÁC LOẠI VỢT PICKLEBALL TỐT NHẤT HIỆN NAY – Lựa Chọn Hoàn Hảo Cho Mọi Trận Đấu!
+                    </a>
+                </h3>
+                <p class="card-text">Pickleball đang ngày càng trở nên phổ biến trên toàn thế giới, không chỉ bởi tính giải trí mà còn vì khả năng cải thiện thể chất và tinh thần.</p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/a2.jpg" alt="Bộ Quần Áo Thi Đấu" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://aobongda.net/cac-mau-giay-pickleball-cua-wika-sport" target="_blank">
+                        Các Mẫu Giày Pickleball của Wika Sport.
+                    </a>
+                </h3>
+                <p class="card-text">Wika là một thương hiệu Việt Nam chuyên sản xuất và phân phối giày thể thao và các sản phẩm liên quan đến thể thao.</p>
+
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/a3.jpg" alt="Áo Đá Banh Cổ Tròn" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://aobongda.net/xu-huong-thoi-trang-the-thao-hien-nay-kham-pha-phong-cach-nang-dong-va-thoi-thuong" target="_blank">
+                        XU HƯỚNG THỜI TRANG THẾ THAO HIỆN NAY - Khám phá phong cách năng động và thời thượng
+                    </a>
+                   </h3>
+                <p class="card-text">XU HƯỚNG THỜI TRANG THẾ THAO HIỆN NAY - Khám phá phong cách năng động và thời thượng.</p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/a4.jpg" alt="Áo Đá Bóng Tập Luyện" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://aobongda.net/giay-sao-vang-bieu-tuong-cua-su-ben-bi-va-chat-luong-trong-giay-the-thao-viet" target="_blank">
+                        Giày Sao Vàng – Biểu Tượng Của Sự Bền Bỉ Và Chất Lượng Trong Giày Thể Thao Việt
+                    </a>
+                </h3>
+                <p class="card-text">Giày sao vàng là một trong những sản phẩm giày nổi tiếng nhất tại Việt Nam, với thiết kế độc đáo và chất lượng vượt trội.</p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/a5.jpg" alt="Bộ Quần Áo Thi Đấu" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://aobongda.net/dat-ao-doi-uu-dai-gap-boi-tai-aobongda-net" target="_blank">
+                        ĐẶT ÁO ĐỘI - ƯU ĐÃI GẤP BỘI TẠI AOBONGDA.NET
+                    </a>
+                    </h3>
+                <p class="card-text">Bạn có thể tự do lựa chọn màu sắc, kiểu dáng và thêm các chi tiết như logo, tên đội, số áo theo sở thích hoặc yêu cầu của đội bóng. </p>
+
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/a7.jpg" alt="Áo Đá Banh Cổ Tròn" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://aobongda.net/gio-vang-gia-soc-sale-off-50" target="_blank">
+                        Giờ vàng giá sốc - Sale off: 50%
+                    </a>
+                   </h3>
+                <p class="card-text">Thời gian giờ vàng : từ [13h – 14h ] các ngày trong tuần
+                    (CS2-8 lần lượt từ T2 đến CN , Riêng CS1: Thứ 4 ) </p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/a7.jpg" alt="Áo Đá Bóng Tập Luyện" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://aobongda.net/bao-sale-off-bung-no-gia-soc-gia-soc" target="_blank">
+                        Bão sale off bùng nổ- Giá sốc, giá sốc!
+                    </a>
+                </h3>
+                <p class="card-text">Hệ thống cửa hàng aobongda.net xin gửi tới các bạn đợt sale off lớn nhất từ trước đến nay áp dụng tất cả ngày giờ trong tuần đồng giá 50k/1 sản phẩm áo bóng đá.</p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/a8.jpg" alt="Bộ Quần Áo Thi Đấu" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://aobongda.net/mua-ao-bong-da-tai-long-bien-gia-re" target="_blank">
+                        Địa chỉ mua áo bóng đá tại Long Biên giá rẻ
+                    </a>
+                  </h3>
+                <p class="card-text">Với mục tiêu phục vụ tốt nhất, nhanh nhất các sản phẩm, dịch vụ đến Quý khách hàng trong cả nước nói chung, đặc biệt là khu vực Hà Nội.</p>
+            </div>
+        </div>
+    </div>
+<!--Tin tức-->
+    <br>
+    <div class="section-header">
+        <h2 class="title">NGOẠI HẠNG ANH</h2>
+        <div class="divider"></div>
+    </div>
+    <div class="grid">
+        <div class="card">
+            <img src="/images/tin1.jpg" alt="Sản phẩm 1" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://www.24h.com.vn/bong-da/mu-va-giac-mo-kiem-tram-trieu-bang-don-toan-luc-vo-dich-europa-league-c48a1652154.html" target="_blank">
+                        MU và giấc mơ kiếm trăm triệu bảng, dồn toàn lực vô địch Europa League
+                    </a>
+                </h3>
+                <p class="card-text">Trận đấu kịch tính đến phút cuối cùng, Liverpool giành 3 điểm quan trọng trong cuộc đua vô địch.</p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/tin2.jpg" alt="Sản phẩm 2" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://www.24h.com.vn/bong-da/barcelona-vuot-len-nghich-canh-chong-lai-virus-nho-tai-cua-hansi-flick-c48a1652129.html" target="_blank">
+                        Barcelona vượt lên nghịch cảnh, chống lại "virus FIFA" nhờ tài của Hansi Flick
+                    </a>
+                </h3>
+                <p class="card-text">Manchester United chính thức ký hợp đồng với trung vệ trẻ đầy triển vọng, hứa hẹn củng cố hàng thủ.</p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/tin3.jpg" alt="Sản phẩm 3" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://www.24h.com.vn/bong-da/du-doan-ty-so-tu-ket-fa-cup-man-city-coi-chung-bournemouth-aston-villa-de-tho-c48a1652142.html" target="_blank">
+                        Barcelona vượt lên nghịch cảnh, chống lại "virus FIFA" nhờ tài của Hansi Flick
+                    </a>
+                </h3>
+                <p class="card-text">ù chưa có kết luận chính thức, nhưng nếu bị xác định vi phạm, anh có thể đối diện với án phạt từ liên đoàn bóng đá châu Âu (UEFA), thậm chí bị cấm thi đấu trong một số trận quan trọng sắp tới. </p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/22.jpg" alt="Sản phẩm 3" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://www.24h.com.vn/bong-da/barcelona-vuot-len-nghich-canh-chong-lai-virus-nho-tai-cua-hansi-flick-c48a1652129.html" target="_blank">
+                        Barcelona nguy cơ bị kiện ở trận thắng Osasuna 3-0, đối diện án phạt từ FIFA
+                    </a></h3>
+                <p class="card-text">Những bản hợp đồng gây thất vọng đang trở thành gánh nặng lớn cho Man Utd..</p>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="section-header">
+        <h2 class="title"> TIN TỨC BÓNG ĐÁ THẾ GIỚI 2025</h2>
+        <div class="divider"></div>
+    </div>
+    <div class="grid">
+        <div class="card">
+            <img src="/images/tin4.jpg" alt="Sản phẩm 1" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://www.24h.com.vn/bong-da/barcelona-nguy-co-bi-kien-o-tran-thang-osasuna-3-0-doi-dien-an-phat-tu-c48a1652144.html" target="_blank">
+                        Barcelona nguy cơ bị kiện ở trận thắng Osasuna 3-0, đối diện án phạt từ FIFA
+                    </a></h3>
+                <p class="card-text">Quỷ Đỏ dừng bước sớm sau thất bại đầy tiếc nuối trước đối thủ dưới cơ.</p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/tin5.jpg" alt="Sản phẩm 2" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://www.24h.com.vn/bong-da/video-bong-da-nu-chelsea-man-city-3-ban-ap-dao-nguoc-dong-than-toc-cup-c1-c48a1652123.html" target="_blank">
+                        Video bóng đá nữ Chelsea - Man City: 3 bàn áp đảo, ngược dòng thần tốc (Cúp C1)
+                    </a>
+                </h3>
+                <p class="card-text">Trận cầu kịch tính với 8 bàn thắng khiến người hâm mộ mãn nhãn.</p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/tin6.jpg" alt="Sản phẩm 3" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://www.24h.com.vn/bong-da/liverpool-xac-dinh-nguoi-the-cho-arnold-aston-villa-quay-xe-thuong-vu-rashfordclip-tin-nong-c48a1652102.html" target="_blank">
+                        Liverpool xác định người thế chỗ Arnold, Aston Villa “quay xe” thương vụ Rashford (Clip tin nóng)
+                    </a>
+                </h3>
+                <p class="card-text">Harry Kane lập cú đúp giúp Bayern giành lợi thế lớn trước trận lượt về.</p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/23.jpg" alt="Sản phẩm 3" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://www.24h.com.vn/bong-da/argentina-khong-messi-van-rong-bay-phuong-mua-sang-cua-bao-ve-ngoi-vuong-world-cup-c48a1652108.html" target="_blank">
+                        Argentina không Messi vẫn "rồng bay phượng múa", sáng cửa bảo vệ ngôi vương World Cup                    </a>
+                </h3>
+                <p class="card-text">Dalot có cơ hội ngon ăn nhưng không thể chuyển hóa thành bàn thắng, khiến Man Utd mất điểm đáng tiếc.</p>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="section-header">
+        <h2 class="title"> CẨM NANG THỂ THAO</h2>
+        <div class="divider"></div>
+    <div class="grid">
+        <div class="card">
+            <img src="/images/camnang1.jpg" alt="Sản phẩm 1" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://www.24h.com.vn/lam-dep/6-xu-huong-tap-luyen-the-thao-giu-dang-khoe-dep-hot-nhat-nam-2025-ap-dung-quy-luat-30-30-30-chi-mat-0-dong-c145a1648052.html" target="_blank">
+                        6 xu hướng tập luyện thể thao giữ dáng khoẻ đẹp hot nhất năm 2025
+                    </a>
+                </h3>
+                <p class="card-text">Các bài tập được được Việt hóa. Tuy nhiên, bạn sẽ không thể tập nếu chỉ đọc phụ đề. Phần phụ để Thể dục 24H chỉ mô tả tư thế cần chú ý và cách hít thở.</p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/camnang2.jpg" alt="Sản phẩm 2" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://www.24h.com.vn/the-thao/10-phut-tap-luyen-toan-than-total-body-c101a570891.html" target="_blank">
+                        10 phút tập luyện: Toàn thân (Total Body)
+                    </a>
+                </h3>
+                <p class="card-text">Bóng đá, bơi lội, tennis và gym là những môn thể thao phổ biến nhất hiện nay.</p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/camnang3.jpg" alt="Sản phẩm 3" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://www.24h.com.vn/suc-khoe-doi-song/bat-ngo-1-kieu-tap-the-thao-khien-ban-song-lau-hoac-chet-som-c62a1043356.html" target="_blank">
+                        Bất ngờ 1 kiểu tập thể thao khiến bạn sống lâu hoặc chết sớm
+                    </a>
+                </h3>
+                <p class="card-text">Nghiên cứu quy mô lớn của Phòng khám Y học Thể thao ở Rio de Janeiro (Brazil).</p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="/images/24.jpg" alt="Sản phẩm 3" class="card-img">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="https://www.24h.com.vn/lam-dep/tap-the-thao-dung-cach-trong-mua-lanh-c145a1621251.html" target="_blank">
+                        Tập thể thao đúng cách trong mùa lạnh
+                    </a>
+                </h3>
+                <p class="card-text">Các nhà khoa học đã khám phá ra môn thể thao "vàng" khiến người cao tuổi trường thọ nếu tập đúng nhưng có thể tăng nguy cơ chết sớm nếu tập sai cách.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

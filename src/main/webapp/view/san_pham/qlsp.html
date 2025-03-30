@@ -5,7 +5,7 @@
     <title>Quan Ly San Pham</title>
     <meta charset="utf-8">
     <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
-    <link rel="stylesheet" href="css/styles.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
 </head>
 <body>
 <div>
@@ -86,16 +86,11 @@
                         <td th:text="${d.ngaySua}"></td>
                         <td th:text="${d.danhMuc != null ? d.danhMuc.tendanhmuc : 'Chưa có danh mục'}"></td>
                         <td th:text="${d.hang != null ? d.hang.tenHang : 'Chưa có hãng'}"></td>
-                        <!--                            <td style="text-align: center; vertical-align: middle;"  >-->
-                        <!--                                <span th:text="${d.trangThai}" th:classappend="${d.trangThai == 'Còn hàng'?'status-ongoing':'status-ended'}" class="badge rounded-pill"></span>-->
-                        <!--                            </td>-->
                         <td style="text-align: center; vertical-align: middle;">
-    <span style=" background-color: #e6f9e6; /* Xanh nhạt */
+                            <span style=" background-color: #e6f9e6; /* Xanh nhạt */
     color: #28a745; /* Xanh lá */
     border: 1px solid #90ee90;" th:text="${d.trangThai}"
-          th:classappend="${d.trangThai == 'Còn hàng' ? 'status-ongoing' :
-
-                           'status-ended'}"
+                            th:classappend="${d.trangThai == 'Còn hàng' ? 'status-ongoing' :'status-ended'}"
           class="badge rounded-pill">
     </span>
                         </td>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" ng-app="ThongKeApp">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Thống kê hóa đơn & sản phẩm</title>
+    <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+<div>
+    <div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
+    <div class="d-flex">
+        <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
+        <div class="pt-3" style="width: calc(100% - 250px);">
+            <div class="container my-5" ng-controller="ThongKeController">
+                <div class="page-inner">
+                    <h1 class="text-center mb-4 fw-bold">Thống kê</h1>
+
+                    <div class="row g-3">
+                        <div class="col-md-4" ng-if="monthlySales">
+                            <div class="card p-3 shadow-sm">
+                                <h5 class="fw-bold">Doanh số tháng này</h5>
+                                <p>{{ monthlySales.totalOrders }} đơn hàng /
+                                    <span class="text-warning fw-bold">{{ monthlySales.totalRevenue | vndCurrency }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4" ng-if="todaySales">
+                            <div class="card p-3 shadow-sm">
+                                <h5 class="fw-bold">Doanh số hôm nay</h5>
+                                <p>{{ todaySales.totalOrders }} đơn hàng /
+                                    <span class="text-warning fw-bold">{{ todaySales.totalRevenue | vndCurrency }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4" ng-if="monthlySoldProducts">
+                            <div class="card p-3 shadow-sm">
+                                <h5 class="fw-bold">Hàng bán được tháng này</h5>
+                                <p><span class="text-warning fw-bold">{{ monthlySoldProducts }}</span> sản phẩm</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h1 class="text-center mb-4">Biểu Đồ Thống Kê Hóa Đơn Và Sản Phẩm Tháng Này</h1>
+                    <canvas id="thongKeChart" width="800" height="400"></canvas>
+
+                    <br><hr><br>
+                    <div class="row">
+                        <div class="col-7" style="background-color: #FFFFFF;margin-right: 20px;border-radius: 10px" >
+                            <h2 class="text-center">Top Sản Phẩm Bán Chạy Tháng Này</h2>
+                            <table class="table table-bordered text-center">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Ảnh</th>
+                                    <th>Tên Sản Phẩm</th>
+                                    <th>Giá Bán</th>
+                                    <th>Số Lượng Đã Bán</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="item in bestSellingProducts track by $index">
+                                    <td>{{$index + 1}}</td>
+                                    <td><img ng-src="/images/{{ item.anh }}" alt="Ảnh sản phẩm" style="width: 100px; height: 80px;"></td>
+                                    <td>{{item.tenSanPham}}</td>
+                                    <td>{{item.giaBan | vndCurrency}}</td>
+                                    <td>{{item.soLuongDaBan}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <h2 class="text-center mb-4">Sản phẩm sắp hết hàng</h2>
+                            <table class="table">
+                                <thead class="table-warning">
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Ảnh</th>
+                                    <th>Tên Sản Phẩm</th>
+                                    <th>Giá Bán</th>
+                                    <th>Số Lượng còn lại</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="product in lowStockProducts">
+                                    <td>{{ $index + 1 }}</td>
+                                    <td><img ng-src="/images/{{ product.chiTietSanPham.anh }}" alt="Ảnh sản phẩm" style="width: 100px; height: 80px;"></td>
+                                    <td>
+                                        {{ product.tenSanPham }}
+                                        [ {{product.chiTietSanPham.mauSac.ten}} - {{product.chiTietSanPham.kichCo.ten}} ]
+                                    </td>
+                                    <td>{{ product.chiTietSanPham.gia_ban | vndCurrency }}</td>
+                                    <td>{{ product.chiTietSanPham.so_luong }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-4" style="background-color: #FFFFFF;height: 400px;border-radius: 10px">
+                            <h2 class="text-center mb-4">Trạng Thái Đơn Hàng Tháng Này</h2>
+                            <canvas id="orderStatusChart" width="800" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/chart.js/chart.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
+<script th:src="@{/js/thong_ke/thongKe.js}"></script>
+</body>
+</html>

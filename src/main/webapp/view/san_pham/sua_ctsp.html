@@ -26,9 +26,12 @@
 
                         <label>Đơn giá(*)</label>
                         <input id="donGia" class="form-control" th:value="${ctsp.donGia}">
+                        <span id="errorDonGia" class="text-danger"></span>
 
                         <label>Số lượng(*)</label>
                         <input id="soLuong" class="form-control" th:value="${ctsp.soLuong}">
+                        <span id="errorSoLuong" class="text-danger"></span>
+                        <br>
 
                         <label>Ghi chú</label>
                         <input id="moTa" class="form-control" th:value="${ctsp.moTa}">
@@ -40,6 +43,8 @@
                                     th:text="${mau.ten_mau_sac}"
                                     th:selected="${mau.id == ctsp.mauSac.id}"></option>
                         </select>
+                        <span id="errorMauSac" class="text-danger"></span>
+                        <br>
 
                         <label>Kích thước(*)</label>
                         <select id="kichThuoc" class="form-control">
@@ -48,6 +53,8 @@
                                     th:text="${size.tenKichThuoc}"
                                     th:selected="${size.id == ctsp.kichThuoc.id}"></option>
                         </select>
+                        <span id="errorSize" class="text-danger"></span>
+                        <br>
 
                         <label>Chất liệu(*)</label>
                         <select id="chatLieu" class="form-control">
@@ -56,6 +63,8 @@
                                     th:text="${chatLieu.tenChatLieu}"
                                     th:selected="${chatLieu.id == ctsp.chatLieu.id}"></option>
                         </select>
+                        <span id="errorChatLieu" class="text-danger"></span>
+                        <br>
 
                         <label>Trạng Thái(*)</label>
                         <select id="trangThai" class="form-control">
@@ -67,10 +76,8 @@
                         <input id="anhSanPham" type="file" class="form-control">
 
                         <br>
-                        <button type="button" class="btn btn-warning"
-                                th:attr="onclick='capNhatCTSP(' + ${ctsp.id} + ')'" >
-                            Update
-                        </button>
+                        <button type="button" class="btn btn-warning" onclick="validateCtsp('update')">Update</button>
+
                         <a th:href="@{'/san-pham/ds-ctsp/' + ${ctsp.sanPham.id}}" class="btn btn-secondary">Hủy</a>
                     </form>
 
@@ -86,208 +93,132 @@
 <script>
     $('#example').DataTable();
 </script>
-<script th:inline="javascript">
-
-    function validateCtsp(action) {
-
-        const soLuong = document.getElementById("soLuong").value;
-        const donGia = document.getElementById("donGia").value;
-        const moTa = document.getElementById("moTa").value;
-        const mauSac = document.getElementById("mauSac").value;
-        const kichThuoc = document.getElementById("kichThuoc").value;
-        const chatLieu = document.getElementById("chatLieu").value;
-        const trangThai = document.getElementById("trangThai").value;
-
-        let isValid = true;
-
-        if (!donGia || isNaN(donGia) || parseFloat(donGia) <= 0) {
-            document.getElementById("errorDonGia").innerText = "Vui lòng nhập đơn giá hợp lệ.";
-            isValid = false;
-        }
-
-        if (!soLuong || isNaN(soLuong) || parseInt(soLuong) <= 0) {
-            document.getElementById("errorSoLuong").innerText = "Vui lòng nhập số lượng hợp lệ.";
-            isValid = false;
-        }
-
-        if (mauSac === "") {
-            document.getElementById("errorMauSac").innerText = "Vui lòng chọn màu sắc.";
-            isValid = false;
-        }
-
-        if (kichThuoc === "") {
-            document.getElementById("errorSize").innerText = "Vui lòng chọn kích thước.";
-            isValid = false;
-        }
-
-        if (chatLieu === "") {
-            document.getElementById("errorChatLieu").innerText = "Vui lòng chọn chất liệu.";
-            isValid = false;
-        }
-        if (trangThai === "") {
-            document.getElementById("errorTrangThai").innerText = "Vui lòng chọn trạng thái.";
-            isValid = false;
-        }
-
-        if (isValid) {
-            if (action === 'add') {
-                themctspp();
-            } else if (action === 'update') {
-                capNhatCTSP(window.currentCTSanPhamId);
-            }
-        }
-
-
-    }
-
-    async function loadCtspData(idctsp) {
-        console.log("ID sản phẩm nhận được:", idctsp); // In ra để kiểm tra idsp
-        try {
-            const id = parseInt(idctsp, 10);
-            if (isNaN(id)) {
-                console.error("ID sản phẩm không hợp lệ:", idctsp);
-                alert("ID sản phẩm không hợp lệ.");
-                return;
-            }
-            // Gửi yêu cầu GET đến server để lấy dữ liệu sản phẩm
-            const response = await fetch(`/san-pham/danh-sach-ctsp/${id}`);
-
-            // Kiểm tra nếu phản hồi không thành công
-            if (!response.ok) {
-                console.error("Lỗi khi tải dữ liệu sản phẩm:", response.statusText);
-                alert("Không thể tải dữ liệu sản phẩm.");
-                return;
-            }
-
-            const ctsp = await response.json();
-
-            // Điền dữ liệu vào form
-            document.getElementById("soLuong").value = ctsp.soLuong;
-            document.getElementById("donGia").value = ctsp.donGia;
-            document.getElementById("moTa").value = ctsp.moTa;
-            document.getElementById("anhSanPham").value = ctsp.anhSanPham;
-            document.getElementById("mauSac").value = ctsp.mauSac.id;
-            document.getElementById("kichThuoc").value = ctsp.kichThuoc.id;
-            document.getElementById("chatLieu").value = ctsp.chatLieu.id;
-            document.getElementById("trangThai").value = ctsp.trangThai;
-
-
-            window.currentCTSanPhamId = idctsp;
-        } catch (error) {
-            console.error("Đã có lỗi xảy ra khi tải dữ liệu sản phẩm:", error);
-            alert("Không thể tải dữ liệu sản phẩm.");
-        }
-    }
-
-
-    async function themctspp() {
-
-        const idsanPham = document.getElementById("idsanPham").value;
-
-        if (!idsanPham || isNaN(idsanPham)) {
-            alert("Vui lòng chọn sản phẩm!");
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("idsanPham", idsanPham);
-        formData.append("idmauSac", document.getElementById("mauSac").value);
-        formData.append("idkichThuoc", document.getElementById("kichThuoc").value);
-        formData.append("idchatLieu", document.getElementById("chatLieu").value);
-        formData.append("soLuong", document.getElementById("soLuong").value);
-        formData.append("donGia", document.getElementById("donGia").value);
-        formData.append("moTa", document.getElementById("moTa").value);
-        formData.append("trangThai", document.getElementById("trangThai").value);
-
-        const anhSanPham = document.getElementById("anhSanPham").files[0];
-        if (anhSanPham) {
-            formData.append("anhSanPham", anhSanPham);
-        }
-
-        try {
-            const response = await fetch(`/san-pham/them-ctsp`, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                alert("Thêm chi tiết sản phẩm thành công!");
-                window.location.href = `/san-pham/ds-ctsp/${idsanPham}`;
-            } else {
-                const result = await response.text();
-                alert("Lỗi: " + result);
-            }
-        } catch (e) {
-            console.error(e);
-            alert("Đã xảy ra lỗi khi thêm chi tiết sản phẩm.");
-        }
-    }
-
-    async function capNhatCTSP(id) {
-        const idsanPham = document.getElementById("idsanPham").value;
-
-        if (!confirm("Bạn chắc chắn muốn cập nhật sản phẩm?")) {
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("idsanPham", idsanPham);
-        formData.append("soLuong", document.getElementById("soLuong").value);
-        formData.append("donGia", document.getElementById("donGia").value);
-        formData.append("moTa", document.getElementById("moTa").value);
-        formData.append("idmauSac", document.getElementById("mauSac").value);
-        formData.append("idkichThuoc", document.getElementById("kichThuoc").value);
-        formData.append("idchatLieu", document.getElementById("chatLieu").value);
-        formData.append("trangThai", document.getElementById("trangThai").value);
-
-        const anhSanPham = document.getElementById("anhSanPham").files[0];
-        if (anhSanPham) formData.append("anhSanPham", anhSanPham);
-
-        try {
-            const response = await fetch(`/san-pham/cap-nhat-ctsp/${id}`, {
-                method: 'PUT',
-                body: formData // Chú ý: Không dùng headers 'Content-Type'
-            });
-
-            const result = await response.text();
-            if (response.ok) {
-                alert(result);
-                window.location.href = `/san-pham/ds-ctsp/${idsanPham}`;
-            } else {
-                alert("Lỗi khi cập nhật: " + result);
-            }
-        } catch (error) {
-            alert("Có lỗi xảy ra, vui lòng thử lại.");
-        }
-    }
-
-
-
-
-    // Hàm lấy id từ URL
-    function getIdFromURL() {
-        const segments = window.location.href.split("/");
-        return segments[segments.length - 1];
-    }
-
-
-
-    function getIdFromURL() {
-        const url = window.location.href;
-        const segments = url.split("/");
-        return segments[segments.length - 1];
-    }
-
-
-
-
-
-    function formatmoney(money) {
-        const VND = new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            window.currentCTSanPhamId = [[${ctsp.id}]];
         });
-        return VND.format(money);
-    }
-</script>
+
+        function validateCtsp(action) {
+            const soLuong = document.getElementById("soLuong").value;
+            const donGia = document.getElementById("donGia").value;
+            const moTa = document.getElementById("moTa").value;
+            const mauSac = document.getElementById("mauSac").value;
+            const kichThuoc = document.getElementById("kichThuoc").value;
+            const chatLieu = document.getElementById("chatLieu").value;
+            const trangThai = document.getElementById("trangThai").value;
+
+            let isValid = true;
+
+            // Reset error spans
+            ["errorDonGia", "errorSoLuong", "errorMauSac", "errorSize", "errorChatLieu", "errorTrangThai"].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = "";
+            });
+
+            if (!donGia || isNaN(donGia) || parseFloat(donGia) <= 0) {
+                document.getElementById("errorDonGia").innerText = "Vui lòng nhập đơn giá hợp lệ.";
+                isValid = false;
+            }
+
+            if (!soLuong || isNaN(soLuong) || parseInt(soLuong) <= 0) {
+                document.getElementById("errorSoLuong").innerText = "Vui lòng nhập số lượng hợp lệ.";
+                isValid = false;
+            }
+
+            if (!mauSac) {
+                document.getElementById("errorMauSac").innerText = "Vui lòng chọn màu sắc.";
+                isValid = false;
+            }
+
+            if (!kichThuoc) {
+                document.getElementById("errorSize").innerText = "Vui lòng chọn kích thước.";
+                isValid = false;
+            }
+
+            if (!chatLieu) {
+                document.getElementById("errorChatLieu").innerText = "Vui lòng chọn chất liệu.";
+                isValid = false;
+            }
+
+            if (!trangThai) {
+                document.getElementById("errorTrangThai").innerText = "Vui lòng chọn trạng thái.";
+                isValid = false;
+            }
+
+            if (isValid && action === 'update') {
+                const idSanPham = document.getElementById("idsanPham").value || getIdFromURL();
+                const idMauSac = document.getElementById("mauSac").value;
+                const idKichThuoc = document.getElementById("kichThuoc").value;
+                const idCTSP = window.currentCTSanPhamId;
+
+                checkDuplicate(idSanPham, idMauSac, idKichThuoc, idCTSP).then(isDuplicate => {
+                    if (isDuplicate) {
+                        alert("Chi tiết sản phẩm với màu sắc và kích thước này đã tồn tại!");
+                    } else {
+                        capNhatCTSP(idCTSP);
+                    }
+                }).catch(err => {
+                    console.error("Lỗi khi kiểm tra trùng:", err);
+                    alert("Có lỗi xảy ra khi kiểm tra dữ liệu.");
+                });
+            }
+        }
+
+        async function checkDuplicate(idSanPham, idMauSac, idKichThuoc, idCTSP = null) {
+            const url = `/san-pham/kiem-tra-trung-ctsp?idSanPham=${idSanPham}&idMauSac=${idMauSac}&idKichThuoc=${idKichThuoc}` +
+                (idCTSP ? `&excludeId=${idCTSP}` : "");
+            const res = await fetch(url);
+            if (!res.ok) throw new Error("Lỗi từ server");
+            return await res.json();
+        }
+
+        async function capNhatCTSP(id) {
+            const idsanPham = document.getElementById("idsanPham").value;
+            if (!confirm("Bạn chắc chắn muốn cập nhật sản phẩm?")) return;
+
+            const formData = new FormData();
+            formData.append("idsanPham", idsanPham);
+            formData.append("soLuong", document.getElementById("soLuong").value);
+            formData.append("donGia", document.getElementById("donGia").value);
+            formData.append("moTa", document.getElementById("moTa").value);
+            formData.append("idmauSac", document.getElementById("mauSac").value);
+            formData.append("idkichThuoc", document.getElementById("kichThuoc").value);
+            formData.append("idchatLieu", document.getElementById("chatLieu").value);
+            formData.append("trangThai", document.getElementById("trangThai").value);
+
+            const anhSanPham = document.getElementById("anhSanPham").files[0];
+            if (anhSanPham) formData.append("anhSanPham", anhSanPham);
+
+            try {
+                const response = await fetch(`/san-pham/cap-nhat-ctsp/${id}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+
+                const result = await response.text();
+                if (response.ok) {
+                    alert(result);
+                    window.location.href = `/san-pham/ds-ctsp/${idsanPham}`;
+                } else {
+                    alert("Lỗi khi cập nhật: " + result);
+                }
+            } catch (error) {
+                console.error("Lỗi cập nhật:", error);
+                alert("Có lỗi xảy ra.");
+            }
+        }
+
+        function getIdFromURL() {
+            const segments = window.location.href.split("/");
+            return segments[segments.length - 1];
+        }
+
+        function formatmoney(money) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(money);
+        }
+    </script>
+
 </html>

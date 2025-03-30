@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<div th:if="${session.nhanVien != null}">
     <head>
         <title>Quan Ly San Pham</title>
         <meta charset="utf-8">
@@ -92,10 +91,6 @@
 
                                         <br><br>
                                         <!-- Nút bấm dưới cùng -->
-
-
-
-
                 </div>
             </div>
         </div>
@@ -150,11 +145,38 @@
 
         if (isValid) {
             if (action === 'add') {
-                themctspp();
+                const idSanPham = document.getElementById("idsanPham").value || getIdFromURL();
+                const idMauSac = document.getElementById("mauSac").value;
+                const idKichThuoc = document.getElementById("kichThuoc").value;
+
+                checkDuplicate(idSanPham, idMauSac, idKichThuoc).then(isDuplicate => {
+                    if (isDuplicate) {
+                        alert("Chi tiết sản phẩm với màu sắc và kích thước này đã tồn tại!");
+                    } else {
+                        themctspp(); // Gọi hàm thêm nếu không bị trùng
+                    }
+                }).catch(err => {
+                    console.error("Lỗi kiểm tra trùng:", err);
+                    alert("Có lỗi khi kiểm tra dữ liệu. Vui lòng thử lại.");
+                });
             } else if (action === 'update') {
                 capNhatCTSP(window.currentCTSanPhamId);
             }
         }
+
+        async function checkDuplicate(idSanPham, idMauSac, idKichThuoc) {
+            try {
+                const res = await fetch(`/san-pham/kiem-tra-trung-ctsp?idSanPham=${idSanPham}&idMauSac=${idMauSac}&idKichThuoc=${idKichThuoc}`);
+                if (!res.ok) {
+                    throw new Error("Lỗi phản hồi từ server");
+                }
+                return await res.json(); // true nếu đã tồn tại, false nếu chưa
+            } catch (err) {
+                console.error("Lỗi khi gọi API kiểm tra trùng:", err);
+                throw err;
+            }
+        }
+
 
 
     }
@@ -240,79 +262,6 @@
         }
     }
 
-    async function capNhatCTSP(id) {
-        const idsp = getIdFromURL();
-
-        if (!idsp) {
-            alert("ID sản phẩm không hợp lệ!");
-            return;
-        }
-
-        if (!confirm("Bạn chắc chắn muốn cập nhật sản phẩm?")) {
-            return;
-        }
-
-        const formData = {
-            soLuong: document.getElementById("soLuong").value,
-            donGia: document.getElementById("donGia").value,
-            moTa: document.getElementById("moTa").value,
-            mauSac: document.getElementById("mauSac").value,
-            kichThuoc: document.getElementById("kichThuoc").value,
-            chatLieu: document.getElementById("chatLieu").value,
-            trangThai: document.getElementById("trangThai").value
-        };
-
-        // Kiểm tra dữ liệu trước khi gửi request
-        if (!formData.soLuong || isNaN(formData.soLuong) || parseInt(formData.soLuong) <= 0) {
-            alert("Vui lòng nhập số lượng hợp lệ!");
-            return;
-        }
-        if (!formData.donGia || isNaN(formData.donGia) || parseFloat(formData.donGia) <= 0) {
-            alert("Vui lòng nhập đơn giá hợp lệ!");
-            return;
-        }
-
-        try {
-            const response = await fetch(`/san-pham/cap-nhat-ctsp/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
-
-            const result = await response.text();
-
-            if (response.ok) {
-                alert("Cập nhật chi tiết sản phẩm thành công!");
-                window.location.href = `/san-pham/ds-ctsp/${idsp}`;
-            } else {
-                alert("Lỗi khi cập nhật sản phẩm: " + result);
-            }
-        } catch (error) {
-            console.error("Lỗi khi gửi dữ liệu:", error);
-            alert("Có lỗi xảy ra, vui lòng thử lại.");
-        }
-    }
-
-    // Hàm lấy id từ URL
-    function getIdFromURL() {
-        const segments = window.location.href.split("/");
-        return segments[segments.length - 1];
-    }
-
-
-
-    function getIdFromURL() {
-        const url = window.location.href;
-        const segments = url.split("/");
-        return segments[segments.length - 1];
-    }
-
-
-
-
-
     function formatmoney(money) {
         const VND = new Intl.NumberFormat('vi-VN', {
             style: 'currency',
@@ -334,7 +283,4 @@
     }
 </script>
 
-
-<!-- Nội dung dành cho người dùng đã đăng nhập -->
-</div>
 </html>
