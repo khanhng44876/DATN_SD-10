@@ -304,7 +304,7 @@ public class QuanLiSanPhamController {
             ctsp.setTrangThai(trangThai);
 
             if (anhSanPham != null && !anhSanPham.isEmpty()) {
-                String uploadDir = "D:/DATN_SD-10/uploads/";
+                String uploadDir = "D:\\DATN_SD-10\\src\\main\\webapp\\images";
                 System.out.println(uploadDir);
                 String fileName = System.currentTimeMillis() + "_" + anhSanPham.getOriginalFilename();
                 Path uploadPath = Paths.get(uploadDir);
@@ -324,6 +324,22 @@ public class QuanLiSanPhamController {
     }
 
 
+// check trung san pham chi tiet
+@GetMapping("/kiem-tra-trung-ctsp")
+public ResponseEntity<Boolean> kiemTraTrungCtsp(
+        @RequestParam("idSanPham") Integer idSanPham,
+        @RequestParam("idMauSac") Integer idMauSac,
+        @RequestParam("idKichThuoc") Integer idKichThuoc,
+        @RequestParam(value = "excludeId", required = false) Integer excludeId
+) {
+    boolean exists;
+    if (excludeId == null) {
+        exists = sanPhamCTRepository.existsBySanPhamIdAndMauSacIdAndKichThuocId(idSanPham, idMauSac, idKichThuoc);
+    } else {
+        exists = sanPhamCTRepository.existsBySanPhamIdAndMauSacIdAndKichThuocIdAndIdNot(idSanPham, idMauSac, idKichThuoc, excludeId);
+    }
+    return ResponseEntity.ok(exists);
+}
 
 
 
@@ -371,7 +387,7 @@ public class QuanLiSanPhamController {
             ctsp.setTrangThai(trangThai);
 
             if (anhSanPham != null && !anhSanPham.isEmpty()) {
-                String uploadDir = "D:/DATN_SD-10/uploads/";
+                String uploadDir = "D:\\DATN_SD-10\\src\\main\\webapp\\images";
                 String fileName = System.currentTimeMillis() + "_" + anhSanPham.getOriginalFilename();
                 Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);

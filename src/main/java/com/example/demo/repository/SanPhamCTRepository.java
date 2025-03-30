@@ -15,4 +15,11 @@ public interface SanPhamCTRepository extends JpaRepository<SanPhamChiTiet,Intege
 
     @Query("SELECT h FROM SanPhamChiTiet h WHERE h.sanPham.id = :idsanPham")
     List<SanPhamChiTiet> findBySanPhamId(@Param("idsanPham") Integer idsanPham);
+
+    boolean existsBySanPhamIdAndMauSacIdAndKichThuocId(Integer sanPhamId, Integer mauSacId, Integer kichThuocId);
+    boolean existsBySanPhamIdAndMauSacIdAndKichThuocIdAndIdNot(Integer idSanPham, Integer idMauSac, Integer idKichThuoc, Integer excludeId);
+
+    // Lấy sản phẩm có số lượng <= ngưỡng
+    List<SanPhamChiTiet> findBySoLuongLessThanEqual(int soLuong);
+
 }
