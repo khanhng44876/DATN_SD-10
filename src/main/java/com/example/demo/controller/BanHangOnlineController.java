@@ -350,6 +350,13 @@ public ResponseEntity<?> createHoaDon(@RequestBody HoaDonRequest request, HttpSe
         return "ban_hang_online/detail"; // Hiển thị trang Thymeleaf
     }
 
-
+    @GetMapping("/ban-hang-online/gioi-thieu")
+    public String hiethi(){
+        return "ban_hang_online/gioithieu.html";
+    }
+    @GetMapping("/ban-hang-online/tin-tuc")
+    public String hiethiTinTuc(){
+        return "ban_hang_online/tintuc.html";
+    }
 
 }
