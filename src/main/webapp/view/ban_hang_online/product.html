@@ -1,41 +1,144 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <head th:replace="giao_dien_chinh/libCustomer :: libheadercustomer"></head>
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Product</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .filter-section {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .filter-section h5 {
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="giao_dien_chinh/navbarCustomer :: headerCustomer"></div>
 <div th:replace="giao_dien_chinh/navbarCustomer :: navCustomer"></div>
-<div>
-    <div class="container">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="/ban-hang-online">
-                    <i class="fas fa-home"></i> Trang chủ >
-                </a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">Sản phẩm</li>
-        </ol>
-    </div>
-    <div class="container">
-        <div class="row row-cols-1 row-cols-md-4 g-4">
-            <div class="col" th:each="s : ${listSp}">
-                <div class="card h-100">
-                    <img th:src="@{'../../images/' + ${s.anhSanPham}}" class="card-img-top" alt="...">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title" th:text="${s.sanPham.tenSanPham}"></h5>
-                        <p class="card-text" th:text="${s.donGia}"></p>
-                        <a th:href="@{'/ban-hang-online/detail?id=' + ${s.id}}" class="btn btn-primary mt-auto">Xem chi tiết</a>
+
+<div class="container mt-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/ban-hang-online">
+                <i class="fas fa-home"></i> Trang chủ >
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Sản phẩm</li>
+    </ol>
+
+    <div class="row">
+        <!-- Bộ lọc -->
+        <div class="col-md-3">
+            <div class="filter-section">
+                <h5>Bộ lọc sản phẩm</h5>
+
+                <!-- Lọc theo khoảng giá (select option) -->
+                <div class="mb-3">
+                    <label><strong>Khoảng giá (VNĐ):</strong></label>
+                    <select id="priceRange" name="priceRange" class="form-select">
+                        <option value="">Tất cả</option>
+                        <option value="0-500000">0 - 500,000</option>
+                        <option value="500000-1000000">500,000 - 1,000,000</option>
+                        <option value="1000000-2000000">1,000,000 - 2,000,000</option>
+                        <option value="2000000">Trên 2,000,000</option>
+                    </select>
+                </div>
+
+                <!-- Lọc theo size -->
+                <div class="mb-3">
+                    <label><strong>Kích thước:</strong></label>
+                    <div th:each="size : ${sizes}" class="form-check">
+                        <input class="form-check-input" type="checkbox" name="sizes" th:value="${size.tenKichThuoc}" th:id="'size-' + ${size.id}">
+                        <label class="form-check-label" th:for="'size-' + ${size.id}" th:text="${size.tenKichThuoc}"></label>
+                    </div>
+                </div>
+
+                <!-- Lọc theo màu sắc -->
+                <div class="mb-3">
+                    <label><strong>Màu sắc:</strong></label>
+                    <div th:each="color : ${colors}" class="form-check">
+                        <input class="form-check-input" type="checkbox" name="colors" th:value="${color.ten_mau_sac}" th:id="'color-' + ${color.id}">
+                        <label class="form-check-label" th:for="'color-' + ${color.id}" th:text="${color.ten_mau_sac}"></label>
+                    </div>
+                </div>
+
+                <!-- Lọc theo chất liệu -->
+                <div class="mb-3">
+                    <label><strong>Chất liệu:</strong></label>
+                    <div th:each="material : ${materials}" class="form-check">
+                        <input class="form-check-input" type="checkbox" name="materials" th:value="${material.tenChatLieu}" th:id="'material-' + ${material.id}">
+                        <label class="form-check-label" th:for="'material-' + ${material.id}" th:text="${material.tenChatLieu}"></label>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="applyFilters()">Áp dụng bộ lọc</button>
+            </div>
+        </div>
+
+        <!-- Danh sách sản phẩm -->
+        <div class="col-md-9">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col" th:each="s : ${listSp}">
+                    <div class="card h-100">
+                        <img th:src="@{'../../images/' + ${s.anhSanPham}}" class="card-img-top" alt="...">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title" th:text="${s.sanPham.tenSanPham}"></h5>
+                            <p class="card-text" th:text="${#numbers.formatCurrency(s.donGia)}"></p>
+                            <a th:href="@{'/ban-hang-online/detail?id=' + ${s.id}}" class="btn btn-primary mt-auto">Xem chi tiết</a>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Phân trang -->
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link" th:href="@{'/ban-hang-online/sp?page=' + ${currentPage - 1}}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link" th:href="@{'/ban-hang-online/sp?page=' + ${i}}" th:text="${i + 1}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{'/ban-hang-online/sp?page=' + ${currentPage + 1}}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 </div>
+
+<script>
+    function applyFilters() {
+        const priceRange = document.getElementById('priceRange').value || '';
+        const sizes = Array.from(document.querySelectorAll('input[name="sizes"]:checked')).map(cb => cb.value);
+        const colors = Array.from(document.querySelectorAll('input[name="colors"]:checked')).map(cb => cb.value);
+        const materials = Array.from(document.querySelectorAll('input[name="materials"]:checked')).map(cb => cb.value);
+
+        const params = new URLSearchParams();
+        if (priceRange) {
+            const [minPrice, maxPrice] = priceRange.split('-');
+            params.append('minPrice', minPrice || '');
+            params.append('maxPrice', maxPrice || '');
+        }
+        sizes.forEach(size => params.append('sizes', size));
+        colors.forEach(color => params.append('colors', color));
+        materials.forEach(material => params.append('materials', material));
+
+        window.location.href = `/ban-hang-online/sp/filter?${params.toString()}`;
+    }
+</script>
 </body>
 </html>

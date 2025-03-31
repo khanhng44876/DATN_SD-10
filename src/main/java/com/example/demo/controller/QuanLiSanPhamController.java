@@ -306,7 +306,7 @@ public class QuanLiSanPhamController {
             if (anhSanPham != null && !anhSanPham.isEmpty()) {
                 String uploadDir = "D:\\DATN_SD-10\\src\\main\\webapp\\images";
                 System.out.println(uploadDir);
-                String fileName = System.currentTimeMillis() + "_" + anhSanPham.getOriginalFilename();
+                String fileName = anhSanPham.getOriginalFilename();
                 Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
                 Files.copy(anhSanPham.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
@@ -388,7 +388,7 @@ public ResponseEntity<Boolean> kiemTraTrungCtsp(
 
             if (anhSanPham != null && !anhSanPham.isEmpty()) {
                 String uploadDir = "D:\\DATN_SD-10\\src\\main\\webapp\\images";
-                String fileName = System.currentTimeMillis() + "_" + anhSanPham.getOriginalFilename();
+                String fileName = anhSanPham.getOriginalFilename();
                 Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
                 Files.copy(anhSanPham.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);

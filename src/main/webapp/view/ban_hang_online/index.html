@@ -44,7 +44,7 @@
     <div class="swiper-container">
         <div class="swiper-wrapper">
             <div class="swiper-slide" th:each="c:${spClb}">
-                <img th:src="@{'/uploads/'  + ${c.anhSanPham}}" alt="Sản phẩm 1">
+                <img th:src="@{'/images/'  + ${c.anhSanPham}}" alt="Sản phẩm 1">
                 <p>
                     <span th:text="${c.sanPham.tenSanPham}"></span> <br>
                     <span th:text="${c.donGia}"></span> <br>
@@ -61,7 +61,7 @@
     </div>
     <div class="d-flex justify-content-space-between align-item-center">
         <div class="homeCard card mx-4" style="width: 18rem;" th:each="d:${spDtqg}">
-            <img th:src="@{'/uploads/'  + ${d.anhSanPham}}" class="card-img-top" alt="...">
+            <img th:src="@{'/images/'  + ${d.anhSanPham}}" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title" th:text="${d.sanPham.tenSanPham}"></h5>
                 <p class="card-text" th:text="${d.donGia}"></p>
@@ -76,7 +76,7 @@
     </div>
     <div class="d-flex justify-content-space-between align-item-center">
         <div class="card mx-4" style="width: 18rem;" th:each="n:${spNologo}">
-            <img th:src="@{'/uploads/' + ${n.anhSanPham}}" class="card-img-top" alt="...">
+            <img th:src="@{'/images/' + ${n.anhSanPham}}" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title" th:text="${n.sanPham.tenSanPham}"></h5>
                 <p class="card-text" th:text="${n.donGia}"></p>
