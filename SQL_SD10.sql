@@ -88,7 +88,8 @@ CREATE TABLE khach_hang (
                             so_dien_thoai NVARCHAR(15),
                             dia_chi NVARCHAR(255),
                             ngay_sinh DATE,
-                            gioi_tinh NVARCHAR(10)
+                            gioi_tinh NVARCHAR(10),
+                            trang_thai BIT DEFAULT '1'
 );
 
 CREATE TABLE nhan_vien (
@@ -103,7 +104,7 @@ CREATE TABLE nhan_vien (
                            gioi_tinh NVARCHAR(10),
                            ngay_tao DATETIME DEFAULT GETDATE(),
                            ngay_sua DATETIME DEFAULT GETDATE(),
-                           trang_thai NVARCHAR(50) DEFAULT 'Đang ho?t đ?ng'
+                           trang_thai bit DEFAULT '1'
 );
 CREATE TABLE kich_thuoc (
                             id INT IDENTITY(1,1) PRIMARY KEY,
@@ -282,20 +283,20 @@ values (500000, 100, 1, 1,3,1, NULL,'Ao_MU.png', N'Còn hàng'),
 
 
 
-    insert into khach_hang(ten_khach_hang, email, so_dien_thoai, dia_chi,ngay_sinh, gioi_tinh,tai_khoan, mat_khau)
-values (N'Khách lẻ',null,null,null,null,null,null,null),
-    ('Nguyen Gia Khanh', 'khanhngph44876@fpt.edu.vn','0345760481','Dai Mo, HN','1998-02-12','Nam','khanh123', '123456'),
-    ('Nguyen Quach Vu', 'vunqph45621@fpt.edu.vn','0396311217','Nhon, HN','1995-12-22','Nam','vu123', '123456'),
-    ('Vi Cong Minh', 'minhvcph45103@fpt.edu.vn','0702202307','Huu Lung, LS','2004-05-09','Nam','minh123', '123456'),
-    ('Nguyen Van Sao', 'saonvph45620@fpt.edu.vn','0879913025','n, BN','2003-05-09','Nam','sao123', '123456'),
-    ('Tran Thi Thu phuong', 'phuongtttph45219@fpt.edu.vn','0947052726','n, LS','2003-05-09',N'N?','phuong123', '123456')
+    insert into khach_hang(ten_khach_hang, email, so_dien_thoai, dia_chi,ngay_sinh, gioi_tinh,tai_khoan, mat_khau, trang_thai)
+values (N'Khách lẻ',null,null,null,null,null,null,null,1),
+    ('Nguyen Gia Khanh', 'khanhngph44876@fpt.edu.vn','0345760481','Dai Mo, HN','1998-02-12','Nam','khanh123', '123456',1),
+    ('Nguyen Quach Vu', 'vunqph45621@fpt.edu.vn','0396311217','Nhon, HN','1995-12-22','Nam','vu123', '123456',1),
+    ('Vi Cong Minh', 'minhvcph45103@fpt.edu.vn','0702202307','Huu Lung, LS','2004-05-09','Nam','minh123', '123456',1),
+    ('Nguyen Van Sao', 'saonvph45620@fpt.edu.vn','0879913025','n, BN','2003-05-09','Nam','sao123', '123456',1),
+    ('Tran Thi Thu phuong', 'phuongtttph45219@fpt.edu.vn','0947052726','n, LS','2003-05-09',N'N?','phuong123', '123456',1)
 
 
 
 insert into nhan_vien(tai_khoan,ten_nhan_vien, mat_khau,chuc_vu, email,sdt, ngay_tao, ngay_sua,trang_thai)
-values ('khanhok123','khanh','SA12342','NHAN_VIEN','jdk1234@gmail.com','0987654321','2025-02-14','2025-02-14','Hoat dong'),
-    ('vuok321','quachvu','as12312','QUAN_LY','zzzzz@gmail.com','0988769287','2025-02-14','2025-02-14','Hoat dong'),
-    ('minhok123','minh','11111','QUAN_LY','skbd9999@gmail.com','0999999999','2025-02-14','2025-02-14','Hoat dong')
+values ('khanhok123','khanh','SA12342','NHAN_VIEN','jdk1234@gmail.com','0987654321','2025-02-14','2025-02-14',1),
+    ('vuok321','quachvu','as12312','QUAN_LY','zzzzz@gmail.com','0988769287','2025-02-14','2025-02-14',1),
+    ('minhok123','minh','11111','QUAN_LY','skbd9999@gmail.com','0999999999','2025-02-14','2025-02-14',1)
 
 
 

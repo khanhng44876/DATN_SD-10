@@ -12,6 +12,6 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
 //    Optional<KhachHang> findByTenKhachHang(@NotBlank(message = "Tên khách hàng không được để trống") String tenKhachHang);
     Optional<KhachHang> findByTaiKhoan(String taiKhoan);
 //    KhachHang findBytaiKhoan(String taiKhoan);
-
+Optional<KhachHang> findByEmail(String email);
 
 }

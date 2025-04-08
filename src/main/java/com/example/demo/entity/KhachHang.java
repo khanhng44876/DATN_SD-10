@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import java.sql.Date;
 import java.time.LocalDate;
 
 @Entity
@@ -44,14 +42,17 @@ public class KhachHang {
     @Column(name = "tai_khoan", unique = true, length = 100)
     private String taiKhoan;
 
-//  ...  @NotBlank(message = "Mật khẩu không được để trống")
+    @NotBlank(message = "Mật khẩu không được để trống")
+    @Size(min = 6, message = "Mật khẩu phải có ít nhất 6 ký tự")
+    @Pattern(regexp = ".*[!@#$%^&*()].*", message = "Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt")
     @Column(name = "mat_khau")
     private String matKhau;
 
     @Column(name = "gioi_tinh", length = 10)
     private String gioiTinh;
 
-
+    @Column(name = "trang_thai")
+    private Boolean trangThai = false;
 
     @PrePersist
     @PreUpdate

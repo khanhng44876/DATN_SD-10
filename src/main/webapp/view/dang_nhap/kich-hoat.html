@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kích hoạt tài khoản</title>
+    <style>
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+<h2>Kích hoạt tài khoản</h2>
+
+<!-- Hiển thị thông báo thành công hoặc lỗi -->
+<p th:if="${message}" class="success" th:text="${message}"></p>
+<p th:if="${error}" class="error" th:text="${error}"></p>
+
+<a href="/login">Quay lại trang đăng nhập</a>
+</body>
+</html>

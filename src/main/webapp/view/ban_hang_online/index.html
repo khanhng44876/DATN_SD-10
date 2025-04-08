@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <link rel="icon" type="image/x-icon" th:href="@{/images/logo.ico}">
     <meta charset="UTF-8">
     <head th:replace="giao_dien_chinh/libCustomer :: libheadercustomer"></head>
     <meta name="viewport"
@@ -44,12 +45,14 @@
     <div class="swiper-container">
         <div class="swiper-wrapper">
             <div class="swiper-slide" th:each="c:${spClb}">
-                <img th:src="@{'/images/'  + ${c.anhSanPham}}" alt="Sản phẩm 1">
-                <p>
+                <img class="card-img-top" th:src="@{'/images/'  + ${c.anhSanPham}}" alt="Sản phẩm 1">
+                <p class="card-body">
                     <span th:text="${c.sanPham.tenSanPham}"></span> <br>
                     <span th:text="${c.donGia}"></span> <br>
-                    <a th:href="@{'/ban-hang-online/detail?id=' + ${c.id}}" >Xem chi tiết</a>
                 </p>
+                <div class="card-footer">
+                    <a th:href="@{'/ban-hang-online/detail?id=' + ${c.id}}" class="link-secondary">Xem chi tiết</a>
+                </div>
             </div>
         </div>
         <div class="swiper-button-next"></div>
@@ -59,13 +62,20 @@
         <span class="title-text2">Áo đấu đội tuyển quốc gia</span>
         <a href="#">Xem chi tiết></a>
     </div>
-    <div class="d-flex justify-content-space-between align-item-center">
+    <div class="d-flex justify-content-between align-items-center">
         <div class="homeCard card mx-4" style="width: 18rem;" th:each="d:${spDtqg}">
-            <img th:src="@{'/images/'  + ${d.anhSanPham}}" class="card-img-top" alt="...">
+            <!-- Ảnh sản phẩm -->
+            <img class="card-img-top" th:src="@{'/images/' + ${d.anhSanPham}}" alt="Sản phẩm 1">
+
             <div class="card-body">
+                <!-- Tên sản phẩm -->
                 <h5 class="card-title" th:text="${d.sanPham.tenSanPham}"></h5>
+
+                <!-- Giá sản phẩm -->
                 <p class="card-text" th:text="${d.donGia}"></p>
-                <a th:href="@{'/ban-hang-online/detail?id=' + ${d.id}}" class="btn btn-primary">Xem chi tiết</a>
+
+                <!-- Liên kết chi tiết sản phẩm -->
+                <a th:href="@{'/ban-hang-online/detail?id=' + ${d.id}}" class="link-secondary">Xem chi tiết</a>
             </div>
         </div>
     </div>
@@ -74,13 +84,20 @@
         <span class="title-text2">Áo đấu không logo</span>
         <a href="#">Xem chi tiết></a>
     </div>
-    <div class="d-flex justify-content-space-between align-item-center">
+    <div class="d-flex justify-content-between align-items-center">
         <div class="card mx-4" style="width: 18rem;" th:each="n:${spNologo}">
-            <img th:src="@{'/images/' + ${n.anhSanPham}}" class="card-img-top" alt="...">
+            <!-- Ảnh sản phẩm -->
+            <img class="card-img-top" th:src="@{'/images/' + ${n.anhSanPham}}" alt="Sản phẩm 1">
+
             <div class="card-body">
+                <!-- Tên sản phẩm -->
                 <h5 class="card-title" th:text="${n.sanPham.tenSanPham}"></h5>
+
+                <!-- Giá sản phẩm -->
                 <p class="card-text" th:text="${n.donGia}"></p>
-                <a th:href="@{'/ban-hang-online/detail?id=' + ${n.id}}" class="btn btn-primary">Xem chi tiết</a>
+
+                <!-- Liên kết chi tiết sản phẩm -->
+                <a th:href="@{'/ban-hang-online/detail?id=' + ${n.id}}" class="link-secondary">Xem chi tiết</a>
             </div>
         </div>
     </div>

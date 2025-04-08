@@ -56,16 +56,7 @@ public class BanHangOnlineController {
         model.addAttribute("spDtqg",spDtqg);
         model.addAttribute("spNologo",spNologo);
         model.addAttribute("spClb", spClb);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        // Kiểm tra nếu user chưa đăng nhập (anonymous)
-        if (authentication == null || !authentication.isAuthenticated() ||
-                authentication.getPrincipal().equals("anonymousUser")) {
-            return "ban_hang_online/home";  // Trang chưa đăng nhập
-        }
-
-        return "ban_hang_online/index";  // Trang đã đăng nhập
+        return "ban_hang_online/index";
     }
 
     @RequestMapping("/ban-hang-online/cart")
@@ -90,7 +81,9 @@ public class BanHangOnlineController {
         model.addAttribute("colors", mauSacRepository.findAll());
         model.addAttribute("materials", chatLieuRepository.findAll());
 
-        return "ban_hang_online/product.html";
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return "ban_hang_online/product";
+
     }
 
     @GetMapping("/ban-hang-online/sp/filter")
@@ -113,64 +106,8 @@ public class BanHangOnlineController {
         model.addAttribute("sizes", kichThuocRepository.findAll());
         model.addAttribute("colors", mauSacRepository.findAll());
         model.addAttribute("materials", chatLieuRepository.findAll());
+        return "ban_hang_online/product";
 
-        return "ban_hang_online/product.html";
     }
-
-
-    // Thêm phương thức mới để lấy chi tiết sản phẩm theo ID
-//    @GetMapping("/ban-hang-online/ctsp/{id}")
-//    @ResponseBody
-//    public ResponseEntity<?> getProductDetail(@PathVariable("id") Integer id) {
-//        try {
-//            Optional<SanPhamChiTiet> optionalCtsp = ctsp_repository.findById(id);
-//            if (!optionalCtsp.isPresent()) {
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy sản phẩm với ID: " + id);
-//            }
-//            SanPhamChiTiet ctsp = optionalCtsp.get();
-//            return new ResponseEntity<>(ctsp, HttpStatus.OK);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi lấy chi tiết sản phẩm: " + e.getMessage());
-//        }
-//    }
-    @GetMapping("/ban-hang-online/detail")
-    public String detailPage(@RequestParam("id") Integer id, Model model) {
-        Optional<SanPhamChiTiet> optionalCtsp = ctsp_repository.findById(id);
-        if (!optionalCtsp.isPresent()) {
-            return "ban_hang_online/error";
-        }
-        SanPhamChiTiet ctsp = optionalCtsp.get();
-        List<SanPhamChiTiet> allDetails = ctsp_repository.findBySanPham(ctsp.getSanPham().getId());
-
-        // Lọc trùng lặp cho kích thước
-        List<SanPhamChiTiet> uniqueSizes = allDetails.stream()
-                .filter(detail -> detail.getSoLuong() > 0 && "Còn hàng".equals(detail.getTrangThai()))
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toMap(
-                                detail -> detail.getKichThuoc().getTenKichThuoc(), // Key là tên kích thước
-                                detail -> detail,
-                                (existing, replacement) -> existing // Giữ bản ghi đầu tiên nếu trùng
-                        ),
-                        map -> new ArrayList<>(map.values())
-                ));
-
-        // Lọc trùng lặp cho biến thể (màu sắc + chất liệu)
-        List<SanPhamChiTiet> uniqueVariants = allDetails.stream()
-                .filter(detail -> detail.getSoLuong() > 0 && "Còn hàng".equals(detail.getTrangThai()))
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toMap(
-                                detail -> detail.getMauSac().getTen_mau_sac() + "-" + detail.getChatLieu().getTenChatLieu(), // Key là cặp màu sắc-chất liệu
-                                detail -> detail,
-                                (existing, replacement) -> existing // Giữ bản ghi đầu tiên nếu trùng
-                        ),
-                        map -> new ArrayList<>(map.values())
-                ));
-
-        model.addAttribute("product", ctsp);
-        model.addAttribute("sizes", uniqueSizes); // Danh sách kích thước không trùng lặp
-        model.addAttribute("variants", uniqueVariants); // Danh sách biến thể không trùng lặp
-        return "ban_hang_online/ctsp";
-    }
-
 
 }

@@ -41,7 +41,7 @@
                         <td th:text="${d.email}"></td>
                         <td th:text="${d.sdt}"></td>
                         <td th:text="${#dates.format(d.ngayTao, 'yyyy-MM-dd')}"></td>
-                        <td th:text="${d.trangThai}"></td>
+                        <td th:text="${d.trangThai}? 'Hoạt động' : 'Không hoạt động'"></td>
                         <td>
                             <a th:href="@{/nhan-vien/add(id=${d.id})}" class="btn btn-success">
                                 <i class="fa fa-pencil-alt"></i>
@@ -68,7 +68,7 @@
 
                     /* Đảm bảo chữ trong tiêu đề bảng có màu trắng */
                     #example thead th {
-                        color: white !important; /* Màu chữ trắng, sử dụng !important để đảm bảo không bị ghi đè */
+                        color: black !important; /* Màu chữ trắng, sử dụng !important để đảm bảo không bị ghi đè */
                     }
 
                     /* Cải thiện giao diện ô trong bảng */

@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
-public interface SanPhamCTRepository extends JpaRepository<SanPhamChiTiet,Integer> {
+public interface SanPhamCTRepository extends JpaRepository<SanPhamChiTiet, Integer> {
     @Query("SELECT h FROM SanPhamChiTiet h WHERE h.sanPham.id = ?1")
     List<SanPhamChiTiet> findBySanPham(Integer spId);
 
@@ -21,12 +21,15 @@ public interface SanPhamCTRepository extends JpaRepository<SanPhamChiTiet,Intege
     List<SanPhamChiTiet> findBySanPhamId(@Param("idsanPham") Integer idsanPham);
 
     boolean existsBySanPhamIdAndMauSacIdAndKichThuocId(Integer sanPhamId, Integer mauSacId, Integer kichThuocId);
+
     boolean existsBySanPhamIdAndMauSacIdAndKichThuocIdAndIdNot(Integer idSanPham, Integer idMauSac, Integer idKichThuoc, Integer excludeId);
 
     // Lấy sản phẩm có số lượng <= ngưỡng
     List<SanPhamChiTiet> findBySoLuongLessThanEqual(int soLuong);
+
     List<SanPhamChiTiet> findBySanPham(SanPham sanPham);
 
+    //lọc sản phẩm online
     @Query("SELECT spct FROM SanPhamChiTiet spct " +
             "WHERE (:minPrice IS NULL OR spct.donGia >= :minPrice) " +
             "AND (:maxPrice IS NULL OR spct.donGia <= :maxPrice) " +
