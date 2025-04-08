@@ -1,0 +1,168 @@
+/* CSS cho Modal Giỏ Hàng */
+#cartPreviewModal .modal-dialog {
+    max-width: 700px; /* Độ rộng tối đa của modal */
+}
+
+#cartPreviewModal .modal-content {
+    border-radius: 10px; /* Bo góc nhẹ */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Đổ bóng nhẹ */
+    border: none; /* Bỏ viền mặc định */
+}
+
+#cartPreviewModal .modal-header {
+    background-color: #f8f9fa; /* Màu nền nhẹ cho header */
+    border-bottom: 1px solid #e9ecef; /* Đường viền dưới */
+    padding: 15px 20px; /* Khoảng cách trong */
+}
+
+#cartPreviewModal .modal-title {
+    font-size: 1.5rem; /* Kích thước chữ tiêu đề */
+    font-weight: 600; /* Độ đậm chữ */
+    color: #343a40; /* Màu chữ tối */
+}
+
+#cartPreviewModal .btn-close {
+    filter: opacity(0.6); /* Độ mờ nhẹ cho nút đóng */
+    transition: filter 0.2s ease; /* Hiệu ứng chuyển đổi */
+}
+
+#cartPreviewModal .btn-close:hover {
+    filter: opacity(1); /* Tăng độ rõ khi hover */
+}
+
+#cartPreviewModal .modal-body {
+    padding: 20px; /* Khoảng cách trong */
+}
+
+#cartPreviewModal .table {
+    margin-bottom: 0; /* Bỏ khoảng cách dưới bảng */
+    border-collapse: separate; /* Tách các ô cho đẹp */
+    border-spacing: 0 10px; /* Khoảng cách giữa các hàng */
+}
+
+#cartPreviewModal .table thead th {
+    font-size: 0.9rem; /* Kích thước chữ tiêu đề bảng */
+    text-transform: uppercase; /* Chữ in hoa */
+    color: #6c757d; /* Màu chữ xám */
+    border-bottom: 2px solid #dee2e6; /* Đường viền dưới */
+    padding-bottom: 10px; /* Khoảng cách dưới */
+}
+
+#cartPreviewModal .table tbody td {
+    vertical-align: middle; /* Căn giữa theo chiều dọc */
+    font-size: 1rem; /* Kích thước chữ */
+    color: #495057; /* Màu chữ tối nhẹ */
+    padding: 15px 10px; /* Khoảng cách trong ô */
+}
+
+#cartPreviewModal .table tbody tr {
+    background-color: #fff; /* Màu nền trắng cho hàng */
+    transition: background-color 0.2s ease; /* Hiệu ứng chuyển đổi màu nền */
+}
+
+#cartPreviewModal .table tbody tr:hover {
+    background-color: #f1f3f5; /* Màu nền khi hover */
+}
+
+#cartPreviewModal .text-end {
+    margin-top: 20px; /* Khoảng cách trên */
+    font-size: 1.2rem; /* Kích thước chữ tổng tiền */
+}
+
+#cartPreviewModal #cartTotal {
+    color: #dc3545; /* Màu đỏ nổi bật cho tổng tiền */
+    font-weight: 700; /* Độ đậm chữ */
+}
+
+#cartPreviewModal .modal-footer {
+    border-top: 1px solid #e9ecef; /* Đường viền trên */
+    padding: 15px 20px; /* Khoảng cách trong */
+}
+
+#cartPreviewModal .btn-secondary {
+    background-color: #6c757d; /* Màu xám cho nút "Tiếp tục mua sắm" */
+    border: none; /* Bỏ viền */
+    padding: 10px 20px; /* Kích thước nút */
+    transition: background-color 0.3s ease; /* Hiệu ứng chuyển đổi */
+}
+
+#cartPreviewModal .btn-secondary:hover {
+    background-color: #5a6268; /* Màu đậm hơn khi hover */
+}
+
+#cartPreviewModal .btn-primary {
+    background-color: #007bff; /* Màu xanh cho nút "Xem giỏ hàng" */
+    border: none; /* Bỏ viền */
+    padding: 10px 20px; /* Kích thước nút */
+    transition: background-color 0.3s ease; /* Hiệu ứng chuyển đổi */
+}
+
+#cartPreviewModal .btn-primary:hover {
+    background-color: #0056b3; /* Màu đậm hơn khi hover */
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    #cartPreviewModal .modal-dialog {
+        margin: 0.5rem; /* Giảm margin trên mobile */
+    }
+
+    #cartPreviewModal .table thead th,
+    #cartPreviewModal .table tbody td {
+        font-size: 0.85rem; /* Giảm kích thước chữ trên mobile */
+        padding: 10px 5px; /* Giảm padding */
+    }
+
+    #cartPreviewModal .modal-footer {
+        flex-direction: column; /* Xếp dọc nút trên mobile */
+    }
+
+    #cartPreviewModal .modal-footer .btn {
+        width: 100%; /* Nút full width */
+        margin: 5px 0; /* Khoảng cách giữa các nút */
+    }
+}
+.variant-button {
+    display: inline-block;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #fff;
+    text-align: center;
+    min-width: 120px;
+    transition: all 0.2s ease;
+}
+.variant-button.selected {
+    border-color: #ff0000;
+    background-color: #ffe6e6;
+}
+.variant-button img {
+    width: 40px;
+    height: 40px;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+.variant-button span {
+    vertical-align: middle;
+}
+.checkbox-group {
+    margin-top: 10px;
+}
+.quantity-input {
+    width: 80px;
+    display: inline-block;
+    margin-right: 10px;
+}
+.stock-info {
+    font-size: 0.9em;
+    color: #555;
+}
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+    transform: translate(0, -50px);
+}
+.modal.show .modal-dialog {
+    transform: translate(0, 0);
+}

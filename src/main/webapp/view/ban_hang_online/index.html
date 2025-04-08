@@ -7,7 +7,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Home</title>
+    <title>Sky Football Fashion</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css"/>
 </head>
 <body>
@@ -48,7 +48,7 @@
                 <img class="card-img-top" th:src="@{'/images/'  + ${c.anhSanPham}}" alt="Sản phẩm 1">
                 <p class="card-body">
                     <span th:text="${c.sanPham.tenSanPham}"></span> <br>
-                    <span th:text="${c.donGia}"></span> <br>
+                    <span th:text="${#numbers.formatCurrency(c.donGia)}" class="text-danger"></span> <br>
                 </p>
                 <div class="card-footer">
                     <a th:href="@{'/ban-hang-online/detail?id=' + ${c.id}}" class="link-secondary">Xem chi tiết</a>
@@ -72,7 +72,7 @@
                 <h5 class="card-title" th:text="${d.sanPham.tenSanPham}"></h5>
 
                 <!-- Giá sản phẩm -->
-                <p class="card-text" th:text="${d.donGia}"></p>
+                <p class="text-danger" th:text="${#numbers.formatCurrency(d.donGia)}"></p>
 
                 <!-- Liên kết chi tiết sản phẩm -->
                 <a th:href="@{'/ban-hang-online/detail?id=' + ${d.id}}" class="link-secondary">Xem chi tiết</a>
@@ -94,7 +94,7 @@
                 <h5 class="card-title" th:text="${n.sanPham.tenSanPham}"></h5>
 
                 <!-- Giá sản phẩm -->
-                <p class="card-text" th:text="${n.donGia}"></p>
+                <p class="text-danger" th:text="${#numbers.formatCurrency(n.donGia)}"></p>
 
                 <!-- Liên kết chi tiết sản phẩm -->
                 <a th:href="@{'/ban-hang-online/detail?id=' + ${n.id}}" class="link-secondary">Xem chi tiết</a>
