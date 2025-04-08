@@ -1,17 +1,25 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.SanPhamChiTiet;
+import com.example.demo.repository.ChatLieuRepository;
+import com.example.demo.repository.KichThuocRepository;
+import com.example.demo.repository.MauSacRepository;
 import com.example.demo.repository.SanPhamCTRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -24,6 +32,12 @@ public class ChiTietSPOnlineController {
 
     @Autowired
     private SanPhamCTRepository sanPhamCTRepository;
+    @Autowired
+    private KichThuocRepository kichThuocRepository;
+    @Autowired
+    private ChatLieuRepository chatLieuRepository;
+    @Autowired
+    private MauSacRepository mauSacRepository;
 
     @GetMapping("/ban-hang-online/detail")
     @PreAuthorize("permitAll()")
@@ -99,5 +113,48 @@ public class ChiTietSPOnlineController {
     private boolean isUserAnonymous(Authentication authentication) {
         return authentication == null || !authentication.isAuthenticated() ||
                 "anonymousUser".equals(authentication.getPrincipal());
+    }
+    @RequestMapping("/ban-hang-online/sp")
+    public String iddsp(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size, // 9 sản phẩm mỗi trang
+            Model model) {
+        Pageable pageable = (Pageable) PageRequest.of(page, size);
+        Page<SanPhamChiTiet> productPage = sanPhamCTRepository.findAll(pageable);
+
+        model.addAttribute("listSp", productPage.getContent());
+        model.addAttribute("currentPage", productPage.getNumber());
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("sizes", kichThuocRepository.findAll());
+        model.addAttribute("colors", mauSacRepository.findAll());
+        model.addAttribute("materials", chatLieuRepository.findAll());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return "ban_hang_online/product";
+
+    }
+
+    @GetMapping("/ban-hang-online/sp/filter")
+    public String filterProducts(
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) List<String> sizes,
+            @RequestParam(required = false) List<String> colors,
+            @RequestParam(required = false) List<String> materials,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size,
+            Model model) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<SanPhamChiTiet> productPage = sanPhamCTRepository.filterProducts(minPrice, maxPrice, sizes, colors, materials, pageable);
+
+        model.addAttribute("listSp", productPage.getContent());
+        model.addAttribute("currentPage", productPage.getNumber());
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("sizes", kichThuocRepository.findAll());
+        model.addAttribute("colors", mauSacRepository.findAll());
+        model.addAttribute("materials", chatLieuRepository.findAll());
+        return "ban_hang_online/product";
+
     }
 }

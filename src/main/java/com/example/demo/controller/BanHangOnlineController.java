@@ -82,16 +82,7 @@ public class BanHangOnlineController {
         model.addAttribute("spDtqg",spDtqg);
         model.addAttribute("spNologo",spNologo);
         model.addAttribute("spClb", spClb);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        // Kiểm tra nếu user chưa đăng nhập (anonymous)
-        if (authentication == null || !authentication.isAuthenticated() ||
-                authentication.getPrincipal().equals("anonymousUser")) {
-            return "ban_hang_online/home";  // Trang chưa đăng nhập
-        }
-
-        return "ban_hang_online/index";  // Trang đã đăng nhập
+        return "ban_hang_online/index";
     }
 
     @RequestMapping("/ban-hang-online/cart")
@@ -101,12 +92,6 @@ public class BanHangOnlineController {
         model.addAttribute("kh",khachHang);
         return "ban_hang_online/giohang.html";
     }
-    @RequestMapping("/ban-hang-online/sp")
-    public String iddsp(Model model){
-        model.addAttribute("listSp", ctsp_repository.findAll());
-        return "ban_hang_online/product.html";
-    }
-
     @RequestMapping("/ban-hang-online/dsdh-customer")
     public String iddsdh(Model model){
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -221,31 +206,5 @@ public class BanHangOnlineController {
         ctsp_repository.save(ct);
         return ResponseEntity.ok(ct);
     }
-
-    // Thêm phương thức mới để lấy chi tiết sản phẩm theo ID
-    @GetMapping("/ban-hang-online/ctsp/{id}")
-    @ResponseBody
-    public ResponseEntity<?> getProductDetail(@PathVariable("id") Integer id) {
-        try {
-            Optional<SanPhamChiTiet> optionalCtsp = ctsp_repository.findById(id);
-            if (!optionalCtsp.isPresent()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy sản phẩm với ID: " + id);
-            }
-            SanPhamChiTiet ctsp = optionalCtsp.get();
-            return new ResponseEntity<>(ctsp, HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi lấy chi tiết sản phẩm: " + e.getMessage());
-        }
-    }
-    @GetMapping("/ban-hang-online/detail")
-    public String detailPage(@RequestParam("id") Integer id, Model model) {
-        Optional<SanPhamChiTiet> optionalCtsp = ctsp_repository.findById(id);
-        if (!optionalCtsp.isPresent()) {
-            return "ban_hang_online/error";
-        }
-        model.addAttribute("product", optionalCtsp.get());
-        return "ban_hang_online/detail"; // Hiển thị trang Thymeleaf
-    }
-
 
 }
