@@ -39,7 +39,6 @@
             <img th:src="${variant.anhSanPham} ? '/images/' + ${variant.anhSanPham} : '/images/default.jpg'"
                  alt="variant image" th:if="${variant.anhSanPham}" loading="lazy">
             <span th:text="${variant.mauSac.ten_mau_sac} + ' - ' + ${variant.chatLieu.tenChatLieu}"></span>
-            <div class="stock-info" th:text="'(Còn: ' + ${variant.soLuong} + ')'"></div>
           </div>
           <span th:unless="${variants}" class="text-muted">Không có mẫu</span>
         </div>
@@ -169,8 +168,6 @@
     const donGia = parseFloat(element.dataset.donGia);
     document.getElementById('priceDisplay').textContent = formatCurrency(donGia);
 
-    document.getElementById('stockInfo').textContent = `Còn ${element.dataset.soLuong} sản phẩm`;
-
     const variantKey = `${element.dataset.color}-${element.dataset.material}`;
     console.log("Selected variantKey:", variantKey);
     const sizes = variantToSizesMap[variantKey] || [];
@@ -181,6 +178,7 @@
 
     if (!sizes || sizes.length === 0) {
       sizeContainer.innerHTML = '<span class="text-muted">Không có kích thước nào cho mẫu này</span>';
+      document.getElementById('stockInfo').textContent = '';
       return;
     }
 
@@ -196,6 +194,7 @@
         sizeButton.setAttribute('aria-label', `Chọn kích thước ${size.tenKichThuoc}`);
         sizeButton.innerHTML = `
           <span>${size.tenKichThuoc}</span>
+          <div class="stock-info">(Còn: ${size.soLuong})</div>
         `;
         sizeButton.onclick = () => selectSize(sizeButton);
         sizeButton.onkeydown = (e) => {
@@ -208,6 +207,7 @@
     const firstSizeButton = sizeContainer.querySelector('.variant-button');
     if (firstSizeButton) {
       selectSize(firstSizeButton);
+      document.getElementById('stockInfo').textContent = `Còn ${firstSizeButton.dataset.soLuong} sản phẩm`;
     }
   }
 
@@ -216,6 +216,7 @@
     const sizeButtons = document.querySelectorAll('#sizeContainer .variant-button');
     sizeButtons.forEach(btn => btn.classList.remove('selected'));
     element.classList.add('selected');
+    document.getElementById('stockInfo').textContent = `Còn ${element.dataset.soLuong} sản phẩm`;
   }
 
   // Hiển thị giỏ hàng trong modal
@@ -262,8 +263,8 @@
       return;
     }
 
-    const selectedVariantButton = document.querySelector('.variant-button[data-color].selected');
-    const soLuongTonKho = selectedVariantButton ? parseInt(selectedVariantButton.dataset.soLuong) : item.soLuongTonKho;
+    const selectedSizeButton = document.querySelector('#sizeContainer .variant-button.selected');
+    const soLuongTonKho = selectedSizeButton ? parseInt(selectedSizeButton.dataset.soLuong) : item.soLuongTonKho;
 
     if (newQty > soLuongTonKho) {
       alert(`Số lượng vượt quá tồn kho! Tồn kho hiện tại: ${soLuongTonKho}`);
@@ -306,7 +307,7 @@
     try {
       const ctspId = selectedVariantButton.dataset.id;
       const sizeId = selectedSizeButton.dataset.id;
-      const soLuongTonKho = parseInt(selectedVariantButton.dataset.soLuong);
+      const soLuongTonKho = parseInt(selectedSizeButton.dataset.soLuong); // Lấy số lượng tồn kho từ kích thước
       const donGia = parseFloat(selectedVariantButton.dataset.donGia); // Lấy giá từ biến thể
 
       const cart = getCartFromLocalStorage();
@@ -325,10 +326,10 @@
         sizeId,
         color: selectedVariantButton.dataset.color,
         material: selectedVariantButton.dataset.material,
-        price: donGia, // Sử dụng giá của biến thể
+        price: donGia,
         image: selectedVariantButton.dataset.anhSanPham || productData.image,
         quantity,
-        soLuongTonKho
+        soLuongTonKho // Lưu số lượng tồn kho của kích thước
       };
 
       if (existingProduct) {
