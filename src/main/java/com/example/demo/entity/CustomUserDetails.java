@@ -8,10 +8,12 @@ import java.util.Collection;
 import java.util.List;
 
 public class CustomUserDetails implements UserDetails{
-    public final Integer id;
+    private final Integer id;
     private final String username;
     private final String password;
     private final String hoTen;
+    private final String email;
+    private final Boolean trangThai;
     private final List<GrantedAuthority> authorities;
 
     public CustomUserDetails(NhanVien nhanVien) {
@@ -19,6 +21,8 @@ public class CustomUserDetails implements UserDetails{
         this.hoTen = nhanVien.getTenNhanVien();
         this.username = nhanVien.getTaiKhoan();
         this.password = nhanVien.getMatKhau();
+        this.email = nhanVien.getEmail();
+        this.trangThai = nhanVien.getTrangThai();
         this.authorities = List.of(new SimpleGrantedAuthority(nhanVien.getChucVu())); // QUAN_LY, NHAN_VIEN
     }
 
@@ -27,6 +31,8 @@ public class CustomUserDetails implements UserDetails{
         this.hoTen = khachHang.getTenKhachHang();
         this.username = khachHang.getTaiKhoan();
         this.password = khachHang.getMatKhau();
+        this.email = khachHang.getEmail();
+        this.trangThai = khachHang.getTrangThai();
         this.authorities = List.of(new SimpleGrantedAuthority("KHACH_HANG"));
     }
 
@@ -51,6 +57,11 @@ public class CustomUserDetails implements UserDetails{
     }
 
     @Override
+    public boolean isEnabled() {
+        return trangThai; // Chỉ cho phép đăng nhập nếu tài khoản đã kích hoạt
+    }
+
+    @Override
     public boolean isAccountNonExpired() {
         return true;
     }
@@ -65,8 +76,4 @@ public class CustomUserDetails implements UserDetails{
         return true;
     }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }

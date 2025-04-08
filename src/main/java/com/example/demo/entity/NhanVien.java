@@ -58,14 +58,14 @@ public class NhanVien {
     private Date ngaySua;
 
     @Column(name = "trang_thai", length = 50)
-    private String trangThai;
+    private Boolean trangThai;
 
     @PrePersist
     protected void onCreate() {
         ngayTao = new Date();
         ngaySua = new Date();
         if (trangThai == null) {
-            trangThai = "Đang hoạt động";
+            trangThai = false;
         }
     }
 

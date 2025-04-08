@@ -2,7 +2,6 @@ package com.example.demo.config;
 
 import com.example.demo.entity.KhachHang;
 import com.example.demo.repository.KhachHangRepository;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +26,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login").anonymous()
+                        .requestMatchers("/login","/dang-ky/**","/kich-hoat/**","/forgot-password", "/reset-password").anonymous()
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**").permitAll() // Cho phép truy cập file tĩnh
                         .requestMatchers("/ban-hang-online/**").permitAll()
                         .requestMatchers("/hoa-don/**","/ban-hang-online/don-hang","/san-pham/**","/khach-hang/**","/mau-sac/**","/ban-hang-off/**").hasAnyAuthority("QUAN_LY", "NHAN_VIEN") // Nhân viên, admin vào được
@@ -38,6 +37,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .successHandler(customSuccessHandler()) // Xử lý điều hướng theo quyền
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -66,7 +66,7 @@ public class SecurityConfig {
                 boolean isNhanVien = authentication.getAuthorities().stream()
                         .anyMatch(auth -> auth.getAuthority().equals("NHAN_VIEN"));
 
-                // ✅ Nếu là khách hàng
+                //Nếu là khách hàng
                 if (!isQuanLy && !isNhanVien) {
                     String taiKhoan = authentication.getName();
 

@@ -70,7 +70,7 @@ public String iii(){
             taiKhoan.setNgayTao(Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
             taiKhoan.setNgayTao(new Date());
 
-            taiKhoan.setTrangThai((String) payload.get("trangThai"));
+            taiKhoan.setTrangThai(Boolean.parseBoolean(payload.get("trangThai").toString()));
             nhanVienRepository.save(taiKhoan);
             return ResponseEntity.ok("Nhân viên đã được thêm thành công!");
         } catch (DateTimeParseException e) {
@@ -112,7 +112,7 @@ public String iii(){
             taiKhoan.setEmail(email);
             taiKhoan.setSdt((String) payload.get("sdt"));
             taiKhoan.setNgaySua(new Date());
-            taiKhoan.setTrangThai((String) payload.get("trangThai"));
+            taiKhoan.setTrangThai(Boolean.parseBoolean(payload.get("trangThai").toString()));
 
             nhanVienRepository.save(taiKhoan);
             return ResponseEntity.ok("Nhân viên đã được cập nhật thành công!");
