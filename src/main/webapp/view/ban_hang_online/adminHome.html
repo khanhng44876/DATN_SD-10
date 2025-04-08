@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <head th:replace="giao_dien_chinh/libAdmin :: libheaderadmin"></head>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <title>Document</title>
+</head>
+<body>
+<div>
+    <div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
+    <div class="d-flex">
+        <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
+        <div class="pt-3" style="width: calc(100% - 250px);">
+            <div class="container">
+                <input type="hidden" id="status" th:value="${status}">
+                <h2 style="text-align: center;">Lịch Sử Hóa Đơn Online</h2>
+                <table class="table table-bordered">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên khách hàng</th>
+                        <th>Ngày lập</th>
+                        <th>Hình thức thanh toán</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr th:each="s:${listhd}">
+                        <td th:text="${s.id}"></td>
+                        <td th:text="${s.khachHang.tenKhachHang}"></td>
+                        <td th:text="${s.ngayTao}"></td>
+                        <td th:text="${s.hinhThucThanhToan}"></td>
+                        <td th:text="${s.tongTien}"></td>
+                        <td th:text="${s.trangThaiThanhToan}"></td>
+                        <td>
+                            <a th:href="@{/ban-hang-online/lshd/{id}(id=${s.id})}" class="btn btn-primary">
+                                Xác nhận
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

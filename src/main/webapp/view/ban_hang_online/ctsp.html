@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Chi Tiết Sản Phẩm - Bộ Đồ Bóng Đá</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head th:replace="giao_dien_chinh/libCustomer :: libheadercustomer"></head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/css/online.css">
+  <style>
+    .variant-button {
+      display: inline-block;
+      border: 1px solid #ccc;
+      padding: 5px 10px;
+      margin: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #fff;
+      text-align: center;
+      min-width: 120px;
+      transition: all 0.2s ease;
+    }
+    .variant-button.selected {
+      border-color: #ff0000;
+      background-color: #ffe6e6;
+    }
+    .variant-button img {
+      width: 40px;
+      height: 40px;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    .variant-button span {
+      vertical-align: middle;
+    }
+    .checkbox-group {
+      margin-top: 10px;
+    }
+    .quantity-input {
+      width: 80px;
+      display: inline-block;
+      margin-right: 10px;
+    }
+    .stock-info {
+      font-size: 0.9em;
+      color: #555;
+    }
+    .modal.fade .modal-dialog {
+      transition: transform 0.3s ease-out;
+      transform: translate(0, -50px);
+    }
+    .modal.show .modal-dialog {
+      transform: translate(0, 0);
+    }
+  </style>
+</head>
+<body>
+<!-- Header -->
+<div th:replace="giao_dien_chinh/navbarCustomer :: headerCustomer"></div>
+<div th:replace="giao_dien_chinh/navbarCustomer :: navCustomer"></div>
+
+<!-- Nội dung chi tiết sản phẩm -->
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Chi Tiết Sản Phẩm</h1>
+  <div class="row" id="product-detail">
+    <div class="col-md-6">
+      <img id="mainImage" th:src="${product.anhSanPham} ? '/images/' + ${product.anhSanPham} : '/images/default.jpg'"
+           class="img-fluid" th:alt="${product.sanPham.tenSanPham}" loading="lazy">
+    </div>
+    <div class="col-md-6">
+      <h2 th:text="${product.sanPham.tenSanPham}"></h2>
+      <p class="text-danger">Giá: <span id="priceDisplay" th:text="${#numbers.formatCurrency(product.donGia)}"></span></p>
+      <p><strong>Mô tả:</strong> <span th:text="${product.moTa} ?: 'Bộ quần áo bóng đá thể thao chất lượng cao, vải mát mẻ, thoáng khí, phù hợp cho cả nam và nữ.'"></span></p>
+
+      <!-- Button cho biến thể màu sắc + chất liệu -->
+      <div class="form-group mb-3">
+        <label><strong>Mẫu:</strong></label>
+        <div class="checkbox-group">
+          <div th:each="variant : ${variants}" th:if="${variant.soLuong > 0}"
+               class="variant-button" tabindex="0"
+               th:attr="data-id=${variant.id},data-color=${variant.mauSac.ten_mau_sac},data-material=${variant.chatLieu.tenChatLieu},data-so-luong=${variant.soLuong},data-anh-san-pham=${variant.anhSanPham},data-don-gia=${variant.donGia}"
+               th:aria-label="'Chọn mẫu ' + ${variant.mauSac.ten_mau_sac} + ' ' + ${variant.chatLieu.tenChatLieu}"
+               onclick="selectVariant(this)">
+            <img th:src="${variant.anhSanPham} ? '/images/' + ${variant.anhSanPham} : '/images/default.jpg'"
+                 alt="variant image" th:if="${variant.anhSanPham}" loading="lazy">
+            <span th:text="${variant.mauSac.ten_mau_sac} + ' - ' + ${variant.chatLieu.tenChatLieu}"></span>
+            <div class="stock-info" th:text="'(Còn: ' + ${variant.soLuong} + ')'"></div>
+          </div>
+          <span th:unless="${variants}" class="text-muted">Không có mẫu</span>
+        </div>
+      </div>
+
+      <!-- Button cho kích thước (được cập nhật động) -->
+      <div class="form-group mb-3">
+        <label><strong>Kích thước:</strong></label>
+        <div class="checkbox-group" id="sizeContainer">
+          <span class="text-muted">Vui lòng chọn mẫu để xem kích thước</span>
+        </div>
+      </div>
+
+      <!-- Input số lượng -->
+      <div class="form-group mb-3">
+        <label><strong>Số lượng:</strong></label>
+        <input type="number" id="quantityInput" class="form-control quantity-input" value="1" min="1" aria-label="Số lượng sản phẩm">
+        <p id="stockInfo" class="stock-info"></p>
+      </div>
+
+      <div class="mt-3">
+        <button id="addToCartBtn" class="btn btn-primary" onclick="addToCart()">Thêm vào giỏ hàng</button>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex justify-content-center mt-4">
+    <a href="/ban-hang-online" class="btn btn-secondary">Quay lại danh sách</a>
+  </div>
+</div>
+
+<!-- Modal Xem Trước Giỏ Hàng -->
+<div class="modal fade" id="cartPreviewModal" tabindex="-1" aria-labelledby="cartPreviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cartPreviewModalLabel">Giỏ Hàng Của Bạn</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>Sản Phẩm</th>
+            <th>Kích Thước</th>
+            <th>Biến Thể</th>
+            <th>Số Lượng</th>
+            <th>Giá</th>
+            <th>Tổng</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody id="cartItems"></tbody>
+        </table>
+        <div class="text-end">
+          <strong>Tổng Tiền: <span id="cartTotal">0 VNĐ</span></strong>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tiếp Tục Mua Sắm</button>
+        <a href="/gio-hang" class="btn btn-primary">Xem Giỏ Hàng</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white mt-5 py-4">
+  <div class="container text-center">
+    <p>© 2025 Sky Football Fashion. All rights reserved.</p>
+    <p>Liên hệ: <a href="mailto:contact@skyfootball.vn" class="text-white">contact@skyfootball.vn</a></p>
+    <div>
+      <a href="#" class="text-white me-3">Facebook</a>
+      <a href="#" class="text-white me-3">Instagram</a>
+      <a href="#" class="text-white">Twitter</a>
+    </div>
+  </div>
+</footer>
+
+<script th:inline="javascript">
+  // Dữ liệu sản phẩm và ánh xạ biến thể-kích thước từ Thymeleaf
+  const productData = {
+    name: /*[[${product.sanPham.tenSanPham}]]*/ "",
+    price: /*[[${product.donGia}]]*/ 0,
+    image: /*[[${product.anhSanPham}]]*/ ""
+  };
+
+  const variantToSizesMap = /*[[${variantToSizesMap}]]*/ {};
+
+  console.log("variantToSizesMap:", variantToSizesMap);
+
+  // Định dạng tiền tệ
+  function formatCurrency(amount) {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+  }
+
+  // Lưu và lấy giỏ hàng từ localStorage
+  function saveCartToLocalStorage(cart) {
+    try {
+      localStorage.setItem('cart', JSON.stringify(cart));
+    } catch (e) {
+      alert('Không thể lưu giỏ hàng. Vui lòng kiểm tra cài đặt trình duyệt.');
+    }
+  }
+
+  function getCartFromLocalStorage() {
+    try {
+      const cart = localStorage.getItem('cart');
+      return cart ? JSON.parse(cart) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // Chọn biến thể và cập nhật kích thước + giá
+  function selectVariant(element) {
+    const variantButtons = document.querySelectorAll('.checkbox-group .variant-button[data-color]');
+    variantButtons.forEach(btn => btn.classList.remove('selected'));
+    element.classList.add('selected');
+
+    const mainImage = document.getElementById('mainImage');
+    const anhSanPham = element.dataset.anhSanPham;
+    if (anhSanPham) {
+      mainImage.src = `/images/${anhSanPham}`;
+    }
+
+    // Cập nhật giá
+    const donGia = parseFloat(element.dataset.donGia);
+    document.getElementById('priceDisplay').textContent = formatCurrency(donGia);
+
+    document.getElementById('stockInfo').textContent = `Còn ${element.dataset.soLuong} sản phẩm`;
+
+    const variantKey = `${element.dataset.color}-${element.dataset.material}`;
+    console.log("Selected variantKey:", variantKey);
+    const sizes = variantToSizesMap[variantKey] || [];
+    console.log("Sizes for variant:", sizes);
+
+    const sizeContainer = document.getElementById('sizeContainer');
+    sizeContainer.innerHTML = '';
+
+    if (!sizes || sizes.length === 0) {
+      sizeContainer.innerHTML = '<span class="text-muted">Không có kích thước nào cho mẫu này</span>';
+      return;
+    }
+
+    sizes.forEach(size => {
+      if (size.soLuong > 0) {
+        const sizeButton = document.createElement('div');
+        sizeButton.className = 'variant-button';
+        sizeButton.tabIndex = 0;
+        sizeButton.dataset.id = size.id;
+        sizeButton.dataset.size = size.tenKichThuoc;
+        sizeButton.dataset.soLuong = size.soLuong;
+        sizeButton.dataset.donGia = size.donGia; // Lưu giá của kích thước
+        sizeButton.setAttribute('aria-label', `Chọn kích thước ${size.tenKichThuoc}`);
+        sizeButton.innerHTML = `
+          <span>${size.tenKichThuoc}</span>
+        `;
+        sizeButton.onclick = () => selectSize(sizeButton);
+        sizeButton.onkeydown = (e) => {
+          if (e.key === 'Enter' || e.key === ' ') selectSize(sizeButton);
+        };
+        sizeContainer.appendChild(sizeButton);
+      }
+    });
+
+    const firstSizeButton = sizeContainer.querySelector('.variant-button');
+    if (firstSizeButton) {
+      selectSize(firstSizeButton);
+    }
+  }
+
+  // Chọn kích thước
+  function selectSize(element) {
+    const sizeButtons = document.querySelectorAll('#sizeContainer .variant-button');
+    sizeButtons.forEach(btn => btn.classList.remove('selected'));
+    element.classList.add('selected');
+  }
+
+  // Hiển thị giỏ hàng trong modal
+  function displayCartPreview() {
+    const cart = getCartFromLocalStorage();
+    const cartItemsContainer = document.getElementById('cartItems');
+    const cartTotalElement = document.getElementById('cartTotal');
+    cartItemsContainer.innerHTML = '';
+
+    if (cart.length === 0) {
+      cartItemsContainer.innerHTML = '<tr><td colspan="7" class="text-center">Giỏ hàng trống</td></tr>';
+      cartTotalElement.textContent = formatCurrency(0);
+      return;
+    }
+
+    let total = 0;
+    cart.forEach(item => {
+      const itemTotal = item.price * item.quantity;
+      total += itemTotal;
+      cartItemsContainer.innerHTML += `
+        <tr>
+          <td>${item.name}</td>
+          <td>${item.size}</td>
+          <td>${item.color}-${item.material}</td>
+          <td><input type="number" value="${item.quantity}" min="1" style="width: 60px;" onchange="updateQuantity('${item.ctspId}', '${item.size}', this.value)"></td>
+          <td>${formatCurrency(item.price)}</td>
+          <td>${formatCurrency(itemTotal)}</td>
+          <td><button class="btn btn-danger btn-sm" onclick="removeFromCart('${item.ctspId}', '${item.size}')">Xóa</button></td>
+        </tr>
+      `;
+    });
+    cartTotalElement.textContent = formatCurrency(total);
+  }
+
+  // Cập nhật số lượng trong giỏ hàng
+  function updateQuantity(ctspId, size, newQuantity) {
+    const cart = getCartFromLocalStorage();
+    const item = cart.find(i => i.ctspId === ctspId && i.size === size);
+    const newQty = parseInt(newQuantity);
+
+    if (isNaN(newQty) || newQty < 1) {
+      alert('Số lượng phải lớn hơn 0!');
+      displayCartPreview();
+      return;
+    }
+
+    const selectedVariantButton = document.querySelector('.variant-button[data-color].selected');
+    const soLuongTonKho = selectedVariantButton ? parseInt(selectedVariantButton.dataset.soLuong) : item.soLuongTonKho;
+
+    if (newQty > soLuongTonKho) {
+      alert(`Số lượng vượt quá tồn kho! Tồn kho hiện tại: ${soLuongTonKho}`);
+      displayCartPreview();
+      return;
+    }
+
+    item.quantity = newQty;
+    saveCartToLocalStorage(cart);
+    displayCartPreview();
+  }
+
+  // Xóa sản phẩm khỏi giỏ hàng
+  function removeFromCart(ctspId, size) {
+    const cart = getCartFromLocalStorage().filter(item => item.ctspId !== ctspId || item.size !== size);
+    saveCartToLocalStorage(cart);
+    displayCartPreview();
+  }
+
+  // Thêm vào giỏ hàng
+  async function addToCart() {
+    const button = document.getElementById('addToCartBtn');
+    const selectedSizeButton = document.querySelector('#sizeContainer .variant-button.selected');
+    const selectedVariantButton = document.querySelector('.checkbox-group .variant-button[data-color].selected');
+    const quantityInput = document.getElementById('quantityInput');
+    const quantity = parseInt(quantityInput.value);
+
+    if (!selectedSizeButton || !selectedVariantButton) {
+      alert('Vui lòng chọn kích thước và biến thể!');
+      return;
+    }
+    if (isNaN(quantity) || quantity < 1) {
+      alert('Số lượng phải lớn hơn 0!');
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = 'Đang thêm...';
+
+    try {
+      const ctspId = selectedVariantButton.dataset.id;
+      const sizeId = selectedSizeButton.dataset.id;
+      const soLuongTonKho = parseInt(selectedVariantButton.dataset.soLuong);
+      const donGia = parseFloat(selectedVariantButton.dataset.donGia); // Lấy giá từ biến thể
+
+      const cart = getCartFromLocalStorage();
+      const existingProduct = cart.find(item => item.ctspId === ctspId && item.size === selectedSizeButton.dataset.size);
+      const totalQuantity = (existingProduct ? existingProduct.quantity : 0) + quantity;
+
+      if (totalQuantity > soLuongTonKho) {
+        alert(`Số lượng vượt quá tồn kho! Tồn kho hiện tại: ${soLuongTonKho}`);
+        return;
+      }
+
+      const cartItem = {
+        ctspId,
+        name: productData.name,
+        size: selectedSizeButton.dataset.size,
+        sizeId,
+        color: selectedVariantButton.dataset.color,
+        material: selectedVariantButton.dataset.material,
+        price: donGia, // Sử dụng giá của biến thể
+        image: selectedVariantButton.dataset.anhSanPham || productData.image,
+        quantity,
+        soLuongTonKho
+      };
+
+      if (existingProduct) {
+        existingProduct.quantity = totalQuantity;
+      } else {
+        cart.push(cartItem);
+      }
+
+      saveCartToLocalStorage(cart);
+
+      displayCartPreview();
+      const modal = new bootstrap.Modal(document.getElementById('cartPreviewModal'));
+      modal.show();
+    } catch (error) {
+      alert('Đã xảy ra lỗi khi thêm vào giỏ hàng.');
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Thêm vào giỏ hàng';
+    }
+  }
+
+  // Xử lý input số lượng
+  document.getElementById('quantityInput').addEventListener('input', () => {
+    const qty = document.getElementById('quantityInput');
+    if (qty.value < 1) qty.value = 1;
+  });
+</script>
+</body>
+</html>

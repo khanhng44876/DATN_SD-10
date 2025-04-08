@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Đơn hàng của bạn</title>
+    <meta charset="utf-8">
+    <head th:replace="giao_dien_chinh/libCustomer :: libheadercustomer"></head>
+</head>
+<body>
+<div th:replace="giao_dien_chinh/navbarCustomer :: headerCustomer"></div>
+<div>
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="/ban-hang-online">
+                    <i class="fas fa-home"></i>Trang chủ >
+                </a>
+            </li>
+            <li class="breadcrumb-item" aria-current="page">
+                <a href="/ban-hang-online/sp">Sản phẩm ></a>
+            </li>
+            <li class="breadcrumb-item" aria-current="page">
+                Giỏ hàng
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                Đơn hàng của bạn
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="container">
+    <div id="yourOrder"></div>
+</div>
+<script th:inline="javascript">
+    let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+    let listhd = /*[[${listhd}]]*/ [];
+    let kh = /*[[${kh}]]*/ null;
+
+    let order = listhd.map(item => {
+        return {
+            id: item.hoaDon.id,
+            status: item.hoaDon.trangThaiThanhToan,
+            total: item.hoaDon.tongTien,
+            listhdct: item.chiTiet.map(ct => {
+                return {
+                    id: ct.id,
+                    name: ct.sanPhamChiTiet.sanPham.tenSanPham,
+                    price: ct.sanPhamChiTiet.donGia,
+                    quantity: ct.soLuong,
+                    size: ct.sanPhamChiTiet.kichThuoc.tenKichThuoc,
+                    color: ct.sanPhamChiTiet.mauSac.ten_mau_sac,
+                    total: ct.tongTien,
+                    image: ct.sanPhamChiTiet.anhSanPham
+                }
+            }),
+            customer: kh,
+            date: item.hoaDon.ngayTao,
+            payment: item.hoaDon.hinhThucThanhToan,
+            address: item.hoaDon.diaChiGiaoHang,
+            note: item.hoaDon.ghiChu,
+            steps: [
+                { label: "Chờ xác nhận", icon: "fas fa-file-alt" },
+                { label: "Chờ giao hàng", icon: "fas fa-truck" },
+                { label: "Đang giao hàng", icon: "fas fa-shipping-fast" },
+                { label: "Giao hàng thành công", icon: "fas fa-check-circle" },
+                { label: "Hoàn thành", icon: "fas fa-check-circle" }
+            ]
+        }
+    });
+    orders.push(...order);
+    localStorage.setItem("orders", JSON.stringify(orders));
+
+    function renderCustomerOrderList() {
+        let orderList = document.getElementById("yourOrder");
+        orders.forEach(o => {
+            let orderItem = document.createElement("div");
+            orderItem.classList.add("row", "mb-4");
+
+            let orderInfo = document.createElement("div");
+            orderInfo.classList.add("d-flex", "justify-content-between", "align-items-center");
+            orderInfo.innerHTML = `
+                <div>Đơn hàng: HDO${o.id}</div>
+                <div>
+                    <a type="button" class="btn btn-warning" href="/ban">Xem chi tiết</a>
+                </div>
+                <hr>
+            `;
+            orderItem.appendChild(orderInfo);
+
+            o.listhdct.forEach(p => {
+                let orderElement = document.createElement("div");
+                orderElement.classList.add("d-flex", "justify-content-between", "align-items-center", "mb-3");
+
+                orderElement.innerHTML = `
+                    <div class="col-2">
+                        <img src="../../images/${p.image}" style="width: 150px;height: 150px;" alt="">
+                    </div>
+                    <div class="col-4">
+                        <h5>${p.name}</h5>
+                        <div class="text-danger fw-bold">
+                            <span class="price">${p.price.toLocaleString("vi-VN")}</span> VND
+                        </div>
+                        <div>Size: ${p.size}</div>
+                    </div>
+                    <div class="col-2 text-center">
+                            <span class="form-control text-center" id="quantity-${p.id}">Số lượng: ${p.quantity}</span>
+                    </div>
+                    <div class="col-2 text-end text-danger fw-bold">
+                        <span id="total-${p.id}">Tổng tiền: ${p.total == null ? 0 : p.total.toLocaleString("vi-VN")}</span> VND
+                    </div>
+                `;
+                orderItem.appendChild(orderElement);
+            });
+            orderList.appendChild(orderItem);
+        });
+    }
+
+    renderCustomerOrderList();
+</script>
+</body>
+</html>

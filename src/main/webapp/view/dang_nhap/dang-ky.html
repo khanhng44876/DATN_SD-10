@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng ký khách hàng</title>
+    <link rel="stylesheet" href="../../css/dang-ky.css">
+    <head th:replace="giao_dien_chinh/libAdmin :: libheaderadmin"></head>
+</head>
+<body>
+
+
+<form th:action="@{dang-ky}" th:object="${khachHang}" method="post">
+    <h2>Đăng ký tài khoản</h2>
+    <p th:if="${message}" class="success" th:text="${message}"></p>
+    <p th:if="${error}" class="error" th:text="${error}"></p>
+    <div>
+        <label>Họ tên <span class="required">*</span>:</label>
+        <input type="text" th:field="*{tenKhachHang}"/>
+        <span class="error" th:errors="*{tenKhachHang}"></span>
+    </div>
+    <div>
+        <label>Email <span class="required">*</span>:</label>
+        <input type="email" th:field="*{email}"/>
+        <span class="error" th:errors="*{email}"></span>
+    </div>
+    <div>
+        <label>Số điện thoại <span class="required">*</span>:</label>
+        <input type="text" th:field="*{soDienThoai}"/>
+        <span class="error" th:errors="*{soDienThoai}"></span>
+    </div>
+    <div>
+        <label>Địa chỉ:</label>
+        <input type="text" th:field="*{diaChi}"/>
+        <span class="error" th:errors="*{diaChi}"></span>
+    </div>
+    <div>
+        <label>Ngày sinh:</label>
+        <input type="date" th:field="*{ngaySinh}"/>
+        <span class="error" th:errors="*{ngaySinh}"></span>
+    </div>
+    <div>
+        <label>Tài khoản <span class="required">*</span>:</label>
+        <input type="text" th:field="*{taiKhoan}"/>
+        <span class="error" th:errors="*{taiKhoan}"></span>
+    </div>
+    <div class="password-container">
+        <label>Mật khẩu <span class="required">*</span>:</label>
+        <input type="password" th:field="*{matKhau}" id="password"/>
+        <span class="toggle-password" onclick="togglePassword('password', this)">👀</span>
+        <span class="error" th:errors="*{matKhau}"></span>
+    </div>
+    <div class="password-container">
+        <label>Xác nhận mật khẩu <span class="required">*</span>:</label>
+        <input type="password" id="confirmPassword"/>
+        <span class="toggle-password" onclick="togglePassword('confirmPassword', this)">👀</span>
+        <span class="error" id="confirmPasswordError"></span>
+    </div>
+    <div>
+        <label>Giới tính:</label>
+        <select th:field="*{gioiTinh}">
+            <option value="">Chọn giới tính</option>
+            <option value="Nam">Nam</option>
+            <option value="Nữ">Nữ</option>
+        </select>
+        <span class="error" th:errors="*{gioiTinh}"></span>
+    </div>
+    <div>
+        <button type="submit">Đăng ký</button>
+    </div>
+</form>
+
+<script>
+    // Xử lý xem/ẩn mật khẩu
+    function togglePassword(inputId, element) {
+        let input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+            element.textContent = "🙈";
+        } else {
+            input.type = "password";
+            element.textContent = "👀";
+        }
+    }
+
+    // Xác nhận mật khẩu
+    document.querySelector("form").addEventListener("submit", function (e) {
+        let password = document.querySelector("#password").value;
+        let confirmPassword = document.querySelector("#confirmPassword").value;
+        let errorSpan = document.querySelector("#confirmPasswordError");
+
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            errorSpan.textContent = "Mật khẩu xác nhận không khớp!";
+        } else {
+            errorSpan.textContent = "";
+        }
+    });
+</script>
+</body>
+</html>

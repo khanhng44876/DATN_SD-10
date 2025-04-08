@@ -1,4 +1,5 @@
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let orders = JSON.parse(localStorage.getItem(("orders"))) || [];
 let total_price = JSON.parse(localStorage.getItem("total_price")) || 0;
 
 function saveToLocalStorage(){
@@ -12,7 +13,7 @@ function renderCart(){
     document.getElementById("total-price").innerText = total_price
     createElementCart()
 }
-
+// Hàm này tạo các thành phần trong giỏ hàng
 function createElementCart(){
     let productList = document.getElementById("product")
     cart.forEach(p=>{
@@ -59,7 +60,7 @@ function createElementCart(){
         productList.appendChild(hr)
     })
 }
-
+// Hàm cập nhật số lượng
 function updateQuantity(itemId,num){
     let item = cart.find(c=>c.id===itemId)
     console.log(item)
@@ -73,6 +74,7 @@ function updateQuantity(itemId,num){
     renderQuantity(item.id);
 
 }
+// Chỉ load so lượng và giá không reload ảnh
 function renderQuantity(itemId){
     let item = cart.find(c=>c.id===itemId)
     document.getElementById(`quantity-${item.id}`).innerText = item.quantity
@@ -84,12 +86,13 @@ function renderQuantity(itemId){
 
     handleCheckboxChange({ target: checkbox });
 }
+// Xóa item khỏi giỏ
 function removeItem(cartId){
     cart = cart.filter(c => c.id !== cartId)
     saveToLocalStorage();
     renderCart();
 }
-
+// Theo dõi những thay đổi của checkbox
 function handleCheckboxChange(event) {
     if (event.target.classList.contains("checkbox-item")) {
         let checkbox = event.target;
@@ -113,10 +116,85 @@ function handleCheckboxChange(event) {
         document.getElementById('total-price').innerText = total_price.toLocaleString("vi-VN");
     }
 }
+// Hàm này sẽ confirm hóa đơn gửi về DB
+async function confirmOrder() {
+    let idkh = Number(document.getElementById("idkh").value);
+    let today = new Date().toISOString().split("T")[0];
+    let total = document.getElementById("total-price").innerText.replace(/[^\d]/g, "");
+    let activeElement = document.querySelector('.payment-option.active');
+    let httt = activeElement.querySelector('input[type="hidden"]').value;
+    let location = document.getElementById("locationKh").innerText;
+    let ghichu = document.getElementById("ghiChu").value;
 
+    console.log(idkh, today, total, httt, location, ghichu)
+      let  hdJson = {
+            id_nhan_vien: 1,
+            id_khach_hang: Number(idkh),
+            id_khuyen_mai: null,
+            ngay_tao: today,
+            ngay_sua: null,
+            don_gia: null,
+            tong_tien: total,
+            trang_thai_thanh_toan: "Chờ xác nhận",
+            hinh_thuc_thanh_toan: httt,
+            dia_chi_giao_hang: location,
+            ghi_chu: ghichu || null
+        }
+    try {
+        let response = await fetch("/ban-hang-online/create-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(hdJson)
+        });
+        if (!response.ok) throw new Error("Lỗi khi tạo đơn hàng");
+        let result = await response.json();
+                console.log("Kết quả:", result);
+        let id = result.id;
+        if (!id) {
+            alert("Không thể tạo hóa đơn!");
+            return;
+        }
 
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        let productList = cart.filter(c => c.active === true);
+        let requests = productList.map((p) => {
+            let hdctJson = {
+                id_hoa_don:id,
+                id_san_pham_chi_tiet:Number(p.id),
+                so_luong:p.quantity,
+                don_gia:p.price,
+                tong_tien:p.total,
+                thanh_tien:p.total,
+                ngay_tao: today,
+                ngay_sua: null,
+                trang_thai: "Chờ xác nhận"
+            };
+            // **Tạo request POST thêm hóa đơn chi tiết**
+            let hdctRequest = fetch("/ban-hang-online/create-order-ct", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(hdctJson)
+            }).then(response => response.json())
+                .then(data => console.log(data))
+                .catch(err => {
+                    console.error("Lỗi thêm hóa đơn chi tiết:", err);
+                    throw err;
+                });
+
+            return Promise.all([hdctRequest]);
+        })
+        await Promise.all(requests.flat());
+        alert("Thành công");
+    } catch (error) {
+        console.error("Lỗi:", error);
+        alert("Đã xảy ra lỗi khi xác nhận đơn hàng!");
+    }
+}
+// Gán sự kiện thayddooiri cho checkbox
 document.addEventListener("change", handleCheckboxChange);
 
+// Hàm thay đổi địa chỉ
 function changeLocation(){
     let newLocation = document.getElementById("newLocation").value
     if(newLocation === ""){
@@ -128,6 +206,8 @@ function changeLocation(){
     modal.hide()
     document.getElementById("errLocation").innerText = ""
 }
+
+// Gán sự kiện cho 2 nút Hình thức thanh toán
 document.addEventListener("DOMContentLoaded", function () {
     const paymentOptions = document.querySelectorAll(".payment-option");
 
