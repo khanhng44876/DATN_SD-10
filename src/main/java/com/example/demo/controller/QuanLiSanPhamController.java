@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,6 +22,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @CrossOrigin(origins = "*")  // Hỗ trợ gọi API từ Frontend khác (React, Vue)
 @Controller
@@ -28,7 +30,7 @@ import java.util.Optional;
 public class QuanLiSanPhamController {
 
     @Autowired
-     private SanPhamRepository sanPhamRepository;
+    private SanPhamRepository sanPhamRepository;
 
     @Autowired
     private SanPhamCTRepository sanPhamCTRepository;
@@ -257,7 +259,7 @@ public class QuanLiSanPhamController {
     }
 
 
-//     Hiển thị danh sách chi tiết sản phẩm
+    //     Hiển thị danh sách chi tiết sản phẩm
     @GetMapping("ds-ctsp/{id}")
     public String HienThi (@PathVariable("id") Integer id, Model model){
         List<SanPhamChiTiet> ctsps = this.sanPhamCTRepository.findBySanPhamId(id);
@@ -305,15 +307,24 @@ public class QuanLiSanPhamController {
 
             if (anhSanPham != null && !anhSanPham.isEmpty()) {
                 String uploadDir = "D:\\DATN_SD-10\\src\\main\\webapp\\images";
-                System.out.println(uploadDir);
-                String fileName = anhSanPham.getOriginalFilename();
+                String originalName = anhSanPham.getOriginalFilename();
+                String fileExt = originalName.substring(originalName.lastIndexOf(".")); // ví dụ: .webp, .jpg
+                String randomFileName = UUID.randomUUID().toString() + fileExt;
+
                 Path uploadPath = Paths.get(uploadDir);
-                if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
-                Files.copy(anhSanPham.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-                ctsp.setAnhSanPham( fileName);
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+
+                try (InputStream inputStream = anhSanPham.getInputStream()) {
+                    Path filePath = uploadPath.resolve(randomFileName);
+                    Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+                    ctsp.setAnhSanPham(randomFileName);
+                }
             } else {
                 ctsp.setAnhSanPham(null);
             }
+
 
             sanPhamCTRepository.save(ctsp);
             return ResponseEntity.ok("Thêm chi tiết sản phẩm thành công!");
@@ -324,22 +335,27 @@ public class QuanLiSanPhamController {
     }
 
 
-// check trung san pham chi tiet
-@GetMapping("/kiem-tra-trung-ctsp")
-public ResponseEntity<Boolean> kiemTraTrungCtsp(
-        @RequestParam("idSanPham") Integer idSanPham,
-        @RequestParam("idMauSac") Integer idMauSac,
-        @RequestParam("idKichThuoc") Integer idKichThuoc,
-        @RequestParam(value = "excludeId", required = false) Integer excludeId
-) {
-    boolean exists;
-    if (excludeId == null) {
-        exists = sanPhamCTRepository.existsBySanPhamIdAndMauSacIdAndKichThuocId(idSanPham, idMauSac, idKichThuoc);
-    } else {
-        exists = sanPhamCTRepository.existsBySanPhamIdAndMauSacIdAndKichThuocIdAndIdNot(idSanPham, idMauSac, idKichThuoc, excludeId);
+    // check trung san pham chi tiet
+    @GetMapping("/kiem-tra-trung-ctsp")
+    public ResponseEntity<Boolean> kiemTraTrungCtsp(
+            @RequestParam("idSanPham") Integer idSanPham,
+            @RequestParam("idMauSac") Integer idMauSac,
+            @RequestParam("idKichThuoc") Integer idKichThuoc,
+            @RequestParam("idChatLieu") Integer idChatLieu,
+            @RequestParam(value = "excludeId", required = false) Integer excludeId
+    ) {
+        boolean exists;
+        if (excludeId == null) {
+            exists = sanPhamCTRepository.existsBySanPhamIdAndMauSacIdAndKichThuocIdAndChatLieuId(
+                    idSanPham, idMauSac, idKichThuoc, idChatLieu
+            );
+        } else {
+            exists = sanPhamCTRepository.existsBySanPhamIdAndMauSacIdAndKichThuocIdAndChatLieuIdAndIdNot(
+                    idSanPham, idMauSac, idKichThuoc, idChatLieu, excludeId
+            );
+        }
+        return ResponseEntity.ok(exists);
     }
-    return ResponseEntity.ok(exists);
-}
 
 
 
@@ -386,13 +402,23 @@ public ResponseEntity<Boolean> kiemTraTrungCtsp(
             ctsp.setMoTa(moTa);
             ctsp.setTrangThai(trangThai);
 
+            // Xử lý ảnh nếu có
             if (anhSanPham != null && !anhSanPham.isEmpty()) {
                 String uploadDir = "D:\\DATN_SD-10\\src\\main\\webapp\\images";
-                String fileName = anhSanPham.getOriginalFilename();
+                String originalName = anhSanPham.getOriginalFilename();
+                String fileExt = originalName.substring(originalName.lastIndexOf(".")); // giữ đuôi ảnh
+                String randomFileName = UUID.randomUUID().toString() + fileExt;
+
                 Path uploadPath = Paths.get(uploadDir);
-                if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
-                Files.copy(anhSanPham.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-                ctsp.setAnhSanPham(fileName);
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+
+                try (InputStream inputStream = anhSanPham.getInputStream()) {
+                    Path filePath = uploadPath.resolve(randomFileName);
+                    Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+                    ctsp.setAnhSanPham(randomFileName);
+                }
             }
 
             sanPhamCTRepository.save(ctsp);
@@ -402,6 +428,7 @@ public ResponseEntity<Boolean> kiemTraTrungCtsp(
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi: " + e.getMessage());
         }
     }
+
 
 
 

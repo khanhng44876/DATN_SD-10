@@ -1,109 +1,107 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Quan Ly San Pham</title>
-        <meta charset="utf-8">
-        <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
-        <link rel="stylesheet" type="text/css" href="/css/style.css">
-    </head>
-    <body>
-    <div>
-        <div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
-        <div class="d-flex">
-            <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
-            <div class="pt-3" style="width: calc(100% - 250px);">
-                <div class="container">
-                    <h2 style="text-align: center;">Quản Lý Chi Tiết Sản Phẩm</h2>
+<head>
+    <title>Quan Ly San Pham</title>
+    <meta charset="utf-8">
+    <head th:replace="~{giao_dien_chinh/libAdmin :: libheaderadmin}"></head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+<div>
+    <div th:replace="giao_dien_chinh/navbarAdmin :: headerAdmin"></div>
+    <div class="d-flex">
+        <div th:replace="giao_dien_chinh/navbarAdmin :: sidenavAdmin"></div>
+        <div class="pt-3" style="width: calc(100% - 250px);">
+            <div class="container">
+                <h2 style="text-align: center;">Quản Lý Chi Tiết Sản Phẩm</h2>
 
-                    <label class="lb-form">Sản phẩm(*)</label>
-                    <select id="idsanPham" class="form-control" disabled>
+                <label class="lb-form">Sản phẩm(*)</label>
+                <select id="idsanPham" class="form-control" disabled>
                     <option value="">Chọn sản phẩm</option>
                     <option th:each="sp : ${dataSP}" th:value="${sp.id}" th:text="${sp.tenSanPham}"></option>
                 </select>
-                    <span id="errorSanPham" class="text-danger"></span>
+                <span id="errorSanPham" class="text-danger"></span>
 
-                    <div class="row">
+                <div class="row">
 
-                                            <div class="col-sm-6">
-                                                <label class="lb-form">Đơn giá(*)</label>
-                                                <input id="donGia" class="form-control" required>
-                                                <span id="errorDonGia" class="text-danger"></span>
-                                                <br>
+                    <div class="col-sm-6">
+                        <label class="lb-form">Đơn giá(*)</label>
+                        <input id="donGia" class="form-control" required>
+                        <span id="errorDonGia" class="text-danger"></span>
+                        <br>
 
-                                                <label class="lb-form">Số lượng(*)</label>
-                                                <input id="soLuong" class="form-control" required>
-                                                <span id="errorSoLuong" class="text-danger"></span>
-                                                <br>
+                        <label class="lb-form">Số lượng(*)</label>
+                        <input id="soLuong" class="form-control" required>
+                        <span id="errorSoLuong" class="text-danger"></span>
+                        <br>
 
-                                                <label class="lb-form">Ghi chú</label>
-                                                <input id="moTa" class="form-control" required>
-                                                <span id="errorMoTa" class="text-danger"></span>
-                                                <br>
+                        <label class="lb-form">Ghi chú</label>
+                        <input id="moTa" class="form-control" required>
+                        <span id="errorMoTa" class="text-danger"></span>
+                        <br>
 
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <label class="lb-form">Màu sắc(*)</label>
-                                                <select id="mauSac" class="form-control">
-                                                    <option value="">Chọn màu sắc</option>
-                                                    <option th:each="mau : ${dsMau}" th:value="${mau.id}" th:text="${mau.ten_mau_sac}"></option>
-                                                </select>
-                                                <a th:href="@{/mau-sac/hien-thi}">Thêm màu sắc</a>
-                                                <br>
-                                                <span id="errorMauSac" class="text-danger"></span>
-                                                <br>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="lb-form">Màu sắc(*)</label>
+                        <select id="mauSac" class="form-control">
+                            <option value="">Chọn màu sắc</option>
+                            <option th:each="mau : ${dsMau}" th:value="${mau.id}" th:text="${mau.ten_mau_sac}"></option>
+                        </select>
+                        <a th:href="@{/mau-sac/hien-thi}">Thêm màu sắc</a>
+                        <br>
+                        <span id="errorMauSac" class="text-danger"></span>
+                        <br>
 
-                                                <label class="lb-form">Kích thước(*)</label>
-                                                <select id="kichThuoc" class="form-control">
-                                                    <option value="">Chọn kích thước</option>
-                                                    <option th:each="size : ${dsKichThuoc}" th:value="${size.id}" th:text="${size.tenKichThuoc}"></option>
-                                                </select>
-                                                <span id="errorSize" class="text-danger"></span>
-                                                <a th:href="@{/san-pham/kich-thuoc}">Thêm kích thước</a>
-                                                <br>
+                        <label class="lb-form">Kích thước(*)</label>
+                        <select id="kichThuoc" class="form-control">
+                            <option value="">Chọn kích thước</option>
+                            <option th:each="size : ${dsKichThuoc}" th:value="${size.id}" th:text="${size.tenKichThuoc}"></option>
+                        </select>
+                        <span id="errorSize" class="text-danger"></span>
+                        <a th:href="@{/san-pham/kich-thuoc}">Thêm kích thước</a>
+                        <br>
 
-                                                <label class="lb-form">Chất liệu(*)</label>
-                                                <select id="chatLieu" class="form-control">
-                                                    <option value="">Chọn chất liệu</option>
-                                                    <option th:each="chatLieu : ${dsChatLieu}" th:value="${chatLieu.id}" th:text="${chatLieu.tenChatLieu}"></option>
-                                                </select>
-                                                <span id="errorChatLieu" class="text-danger"></span>
-                                                <a th:href="@{/san-pham/chat-lieu}">Thêm chất liệu</a>
-                                            </div>
-                                            <br>
+                        <label class="lb-form">Chất liệu(*)</label>
+                        <select id="chatLieu" class="form-control">
+                            <option value="">Chọn chất liệu</option>
+                            <option th:each="chatLieu : ${dsChatLieu}" th:value="${chatLieu.id}" th:text="${chatLieu.tenChatLieu}"></option>
+                        </select>
+                        <span id="errorChatLieu" class="text-danger"></span>
+                        <a th:href="@{/san-pham/chat-lieu}">Thêm chất liệu</a>
+                    </div>
+                    <br>
 
-                                            <label class="lb-form">Trạng Thái(*)</label>
-                                            <select id="trangThai" class="form-control">
-                                                <option value="">Chọn trạng thái</option>
-                                                <option value="Còn hàng">Còn Hàng</option>
-                                                <option value="Hết hàng">Hết Hàng</option>
-                                            </select>
-                                            <span id="errorTrangThai" class="text-danger"></span>
-                                            <br>
-                                            <div>
-                                                <label class="lb-form">Ảnh sản phẩm</label>
-                                                <input id="anhSanPham" type="file" class="form-control" required>
-                                                <span id="errorAnh" class="text-danger"></span>
-                                            </div>
-                                        </div>
-
-                                        <br>
-                                        <button onclick="validateCtsp('add')" class="btn btn-primary">Add</button>
-
-                                        <br><br>
-                                        <!-- Nút bấm dưới cùng -->
+                    <label class="lb-form">Trạng Thái(*)</label>
+                    <select id="trangThai" class="form-control">
+                        <option value="">Chọn trạng thái</option>
+                        <option value="Còn hàng">Còn Hàng</option>
+                        <option value="Hết hàng">Hết Hàng</option>
+                    </select>
+                    <span id="errorTrangThai" class="text-danger"></span>
+                    <br>
+                    <div>
+                        <label class="lb-form">Ảnh sản phẩm</label>
+                        <input id="anhSanPham" type="file" class="form-control" required>
+                        <span id="errorAnh" class="text-danger"></span>
+                    </div>
                 </div>
+
+                <br>
+                <button onclick="validateCtsp('add')" class="btn btn-primary">Add</button>
+
+                <br><br>
+                <!-- Nút bấm dưới cùng -->
             </div>
         </div>
-    </body>
+    </div>
+</body>
 </div>
 
 <script>
     $('#example').DataTable();
 </script>
 <script th:inline="javascript">
-
     function validateCtsp(action) {
-
         const soLuong = document.getElementById("soLuong").value;
         const donGia = document.getElementById("donGia").value;
         const moTa = document.getElementById("moTa").value;
@@ -138,95 +136,40 @@
             document.getElementById("errorChatLieu").innerText = "Vui lòng chọn chất liệu.";
             isValid = false;
         }
+
         if (trangThai === "") {
             document.getElementById("errorTrangThai").innerText = "Vui lòng chọn trạng thái.";
             isValid = false;
         }
 
-        if (isValid) {
-            if (action === 'add') {
-                const idSanPham = document.getElementById("idsanPham").value || getIdFromURL();
-                const idMauSac = document.getElementById("mauSac").value;
-                const idKichThuoc = document.getElementById("kichThuoc").value;
+        if (isValid && action === 'add') {
+            const idSanPham = document.getElementById("idsanPham").value || getIdFromURL();
+            const idMauSac = document.getElementById("mauSac").value;
+            const idKichThuoc = document.getElementById("kichThuoc").value;
+            const idChatLieu = document.getElementById("chatLieu").value;
 
-                checkDuplicate(idSanPham, idMauSac, idKichThuoc).then(isDuplicate => {
-                    if (isDuplicate) {
-                        alert("Chi tiết sản phẩm với màu sắc và kích thước này đã tồn tại!");
-                    } else {
-                        themctspp(); // Gọi hàm thêm nếu không bị trùng
-                    }
-                }).catch(err => {
-                    console.error("Lỗi kiểm tra trùng:", err);
-                    alert("Có lỗi khi kiểm tra dữ liệu. Vui lòng thử lại.");
-                });
-            } else if (action === 'update') {
-                capNhatCTSP(window.currentCTSanPhamId);
-            }
-        }
-
-        async function checkDuplicate(idSanPham, idMauSac, idKichThuoc) {
-            try {
-                const res = await fetch(`/san-pham/kiem-tra-trung-ctsp?idSanPham=${idSanPham}&idMauSac=${idMauSac}&idKichThuoc=${idKichThuoc}`);
-                if (!res.ok) {
-                    throw new Error("Lỗi phản hồi từ server");
+            checkDuplicate(idSanPham, idMauSac, idKichThuoc, idChatLieu).then(isDuplicate => {
+                if (isDuplicate) {
+                    alert("Chi tiết sản phẩm với màu sắc, kích thước và chất liệu này đã tồn tại!");
+                } else {
+                    themctspp();
                 }
-                return await res.json(); // true nếu đã tồn tại, false nếu chưa
-            } catch (err) {
-                console.error("Lỗi khi gọi API kiểm tra trùng:", err);
-                throw err;
-            }
-        }
-
-
-
-    }
-
-    async function loadCtspData(idctsp) {
-        console.log("ID chi tiết sản phẩm nhận được:", idctsp);
-        try {
-            const id = parseInt(idctsp, 10);
-            if (isNaN(id)) {
-                console.error("ID không hợp lệ:", idctsp);
-                alert("ID chi tiết sản phẩm không hợp lệ.");
-                return;
-            }
-
-            // Gửi yêu cầu GET đến server
-            const response = await fetch(`/san-pham/danh-sach-ctsp/${id}`);
-            if (!response.ok) {
-                console.error("Lỗi khi tải dữ liệu:", response.statusText);
-                alert("Không thể tải dữ liệu chi tiết sản phẩm.");
-                return;
-            }
-
-            const ctsp = await response.json();
-            console.log("Dữ liệu nhận được:", ctsp);
-
-            // Điền dữ liệu vào form
-            document.getElementById("idsanPham").value = ctsp.sanPham.id; // Chọn sản phẩm trong dropdown
-            document.getElementById("soLuong").value = ctsp.soLuong;
-            document.getElementById("donGia").value = ctsp.donGia;
-            document.getElementById("moTa").value = ctsp.moTa;
-            document.getElementById("mauSac").value = ctsp.mauSac.id;
-            document.getElementById("kichThuoc").value = ctsp.kichThuoc.id;
-            document.getElementById("chatLieu").value = ctsp.chatLieu.id;
-            document.getElementById("trangThai").value = ctsp.trangThai;
-
-        } catch (error) {
-            console.error("Lỗi khi tải dữ liệu:", error);
-            alert("Không thể tải dữ liệu chi tiết sản phẩm.");
+            }).catch(err => {
+                console.error("Lỗi khi kiểm tra trùng:", err);
+                alert("Có lỗi khi kiểm tra dữ liệu. Vui lòng thử lại.");
+            });
         }
     }
 
+    async function checkDuplicate(idSanPham, idMauSac, idKichThuoc, idChatLieu) {
+        const url = `/san-pham/kiem-tra-trung-ctsp?idSanPham=${idSanPham}&idMauSac=${idMauSac}&idKichThuoc=${idKichThuoc}&idChatLieu=${idChatLieu}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Lỗi phản hồi từ server");
+        return await res.json(); // true nếu trùng
+    }
 
     async function themctspp() {
-        let idsp = document.getElementById("idsanPham").value || getIdFromURL();
-
-        if (!idsp || isNaN(idsp)) {
-            alert("ID sản phẩm không hợp lệ!");
-            return;
-        }
-
+        const idsp = document.getElementById("idsanPham").value || getIdFromURL();
         const formData = new FormData();
         formData.append("idsanPham", idsp);
         formData.append("idmauSac", document.getElementById("mauSac").value);
@@ -248,9 +191,9 @@
                 body: formData
             });
 
+            const result = await response.text();
             if (!response.ok) {
-                const error = await response.json();
-                alert("Lỗi: " + (error.message || "Không thể thêm sản phẩm!"));
+                alert("Lỗi khi thêm: " + result);
                 return;
             }
 
@@ -262,6 +205,12 @@
         }
     }
 
+    function getIdFromURL() {
+        const url = window.location.href;
+        const segments = url.split("/");
+        return segments[segments.length - 1];
+    }
+
     function formatmoney(money) {
         const VND = new Intl.NumberFormat('vi-VN', {
             style: 'currency',
@@ -269,18 +218,14 @@
         });
         return VND.format(money);
     }
-    document.addEventListener("DOMContentLoaded", function() {
+
+    document.addEventListener("DOMContentLoaded", function () {
         const idSanPham = getIdFromURL();
         if (idSanPham && !isNaN(idSanPham)) {
             document.getElementById("idsanPham").value = idSanPham;
         }
     });
-
-    function getIdFromURL() {
-        const url = window.location.href;
-        const segments = url.split("/");
-        return segments[segments.length - 1];
-    }
 </script>
+
 
 </html>
