@@ -1,5 +1,4 @@
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
-let orders = JSON.parse(localStorage.getItem(("orders"))) || [];
 let total_price = JSON.parse(localStorage.getItem("total_price")) || 0;
 
 function saveToLocalStorage(){

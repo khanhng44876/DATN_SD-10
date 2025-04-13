@@ -36,6 +36,8 @@
     let listhd = /*[[${listhd}]]*/ [];
     let kh = /*[[${kh}]]*/ null;
 
+    let existingIds = orders.map(o => o.id);
+
     let order = listhd.map(item => {
         return {
             id: item.hoaDon.id,
@@ -58,15 +60,16 @@
             payment: item.hoaDon.hinhThucThanhToan,
             address: item.hoaDon.diaChiGiaoHang,
             note: item.hoaDon.ghiChu,
+            total_amount: item.hoaDon.tongTien,
             steps: [
                 { label: "Chờ xác nhận", icon: "fas fa-file-alt" },
                 { label: "Chờ giao hàng", icon: "fas fa-truck" },
                 { label: "Đang giao hàng", icon: "fas fa-shipping-fast" },
-                { label: "Giao hàng thành công", icon: "fas fa-check-circle" },
+                { label: "Giao hàng thành công", icon: "fa-solid fa-flag-checkered" },
                 { label: "Hoàn thành", icon: "fas fa-check-circle" }
             ]
         }
-    });
+    }).filter(o => !existingIds.includes(o.id));
     orders.push(...order);
     localStorage.setItem("orders", JSON.stringify(orders));
 
@@ -81,7 +84,7 @@
             orderInfo.innerHTML = `
                 <div>Đơn hàng: HDO${o.id}</div>
                 <div>
-                    <a type="button" class="btn btn-warning" href="/ban">Xem chi tiết</a>
+                    <a type="button" class="btn btn-warning" href="/ban-hang-online/follow-order/${o.id}">Xem chi tiết</a>
                 </div>
                 <hr>
             `;
