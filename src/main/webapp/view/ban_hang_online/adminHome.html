@@ -18,33 +18,202 @@
             <div class="container">
                 <input type="hidden" id="status" th:value="${status}">
                 <h2 style="text-align: center;">Lịch Sử Hóa Đơn Online</h2>
-                <table class="table table-bordered">
-                    <tr>
-                        <th>ID</th>
-                        <th>Tên khách hàng</th>
-                        <th>Ngày lập</th>
-                        <th>Hình thức thanh toán</th>
-                        <th>Tổng tiền</th>
-                        <th>Trạng thái</th>
-                        <th>Action</th>
-                    </tr>
-                    <tr th:each="s:${listhd}">
-                        <td th:text="${s.id}"></td>
-                        <td th:text="${s.khachHang.tenKhachHang}"></td>
-                        <td th:text="${s.ngayTao}"></td>
-                        <td th:text="${s.hinhThucThanhToan}"></td>
-                        <td th:text="${s.tongTien}"></td>
-                        <td th:text="${s.trangThaiThanhToan}"></td>
-                        <td>
-                            <a th:href="@{/ban-hang-online/lshd/{id}(id=${s.id})}" class="btn btn-primary">
-                                Xác nhận
-                            </a>
-                        </td>
-                    </tr>
-                </table>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" data-tab="cho-xac-nhan" onclick="showTab(this)">Chờ xác nhận</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-tab="cho-giao-hang" onclick="showTab(this)">Chờ giao hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-tab="dang-giao-hang" onclick="showTab(this)">Đang giao hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-tab="giao-hang-thanh-cong" onclick="showTab(this)">Giao hàng thành công</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-tab="hoan-thanh" onclick="showTab(this)">Hoàn thành</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-tab="da-huy" onclick="showTab(this)">Đã hủy</a>
+                    </li>
+                </ul>
+                <div id="cho-xac-nhan" class="tab-content">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên khách hàng</th>
+                            <th>Ngày lập</th>
+                            <th>Hình thức thanh toán</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Action</th>
+                        </tr>
+                        <tr th:each="a:${listhd}">
+                            <td th:text="${a.id}"></td>
+                            <td th:text="${a.khachHang.tenKhachHang}"></td>
+                            <td th:text="${a.ngayTao}"></td>
+                            <td th:text="${a.hinhThucThanhToan}"></td>
+                            <td th:text="${a.tongTien}"></td>
+                            <td th:text="${a.trangThaiThanhToan}"></td>
+                            <td>
+                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${a.id})}" class="btn btn-primary">
+                                    Xác nhận
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="cho-giao-hang" class="tab-content" style="display:none;">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên khách hàng</th>
+                            <th>Ngày lập</th>
+                            <th>Hình thức thanh toán</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Action</th>
+                        </tr>
+                        <tr th:each="b:${listhd2}">
+                            <td th:text="${b.id}"></td>
+                            <td th:text="${b.khachHang.tenKhachHang}"></td>
+                            <td th:text="${b.ngayTao}"></td>
+                            <td th:text="${b.hinhThucThanhToan}"></td>
+                            <td th:text="${b.tongTien}"></td>
+                            <td th:text="${b.trangThaiThanhToan}"></td>
+                            <td>
+                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${b.id})}" class="btn btn-primary">
+                                    Xác nhận
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="dang-giao-hang" class="tab-content" style="display:none;">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên khách hàng</th>
+                            <th>Ngày lập</th>
+                            <th>Hình thức thanh toán</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Action</th>
+                        </tr>
+                        <tr th:each="c:${listhd3}">
+                            <td th:text="${c.id}"></td>
+                            <td th:text="${c.khachHang.tenKhachHang}"></td>
+                            <td th:text="${c.ngayTao}"></td>
+                            <td th:text="${c.hinhThucThanhToan}"></td>
+                            <td th:text="${c.tongTien}"></td>
+                            <td th:text="${c.trangThaiThanhToan}"></td>
+                            <td>
+                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${c.id})}" class="btn btn-primary">
+                                    Xác nhận
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="giao-hang-thanh-cong" class="tab-content" style="display:none;">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên khách hàng</th>
+                            <th>Ngày lập</th>
+                            <th>Hình thức thanh toán</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Action</th>
+                        </tr>
+                        <tr th:each="d:${listhd4}">
+                            <td th:text="${d.id}"></td>
+                            <td th:text="${d.khachHang.tenKhachHang}"></td>
+                            <td th:text="${d.ngayTao}"></td>
+                            <td th:text="${d.hinhThucThanhToan}"></td>
+                            <td th:text="${d.tongTien}"></td>
+                            <td th:text="${d.trangThaiThanhToan}"></td>
+                            <td>
+                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${d.id})}" class="btn btn-primary">
+                                    Xác nhận
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="hoan-thanh" class="tab-content" style="display:none;">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên khách hàng</th>
+                            <th>Ngày lập</th>
+                            <th>Hình thức thanh toán</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Action</th>
+                        </tr>
+                        <tr th:each="e:${listhd5}">
+                            <td th:text="${e.id}"></td>
+                            <td th:text="${e.khachHang.tenKhachHang}"></td>
+                            <td th:text="${e.ngayTao}"></td>
+                            <td th:text="${e.hinhThucThanhToan}"></td>
+                            <td th:text="${e.tongTien}"></td>
+                            <td th:text="${e.trangThaiThanhToan}"></td>
+                            <td>
+                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${e.id})}" class="btn btn-primary">
+                                    Xác nhận
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="da-huy" class="tab-content" style="display:none;">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên khách hàng</th>
+                            <th>Ngày lập</th>
+                            <th>Hình thức thanh toán</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Action</th>
+                        </tr>
+                        <tr th:each="f:${listhd6}">
+                            <td th:text="${f.id}"></td>
+                            <td th:text="${f.khachHang.tenKhachHang}"></td>
+                            <td th:text="${f.ngayTao}"></td>
+                            <td th:text="${f.hinhThucThanhToan}"></td>
+                            <td th:text="${f.tongTien}"></td>
+                            <td th:text="${f.trangThaiThanhToan}"></td>
+                            <td>
+                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${f.id})}" class="btn btn-primary">
+                                    Xác nhận
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
 </body>
+<script>
+    function showTab(element) {
+        const tabId = element.getAttribute("data-tab");
+
+        // Ẩn tất cả tab-content
+        document.querySelectorAll(".tab-content").forEach(tab => {
+            tab.style.display = "none";
+        });
+
+        // Hiện tab-content được chọn
+        document.getElementById(tabId).style.display = "block";
+
+        // Active tab
+        document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
+        element.classList.add("active");
+    }
+</script>
 </html>

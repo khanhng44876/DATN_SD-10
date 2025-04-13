@@ -38,7 +38,7 @@
         <div class="col-5" id="info">
             <h3>Thông tin của bạn</h3>
             <form action="">
-                <input type="hidden" th:value="${kh.id}">
+                <input type="hidden" id="idkh" th:value="${kh.id}">
                 <p>
                     Tên: <span th:text="${kh.tenKhachHang}"></span>
                 </p>
@@ -46,7 +46,7 @@
                     Số điện thoại: <span th:text="${kh.soDienThoai}"></span>
                 </p>
                 <p>
-                    Địa chỉ nhận hàng : <span th:text="${kh.diaChi}"></span>
+                    Địa chỉ nhận hàng : <span id="locationKh" th:text="${kh.diaChi}"></span>
                     <a onclick="changeLocation()" data-bs-toggle="modal" data-bs-target="#exampleModal">
                         Thay đổi
                     </a>
@@ -60,6 +60,7 @@
                     <div class="row">
                         <div class="col">
                             <div class="payment-option">
+                                <input type="hidden" value="COD">
                                 <img src="../../images/freeShip.png" alt="Credit Card">
                                 <div>
                                     <h5>Thanh toán khi nhận hàng</h5>
@@ -69,6 +70,7 @@
                         </div>
                         <div class="col">
                             <div class="payment-option">
+                                <input type="hidden" value="Online">
                                 <div>
                                     <img src="../../images/iconThanhToan.png" alt="PayPal">
                                 </div>
@@ -80,7 +82,7 @@
                          </div>
                     </div>
                 </p>
-                <button type="button" class="btn btn-warning rounded-pill">Đặt hàng</button>
+                <button type="button" class="btn btn-warning rounded-pill" onclick="confirmOrder()">Đặt hàng</button>
             </form>
         </div>
     </div>

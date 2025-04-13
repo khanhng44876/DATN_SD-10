@@ -82,6 +82,9 @@
             <input type="hidden" id="orderId" th:value="${hdNCommit.id}">
             <div class="container">
                 <h2 style="text-align: center;">Lịch Sử Hóa Đơn Online</h2>
+                <div>
+                    <button type="button" class="btn btn-danger" onclick="cancelOrder()">Hủy đơn hàng</button>
+                </div>
                 <div class="status-bar" id="status-bar">
 
                 </div>
@@ -89,14 +92,33 @@
                     <button type="button" class="btn btn-warning rounded-pill" id="confirm-status" onclick="updateOrder()">Xác nhận</button>
                 </div>
                 <div>
-                    <div class="row">
+                    <div class="row mt-3">
+                        <div class="col-8" id="product-list">
 
+                        </div>
+                        <div class="col-4">
+                            <h3>Thông tin khách hàng</h3>
+                            <p>
+                                Họ và tên : <span th:text="${hdNCommit.khachHang.tenKhachHang}"></span>
+                            </p>
+                            <p>
+                                Số điện thoại : <span th:text="${hdNCommit.khachHang.soDienThoai}"></span>
+                            </p>
+                            <p>
+                                Địa chỉ nhận hàng : <span th:text="${hdNCommit.diaChiGiaoHang}"></span>
+                            </p>
+                            <p>
+                                Tổng tiền hàng: <span th:text="${hdNCommit.tongTien}"></span>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
 <script th:inline="javascript">
     let orders = JSON.parse(localStorage.getItem(("orders"))) || [];
     window.hoaDonData = /*[[${hdNCommit}]]*/ null;
@@ -106,7 +128,18 @@
         idnv: window.hoaDonData.nhanVien.id,
         idkm: window.hoaDonData.khuyenMai ? window.hoaDonData.khuyenMai.id : null,
         status: window.hoaDonData.trangThaiThanhToan,
-        listhdct: window.listhdctData,
+        listhdct: window.listhdctData.map(ct => {
+            return {
+                id: ct.id,
+                name: ct.sanPhamChiTiet.sanPham.tenSanPham,
+                price: ct.sanPhamChiTiet.donGia,
+                quantity: ct.soLuong,
+                size: ct.sanPhamChiTiet.kichThuoc.tenKichThuoc,
+                color: ct.sanPhamChiTiet.mauSac.ten_mau_sac,
+                total: ct.tongTien,
+                image: ct.sanPhamChiTiet.anhSanPham
+            }
+        }),
         customer: window.hoaDonData.khachHang,
         total: window.hoaDonData.tongTien,
         date: window.hoaDonData.ngayTao,
@@ -117,7 +150,7 @@
             {label: "Chờ xác nhận", icon: "fas fa-file-alt" },
             {label: "Chờ giao hàng", icon: "fas fa-truck" },
             {label: "Đang giao hàng", icon: "fas fa-shipping-fast" },
-            {label: "Giao hàng thành công", icon: "fas fa-check-circle" },
+            {label: "Giao hàng thành công", icon: "fa-solid fa-flag-checkered" },
             {label: "Hoàn thành", icon: "fas fa-check-circle" }
         ]
     }

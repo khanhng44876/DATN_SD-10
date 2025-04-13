@@ -86,16 +86,32 @@
         </ol>
     </div>
     <div class="container">
+        <input type="hidden" th:value="${id}" id="orderId">
         <h2 style="text-align: center;">Lịch sử đơn hàng</h2>
-        <div class="status-bar">
+        <div>
+            <button type="button" class="btn btn-danger" onclick="cancelOrder()">Hủy đơn hàng</button>
+        </div>
+        <div class="status-bar" id="status-bar">
 
         </div>
-        <div >
-            Thông tin
-        </div>
-        <div>
-            <div class="row">
-                sản phẩm
+        <div class="row">
+            <div class="col" id="product-list">
+
+            </div>
+            <div class="col">
+                Thông tin của bạn:
+                <p>
+                    Họ và tên : <span th:text="${hd.khachHang.tenKhachHang}"></span>
+                </p>
+                <p>
+                    Số điện thoại : <span th:text="${hd.khachHang.soDienThoai}"></span>
+                </p>
+                <p>
+                    Địa chỉ nhận hàng : <span th:text="${hd.diaChiGiaoHang}"></span>
+                </p>
+                <p>
+                    Tổng số tiền hàng : <span th:text="${hd.tongTien}"></span>
+                </p>
             </div>
         </div>
     </div>
