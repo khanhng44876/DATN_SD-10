@@ -5,54 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <head th:replace="giao_dien_chinh/libCustomer :: libheadercustomer"></head>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="/css/online.css">
-  <style>
-    .variant-button {
-      display: inline-block;
-      border: 1px solid #ccc;
-      padding: 5px 10px;
-      margin: 5px;
-      border-radius: 5px;
-      cursor: pointer;
-      background-color: #fff;
-      text-align: center;
-      min-width: 120px;
-      transition: all 0.2s ease;
-    }
-    .variant-button.selected {
-      border-color: #ff0000;
-      background-color: #ffe6e6;
-    }
-    .variant-button img {
-      width: 40px;
-      height: 40px;
-      margin-right: 5px;
-      vertical-align: middle;
-    }
-    .variant-button span {
-      vertical-align: middle;
-    }
-    .checkbox-group {
-      margin-top: 10px;
-    }
-    .quantity-input {
-      width: 80px;
-      display: inline-block;
-      margin-right: 10px;
-    }
-    .stock-info {
-      font-size: 0.9em;
-      color: #555;
-    }
-    .modal.fade .modal-dialog {
-      transition: transform 0.3s ease-out;
-      transform: translate(0, -50px);
-    }
-    .modal.show .modal-dialog {
-      transform: translate(0, 0);
-    }
-  </style>
+  <link rel="stylesheet" href="/css/modal-ctsp.css">
 </head>
 <body>
 <!-- Header -->
@@ -84,7 +38,6 @@
             <img th:src="${variant.anhSanPham} ? '/images/' + ${variant.anhSanPham} : '/images/default.jpg'"
                  alt="variant image" th:if="${variant.anhSanPham}" loading="lazy">
             <span th:text="${variant.mauSac.ten_mau_sac} + ' - ' + ${variant.chatLieu.tenChatLieu}"></span>
-            <div class="stock-info" th:text="'(Còn: ' + ${variant.soLuong} + ')'"></div>
           </div>
           <span th:unless="${variants}" class="text-muted">Không có mẫu</span>
         </div>
@@ -226,6 +179,7 @@
 
     if (!sizes || sizes.length === 0) {
       sizeContainer.innerHTML = '<span class="text-muted">Không có kích thước nào cho mẫu này</span>';
+      document.getElementById('stockInfo').textContent = '';
       return;
     }
 
@@ -241,6 +195,7 @@
         sizeButton.setAttribute('aria-label', `Chọn kích thước ${size.tenKichThuoc}`);
         sizeButton.innerHTML = `
           <span>${size.tenKichThuoc}</span>
+          <div class="stock-info">(Còn: ${size.soLuong})</div>
         `;
         sizeButton.onclick = () => selectSize(sizeButton);
         sizeButton.onkeydown = (e) => {
@@ -253,6 +208,7 @@
     const firstSizeButton = sizeContainer.querySelector('.variant-button');
     if (firstSizeButton) {
       selectSize(firstSizeButton);
+      document.getElementById('stockInfo').textContent = `Còn ${firstSizeButton.dataset.soLuong} sản phẩm`;
     }
   }
 
@@ -261,6 +217,7 @@
     const sizeButtons = document.querySelectorAll('#sizeContainer .variant-button');
     sizeButtons.forEach(btn => btn.classList.remove('selected'));
     element.classList.add('selected');
+    document.getElementById('stockInfo').textContent = `Còn ${element.dataset.soLuong} sản phẩm`;
   }
 
   // Hiển thị giỏ hàng trong modal
