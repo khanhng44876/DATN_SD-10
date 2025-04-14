@@ -3,7 +3,7 @@
 function renderOnlOrder(){
     document.getElementById("product-list").innerHTML = ""
     let orderId = Number(document.getElementById("orderId").value);
-    let order = orders.find(o => o.id === orderId)
+    let order = ordersOnl.find(o => o.id === orderId)
     console.log(order)
     let status = order.status;
     if(status!=="Chờ xác nhận"){
@@ -19,33 +19,33 @@ function renderOnlOrder(){
                 <div class="col text-center">
                     <div class="input-group input-group-sm">
                         <button class="btn btn-outline-secondary btn-sm" onclick="updateQuantity(${p.id},-1)">-</button>
-                        <span class="form-control text-center" id="quantity-${p.id}">${p.soLuong}</span>
+                        <span class="form-control text-center" id="quantity-${p.id}">${p.quantity}</span>
                         <button class="btn btn-outline-secondary btn-sm" onclick="updateQuantity(${p.id},1)">+</button>
                     </div>
                 </div>
               `
             : `
                 <div class="col">
-                    <p>Số lượng: <span>${p.soLuong}</span></p>
+                    <p>Số lượng: <span>${p.quantity}</span></p>
                 </div>
               `;
         product.innerHTML = `
             <div class="row ">
                 <div class="col">
-                    <img src="../../images/${p.sanPhamChiTiet.anhSanPham}" style="width: 150px;height: 150px;" alt="">
+                    <img src="../../images/${p.image}" style="width: 150px;height: 150px;" alt="">
                 </div>
                 <div class="col">
                     <h5>
-                        ${p.sanPhamChiTiet.sanPham.tenSanPham}
+                        ${p.name}
                     </h5>
                     <div class="text-danger fw-bold"> 
-                        <span class="price">${p.sanPhamChiTiet.donGia.toLocaleString("vi-VN")}</span> VND
+                        <span class="price">${p.price.toLocaleString("vi-VN")}</span> VND
                     </div>
-                    <div>Size: ${p.sanPhamChiTiet.kichThuoc.tenKichThuoc}</div> 
+                    <div>Size: ${p.size}</div> 
                 </div>
                 ${quantityHTML}
                 <div class="col text-end text-danger fw-bold">
-                        <span id="total-${p.id}">${p.tongTien==null ? 0 : p.tongTien.toLocaleString("vi-VN")}</span> VND
+                        <span id="total-${p.id}">${p.total==null ? 0 : p.total.toLocaleString("vi-VN")}</span> VND
                 </div>
                 ${order.status === "Chờ xác nhận"
             ? `<div class="col text-end">
@@ -66,7 +66,7 @@ function renderOnlOrder(){
 // Hàm này sẽ cập nhật trạng thái đơn hàng Vào DB và Local
 async function updateOrder() {
     let orderId = Number(document.getElementById("orderId").value);
-    let order = orders.find(o => o.id === orderId)
+    let order = ordersOnl.find(o => o.id === orderId)
     let hdctList = order.listhdct
     for (const hdct of hdctList) {
         try {
@@ -105,10 +105,38 @@ async function updateOrder() {
     renderOnlOrder();
 }
 
+function updateQuantity(itemId,num){
+    let orderId = Number(document.getElementById("orderId").value);
+    let order = ordersOnl.find(o => o.id === orderId)
+    console.log(order)
+    let item = order.listhdct.find(c=>c.id===itemId)
+    order.total_amount = 0;
+    console.log(item)
+    if(!item){
+        alert("không tìm thấy item")
+        return;
+    }
+    item.quantity = Math.max(1,item.quantity+num)
+    item.total = item.quantity * item.price
+    order.listhdct.forEach(c=>{
+        order.total_amount += c.total;
+    })
+    localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
+    const payload = {
+        orderId : order.id,
+        itemId : item.id,
+        totalAmount : order.totalAmount,
+        quantity : item.quantity
+    }
+    stompClient.send("app/update-quantity",{},JSON.stringify(payload));
+    renderOnlOrder()
+
+}
+
 // Hàm này đê
 function connectSocket() {
     const socket = new SockJS("/ws");
-    const stompClient = Stomp.over(socket);
+    stompClient = Stomp.over(socket);
 
     stompClient.connect({}, function (frame) {
         console.log("Connected to WebSocket: " + frame);
@@ -120,10 +148,21 @@ function connectSocket() {
         stompClient.subscribe("/user/topic/order/" + orderId, function (message) {
             console.log(message.body)
             const newStatus = message.body;
+            const payload = message.body;
             console.log("Nhận trạng thái mới từ Admin:", newStatus);
-
+            if(payload.type === "update-quantity"){
+                let order = ordersOnl.find(o => o.id === orderId)
+                let item = order.listhdct.find(p => p.id === payload.itemId)
+                if(item){
+                    item.quantity = payload.quantity;
+                    item.total = payload.quantity * item.price;
+                }
+                order.total_amount = payload.totalAmount;
+                localStorage.setItem("ordersOnl",JSON.stringify(ordersOnl))
+                renderOnlOrder()
+            }
             // Cập nhật localStorage và giao diện
-            const order = orders.find(o => o.id === orderId);
+            const order = ordersOnl.find(o => o.id === orderId);
             const oldStatus = order.status;
             if (order) {
                 order.status = newStatus;
@@ -137,7 +176,7 @@ function connectSocket() {
                     });
                 }
 
-                localStorage.setItem("orders", JSON.stringify(orders));
+                localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
                 renderOnlOrder();
             }
         });
@@ -146,7 +185,7 @@ function connectSocket() {
 // Nút hủy đơn
 function cancelOrder() {
     let orderId = Number(document.getElementById("orderId").value);
-    let order = orders.find(o => o.id === orderId)
+    let order = ordersOnl.find(o => o.id === orderId)
 
     const currentStep = order.steps.findIndex(step => step.label === order.status);
 
@@ -166,7 +205,7 @@ function cancelOrder() {
                 });
             }
 
-            localStorage.setItem("orders", JSON.stringify(orders));
+            localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
             renderOnlOrder();
         }
     }).catch(err => alert(err.message));
@@ -175,14 +214,11 @@ function cancelOrder() {
 // Hàm này sẽ update thanh trạng thái
 function updateStatusBar(status,orderId) {
     console.log(status)
-    let order = orders.find(o => o.id === orderId)
+    let order = ordersOnl.find(o => o.id === orderId)
     const statusBar = document.getElementById("status-bar");
     statusBar.innerHTML = "";
 
     const currentIndex = order.steps.findIndex(step => step.label === status);
-
-    // Nếu không phải "Đã hủy" thì chỉ hiển thị từ đầu đến trạng thái hiện tại
-    const visibleSteps = order.steps.filter(step => step.id > 0).slice(0, currentIndex); // lọc bỏ id -1
 
     order.steps.slice(0, currentIndex + 1).forEach((step, index) => {
         const stepDiv = document.createElement("div");
