@@ -25,7 +25,7 @@ public interface HoaDonCTRepository extends JpaRepository<HoaDonCT, Integer> {
     @Query("SELECT SUM(hdct.soLuong) FROM HoaDonCT hdct " +
             "JOIN hdct.hoaDon hd " +
             "WHERE hd.ngayTao BETWEEN :startDate AND :endDate")
-    int findSoldQuantityByDateRange(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+    Integer findSoldQuantityByDateRange(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
     // Top sản phẩm bán chạy
     @Query(value = """

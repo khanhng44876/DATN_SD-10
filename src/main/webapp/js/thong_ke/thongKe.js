@@ -70,9 +70,11 @@ app.controller('ThongKeController', function ($scope, $http) {
                     datasets: [{
                         data: statusData.data,
                         backgroundColor: [
-                            '#FACC15', // Chờ giao hàng - vàng
+                            '#FACC15', // Chờ xác nhận - vàng
+                            '#FFD700', // Chờ giao hàng - vàng đậm
                             '#3B82F6', // Đang giao hàng - xanh dương
                             '#10B981', // Giao hàng thành công - xanh lá
+                            '#8B5CF6', // Hoàn thành - tím
                             '#EF4444'  // Đã hủy - đỏ
                         ],
                         borderWidth: 1
