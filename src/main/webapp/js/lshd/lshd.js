@@ -101,7 +101,7 @@ async function updateOrder() {
     }catch(error){
         console.log(error)
     }
-    localStorage.setItem("orders", JSON.stringify(orders));
+    localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
     renderOnlOrder();
 }
 
@@ -148,7 +148,7 @@ function connectSocket() {
         stompClient.subscribe("/user/topic/order/" + orderId, function (message) {
             console.log(message.body)
             const newStatus = message.body;
-            const payload = message.body;
+            const payload = JSON.parse(message.body);
             console.log("Nhận trạng thái mới từ Admin:", newStatus);
             if(payload.type === "update-quantity"){
                 let order = ordersOnl.find(o => o.id === orderId)

@@ -564,7 +564,7 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
         document.getElementById("errQuantityMes").innerText = "Không được để trống trường này!"
         return;
     }
-    if(inpQuantity < 0){
+    if(inpQuantity <= 0){
         document.getElementById("errQuantityMes").innerText = "Vui lòng nhập số lớn hơn 0"
         return;
     }
@@ -574,7 +574,7 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
     }
     let existingProduct = order.product.find(p => Number(p.id) === Number(productId))
     if(existingProduct){
-        existingProduct.so_luong += inpQuantity
+        existingProduct.so_luong += Number(inpQuantity)
         existingProduct.tong_tien = existingProduct.so_luong * donGia
     }else{
         order.product.push({

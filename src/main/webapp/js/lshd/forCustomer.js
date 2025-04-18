@@ -1,10 +1,10 @@
-let orders = JSON.parse(localStorage.getItem("orders"));
+let ordersOnl = JSON.parse(localStorage.getItem("ordersOnl"));
 let stompClient = null;
 // Reload trang
 function renderOnlOrder(){
     document.getElementById("product-list").innerHTML = "";
     let orderId = Number(document.getElementById("orderId").value);
-    let order = orders.find(o => o.id === orderId)
+    let order = ordersOnl.find(o => o.id === orderId)
     let status = order.status;
     if(status!=="Chờ xác nhận"){
         document.querySelector(".btn.btn-danger").style.display = "none";
@@ -64,9 +64,11 @@ function renderOnlOrder(){
 }
 
 function updateQuantity(itemId,num){
-    let orderId = document.getElementById("orderId").value;
-    let order = orders.find(o => o.id === orderId)
+    let orderId = Number(document.getElementById("orderId").value);
+    let order = ordersOnl.find(o => o.id === orderId)
+    console.log(order)
     let item = order.listhdct.find(c=>c.id===itemId)
+    order.total_amount = 0;
     console.log(item)
     if(!item){
         alert("không tìm thấy item")
@@ -75,16 +77,23 @@ function updateQuantity(itemId,num){
     item.quantity = Math.max(1,item.quantity+num)
     item.total = item.quantity * item.price
     order.listhdct.forEach(c=>{
-
+        order.total_amount += c.total;
     })
-    saveToLocalStorage();
-    renderQuantity(item.id);
+    localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
+    const payload = {
+        orderId : order.id,
+        itemId : item.id,
+        totalAmount : order.totalAmount,
+        quantity : item.quantity
+    }
+    stompClient.send("app/update-quantity",{},JSON.stringify(payload));
+    renderOnlOrder()
 
 }
 
 function connectSocket() {
     const socket = new SockJS("/ws");
-    const stompClient = Stomp.over(socket);
+    stompClient = Stomp.over(socket);
 
     stompClient.connect({}, function (frame) {
         console.log("Connected to WebSocket: " + frame);
@@ -96,10 +105,22 @@ function connectSocket() {
         stompClient.subscribe("/user/topic/order/" + orderId, function (message) {
             console.log(message.body)
             const newStatus = message.body;
+            // const payload = JSON.parse(message.body);
             console.log("Nhận trạng thái mới từ Admin:", newStatus);
 
+            // if(payload.type === "update-quantity"){
+            //     let order = ordersOnl.find(o => o.id === orderId)
+            //     let item = order.listhdct.find(p => p.id === payload.itemId)
+            //     if(item){
+            //         item.quantity = payload.quantity;
+            //         item.total = payload.quantity * item.price;
+            //     }
+            //     order.total_amount = payload.totalAmount;
+            //     localStorage.setItem("orders",JSON.stringify(orders))
+            //     renderOnlOrder()
+            // }
             // Cập nhật localStorage và giao diện
-            const order = orders.find(o => o.id === orderId);
+            const order = ordersOnl.find(o => o.id === orderId);
             const oldStatus = order.status;
             if (order) {
                 order.status = newStatus;
@@ -113,7 +134,7 @@ function connectSocket() {
                     });
                 }
 
-                localStorage.setItem("orders", JSON.stringify(orders));
+                localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
                 renderOnlOrder();
             }
         });
@@ -122,12 +143,12 @@ function connectSocket() {
 
 function cancelOrder() {
     let orderId = Number(document.getElementById("orderId").value);
-    let order = orders.find(o => o.id === orderId)
+    let order = ordersOnl.find(o => o.id === orderId)
 
     const currentStep = order.steps.findIndex(step => step.label === order.status);
 
     order.status = "Đã hủy";
-    localStorage.setItem("orders", JSON.stringify(orders));
+    localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
     fetch(`/ban-hang-online/cancel-order/${order.id}`,{
         method:"PUT"
     }).then(res => {
@@ -144,14 +165,14 @@ function cancelOrder() {
             });
         }
 
-        localStorage.setItem("orders", JSON.stringify(orders));
+        localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
         renderOnlOrder();
     }
     }).catch(err => alert(err.message));
 }
 // Hàm này sẽ update thanh trạng thái
 function updateStatusBar(status,orderId) {
-    let order = orders.find(o => o.id === orderId)
+    let order = ordersOnl.find(o => o.id === orderId)
     const statusBar = document.getElementById("status-bar");
     statusBar.innerHTML = "";
 

@@ -86,7 +86,7 @@
         </ol>
     </div>
     <div class="container">
-        <input type="hidden" th:value="${id}" id="orderId">
+        <input type="hidden" th:value="${hd.id}" id="orderId">
         <h2 style="text-align: center;">Lịch sử đơn hàng</h2>
         <div>
             <button type="button" class="btn btn-danger" onclick="cancelOrder()">Hủy đơn hàng</button>
@@ -112,6 +112,9 @@
                 <p>
                     Tổng số tiền hàng : <span th:text="${hd.tongTien}"></span>
                 </p>
+                <div>
+
+                </div>
             </div>
         </div>
     </div>
