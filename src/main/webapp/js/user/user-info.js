@@ -2,9 +2,13 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch("/ttdn")
         .then(response => response.json()) // Không cần kiểm tra response.ok vì server luôn trả 200
         .then(data => {
+            console.log("Dữ liệu từ /ttdn:", data);
             const userNameSpan = document.getElementById("user-name");
             const authButton = document.getElementById("auth-button");
-
+            if (!userNameSpan || !authButton) {
+                console.error("Không tìm thấy #user-name hoặc #auth-button trong DOM");
+                return;
+            }
             // Kiểm tra authenticated để xác định trạng thái
             if (data.authenticated === true) {
                 userNameSpan.textContent = `Xin chào, ${data.hoTen || "Khách"}!`;

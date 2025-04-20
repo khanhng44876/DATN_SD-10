@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kết quả thanh toán</title>
+    <head th:replace="giao_dien_chinh/libCustomer :: libheadercustomer"></head>
+</head>
+<body>
+<div th:replace="giao_dien_chinh/navbarCustomer :: headerCustomer"></div>
+<div class="container mt-5">
+    <h2>Kết quả thanh toán</h2>
+    <p><strong>Thông tin đơn hàng:</strong> <span th:text="${orderId}"></span></p>
+    <p><strong>Số tiền:</strong> <span th:text="${totalPrice}"></span> VNĐ</p>
+    <p><strong>Thời gian thanh toán:</strong> <span th:text="${paymentTime}"></span></p>
+    <p><strong>Mã giao dịch:</strong> <span th:text="${transactionId}"></span></p>
+    <p><strong>Trạng thái:</strong> <span th:text="${paymentStatus}"></span></p>
+    <a href="/ban-hang-online" class="btn btn-primary">Quay lại trang chủ</a>
+</div>
+</body>
+</html>

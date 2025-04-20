@@ -16,24 +16,28 @@
         <!-- Phần Navigation cho User đã đăng nhập -->
         <ul class="navbar-nav align-items-center">
             <!-- Hiển thị thông tin người dùng -->
-            <li class="nav-item me-3">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-person-circle me-2"></i>
-                    <p>Xin chào, <span id="user-name" style="font-weight: bold; color: #ff6b6b; font-size: 1.2rem;">Đang tải...</span>!
-                    </p>
-
-                </div>
-            </li>
-            <!-- Nút đăng xuất -->
             <li class="nav-item">
-                <a class="nav-link" href="/logout" onclick="return confirmLogout(event)"
-                   style="display: flex; align-items: center; gap: 8px; padding: 10px 15px;
+                <span id="user-name" style="color: black; font-weight: bold;"></span>
+            </li>
+            <li class="nav-item"></li>
+            <li class="nav-item">
+                <a id="auth-button" class="nav-link btn btn-outline-light" href="/login" style="display: flex; align-items: center; gap: 8px; padding: 10px 15px;
               background: linear-gradient(135deg, #ff416c, #ff4b2b);
               color: white; border-radius: 8px; transition: 0.3s; text-decoration: none;
               font-weight: bold; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                    <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Đăng nhập
                 </a>
             </li>
+            <!-- Nút đăng xuất -->
+<!--            <li class="nav-item">-->
+<!--                <a class="nav-link" href="/logout" onclick="return confirmLogout(event)"-->
+<!--                   style="display: flex; align-items: center; gap: 8px; padding: 10px 15px;-->
+<!--              background: linear-gradient(135deg, #ff416c, #ff4b2b);-->
+<!--              color: white; border-radius: 8px; transition: 0.3s; text-decoration: none;-->
+<!--              font-weight: bold; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">-->
+<!--                    <i class="bi bi-box-arrow-right"></i> Đăng xuất-->
+<!--                </a>-->
+<!--            </li>-->
         </ul>
     </div>
 </nav>

@@ -2,11 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.*;
 import com.example.demo.entity.*;
-import com.example.demo.exception.MessageException;
 import com.example.demo.repository.*;
-import jakarta.servlet.http.HttpSession;
+import com.example.demo.service.VNPAYService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -17,9 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.*;
-import java.util.stream.Collectors;
+
 
 @Controller
 
@@ -44,6 +43,10 @@ public class BanHangOnlineController {
     private SimpMessagingTemplate simMessagingTemplate;
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+    @Autowired
+    private HoaDonCTRepository hoaDonCTRepository;
+    @Autowired
+    private VNPAYService vnPayService;
 
     // Bán hàng online cua admin
     @RequestMapping("/ban-hang-online/admin")
@@ -113,13 +116,6 @@ public class BanHangOnlineController {
         model.addAttribute("spClb", spClb);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        // Kiểm tra nếu user chưa đăng nhập (anonymous)
-        if (authentication == null || !authentication.isAuthenticated() ||
-                authentication.getPrincipal().equals("anonymousUser")) {
-            return "ban_hang_online/home";  // Trang chưa đăng nhập
-        }
-
         return "ban_hang_online/index";  // Trang đã đăng nhập
     }
 
@@ -228,49 +224,84 @@ public class BanHangOnlineController {
 
     @PostMapping("/ban-hang-online/create-order")
     @Transactional
-    public ResponseEntity<?> createOrder(@RequestBody HoaDonRequestNew hd) {
-        System.out.println("Dữ liệu nhận được: " + hd);
-        HoaDon hoaDon = new HoaDon();
-        hoaDon.setNgayTao(hd.getNgayTao());
-        hoaDon.setNgaySua(hd.getNgaySua());
-        hoaDon.setDonGia(hd.getDonGia());
-        hoaDon.setTongTien(hd.getTongTien());
-        hoaDon.setTrangThaiThanhToan(hd.getTrangThaiThanhToan());
-        hoaDon.setHinhThucThanhToan(hd.getHinhThucThanhToan());
-        hoaDon.setDiaChiGiaoHang(hd.getDiaChiGiaoHang());
-        hoaDon.setGhiChu(hd.getGhiChu());
+    public ResponseEntity<Map<String, Object>> createOrder(@RequestBody HoaDonRequestNew hd, HttpServletRequest request) {
+        Map<String, Object> response = new HashMap<>();
 
-        hoaDon.setKhachHang(khachHangRepository.findById(hd.getIdKhachHang()).get());
-        hoaDon.setNhanVien(nhanVienRepository.findById(hd.getIdNhanVien()).get());
-        if (hd.getIdKhuyenMai() == null) {
-            hoaDon.setKhuyenMai(null);
-        } else {
-            hoaDon.setKhuyenMai(khuyenMaiRepository.findById(hd.getIdKhuyenMai()).get());
+        try {
+            if (hd.getIdKhachHang() == null || hd.getIdNhanVien() == null) {
+                response.put("error", "Thiếu ID khách hàng hoặc nhân viên");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            HoaDon hoaDon = new HoaDon();
+            hoaDon.setNgayTao(hd.getNgayTao() != null ? hd.getNgayTao() : new Date());
+            hoaDon.setNgaySua(hd.getNgaySua());
+            hoaDon.setDonGia(hd.getDonGia());
+            hoaDon.setTongTien(hd.getTongTien());
+            hoaDon.setTrangThaiThanhToan(hd.getTrangThaiThanhToan());
+            hoaDon.setHinhThucThanhToan(hd.getHinhThucThanhToan());
+            hoaDon.setDiaChiGiaoHang(hd.getDiaChiGiaoHang());
+            hoaDon.setGhiChu(hd.getGhiChu());
+
+            return khachHangRepository.findById(hd.getIdKhachHang())
+                    .map(khachHang -> {
+                        hoaDon.setKhachHang(khachHang);
+                        return nhanVienRepository.findById(hd.getIdNhanVien())
+                                .map(nhanVien -> {
+                                    hoaDon.setNhanVien(nhanVien);
+                                    if (hd.getIdKhuyenMai() != null) {
+                                        khuyenMaiRepository.findById(hd.getIdKhuyenMai())
+                                                .ifPresent(hoaDon::setKhuyenMai);
+                                    }
+                                    HoaDon savedHoaDon = hoaDonrepo.save(hoaDon);
+
+                                    response.put("id", savedHoaDon.getId());
+                                    if ("Online".equals(hd.getHinhThucThanhToan())) {
+                                        String orderInfo = "Thanh toan don hang " + savedHoaDon.getId() + " cua KH: " + hd.getIdKhachHang();
+                                        String vnpayUrl = vnPayService.createOrder(request, savedHoaDon.getTongTien().intValue(), orderInfo);
+                                        response.put("redirectUrl", vnpayUrl);
+                                    }
+                                    return ResponseEntity.ok(response);
+                                })
+                                .orElseGet(() -> {
+                                    response.put("error", "Nhân viên không tồn tại");
+                                    return ResponseEntity.badRequest().body(response);
+                                });
+                    })
+                    .orElseGet(() -> {
+                        response.put("error", "Khách hàng không tồn tại");
+                        return ResponseEntity.badRequest().body(response);
+                    });
+        } catch (Exception e) {
+            response.put("error", "Lỗi server: " + e.getMessage());
+            return ResponseEntity.status(500).body(response);
         }
-
-        hoaDonrepo.save(hoaDon);
-
-        return ResponseEntity.ok(hoaDon);
     }
 
     @PostMapping("/ban-hang-online/create-order-ct")
     @Transactional
     public ResponseEntity<?> createOrderCT(@RequestBody HoaDonCT_DTO hdct) {
-        System.out.println(hdct);
-        HoaDonCT hoaDonCT = new HoaDonCT();
-        hoaDonCT.setDonGia(hdct.getDonGia());
-        hoaDonCT.setSoLuong(hdct.getSoLuong());
-        hoaDonCT.setTrangThai(hdct.getTrangThai());
-        hoaDonCT.setTongTien(hdct.getTongTien());
-        hoaDonCT.setThanhTien(hdct.getThanhTien());
-        hoaDonCT.setNgayTao(hdct.getNgayTao());
-        hoaDonCT.setNgaySua(hdct.getNgaySua());
+        try {
+            if (hdct.getIdHoaDon() == null || hdct.getIdSanPhamChiTiet() == null) {
+                return ResponseEntity.badRequest().body("Thiếu ID hóa đơn hoặc sản phẩm chi tiết");
+            }
 
-        hoaDonCT.setHoaDon_id(hdct.getIdHoaDon());
-        hoaDonCT.setCtsp_id(hdct.getIdSanPhamChiTiet());
+            HoaDonCT hoaDonCT = new HoaDonCT();
+            hoaDonCT.setDonGia(hdct.getDonGia());
+            hoaDonCT.setSoLuong(hdct.getSoLuong());
+            hoaDonCT.setTrangThai(hdct.getTrangThai());
+            hoaDonCT.setTongTien(hdct.getTongTien());
+            hoaDonCT.setThanhTien(hdct.getThanhTien());
+            hoaDonCT.setNgayTao(hdct.getNgayTao() != null ? hdct.getNgayTao() : new Date());
+            hoaDonCT.setNgaySua(hdct.getNgaySua());
+            hoaDonCT.setHoaDon_id(hdct.getIdHoaDon());
+            hoaDonCT.setCtsp_id(hdct.getIdSanPhamChiTiet());
 
-        hdctRepository.save(hoaDonCT);
-        return ResponseEntity.ok(hoaDonCT);
+            HoaDonCT savedHoaDonCT = hoaDonCTRepository .save(hoaDonCT);
+            return ResponseEntity.ok(savedHoaDonCT);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Lỗi server: " + e.getMessage());
+        }
     }
 
     @PutMapping("/ban-hang-online/updateHD/{id}/{status}")

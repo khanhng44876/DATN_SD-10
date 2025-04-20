@@ -1,72 +1,72 @@
 package com.example.demo.service;
 
+import com.example.demo.config.VNPayConfig;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
 public class VNPAYService {
-    @Value("${vnpay.tmnCode}")
-    private String vnp_TmnCode;
 
-    @Value("${vnpay.hashSecret}")
-    private String vnp_HashSecret;
+    @Autowired
+    private VNPayConfig vnPayConfig;
 
-    @Value("${vnpay.url}")
-    private String vnp_Url;
-
-    @Value("${vnpay.returnUrl}")
-    private String vnp_ReturnUrl;
-
-    public String createOrder(HttpServletRequest request, int amount, String orderInfo, String baseUrl) {
+    public String createOrder(HttpServletRequest request, int amount, String orderInfo) {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
-        String vnp_OrderType = "other";
-        String vnp_Amount = String.valueOf(amount * 100); // Nhân 100 để khử thập phân
-        String vnp_IpAddr = request.getRemoteAddr();
+        String vnp_OrderInfo = orderInfo;
+        String vnp_OrderType = "billpayment";
         String vnp_TxnRef = String.valueOf(System.currentTimeMillis());
+        String vnp_IpAddr = request.getRemoteAddr();
         String vnp_CreateDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        String vnp_ExpireDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis() + 15 * 60 * 1000));
 
         Map<String, String> vnp_Params = new TreeMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
-        vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", vnp_Amount);
+        vnp_Params.put("vnp_TmnCode", vnPayConfig.vnp_TmnCode);
+        vnp_Params.put("vnp_Amount", String.valueOf(amount * 100)); // Nhân 100 để bỏ phần thập phân
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", orderInfo);
+        vnp_Params.put("vnp_OrderInfo", vnp_OrderInfo);
         vnp_Params.put("vnp_OrderType", vnp_OrderType);
         vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", vnp_ReturnUrl);
+        vnp_Params.put("vnp_ReturnUrl", vnPayConfig.vnp_ReturnUrl);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+        vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
         StringBuilder hashData = new StringBuilder();
         for (Map.Entry<String, String> entry : vnp_Params.entrySet()) {
-            hashData.append(entry.getKey()).append("=")
-                    .append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8)).append("&");
+            hashData.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
+            hashData.append("=");
+            hashData.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
+            hashData.append("&");
         }
         hashData.deleteCharAt(hashData.length() - 1);
-        String vnp_SecureHash = hmacSHA512(vnp_HashSecret, hashData.toString());
+        String vnp_SecureHash = hmacSHA512(vnPayConfig.vnp_HashSecret, hashData.toString());
         vnp_Params.put("vnp_SecureHash", vnp_SecureHash);
 
-        StringBuilder query = new StringBuilder();
+        StringBuilder vnpayUrl = new StringBuilder(vnPayConfig.vnp_Url);
+        vnpayUrl.append("?");
         for (Map.Entry<String, String> entry : vnp_Params.entrySet()) {
-            query.append(entry.getKey()).append("=")
-                    .append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8)).append("&");
+            vnpayUrl.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
+            vnpayUrl.append("=");
+            vnpayUrl.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
+            vnpayUrl.append("&");
         }
-        query.deleteCharAt(query.length() - 1);
-        return vnp_Url + "?" + query.toString();
+        vnpayUrl.deleteCharAt(vnpayUrl.length() - 1);
+
+        return vnpayUrl.toString();
     }
 
     public int orderReturn(HttpServletRequest request) {
-        Map<String, String> fields = new HashMap<>();
+        Map<String, String> fields = new TreeMap<>();
         for (String key : request.getParameterMap().keySet()) {
             String value = request.getParameter(key);
             if (value != null && !value.isEmpty()) {
@@ -74,40 +74,53 @@ public class VNPAYService {
             }
         }
 
-        String vnp_SecureHash = fields.get("vnp_SecureHash");
+        String vnp_SecureHash = request.getParameter("vnp_SecureHash");
         fields.remove("vnp_SecureHash");
 
-        String signValue = hashAllFields(fields);
-        if (signValue.equals(vnp_SecureHash)) {
-            return "00".equals(fields.get("vnp_ResponseCode")) ? 1 : 0; // 1: Thành công, 0: Thất bại
+        String signValue = "";
+        for (Map.Entry<String, String> entry : fields.entrySet()) {
+            signValue += URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8) + "=" +
+                    URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8) + "&";
         }
-        return -1; // Sai chữ ký
+        signValue = signValue.substring(0, signValue.length() - 1);
+        String sign = hmacSHA512(vnPayConfig.vnp_HashSecret, signValue);
+
+        if (sign.equals(vnp_SecureHash)) {
+            return "00".equals(request.getParameter("vnp_ResponseCode")) ? 1 : 0;
+        }
+        return -1; // Chữ ký không hợp lệ
     }
 
-    private String hmacSHA512(String key, String data) {
+    public String hmacSHA512(String key, String data) {
         try {
             javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA512");
             mac.init(new javax.crypto.spec.SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA512"));
-            byte[] hash = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
+            byte[] hmac = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hmac) {
+                sb.append(String.format("%02x", b));
             }
-            return hexString.toString();
+            return sb.toString();
         } catch (Exception e) {
-            throw new RuntimeException("Error while hashing", e);
+            throw new RuntimeException("Failed to create HMAC-SHA512", e);
         }
     }
 
-    private String hashAllFields(Map<String, String> fields) {
-        StringBuilder sb = new StringBuilder();
-        TreeMap<String, String> sortedFields = new TreeMap<>(fields);
+    public boolean verifySignature(Map<String, String> fields, String vnpSecureHash) {
+        Map<String, String> sortedFields = new TreeMap<>(fields);
+        StringBuilder signValue = new StringBuilder();
         for (Map.Entry<String, String> entry : sortedFields.entrySet()) {
-            sb.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+            if (!entry.getKey().equals("vnp_SecureHash")) {
+                signValue.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8))
+                        .append("=")
+                        .append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8))
+                        .append("&");
+            }
         }
-        sb.deleteCharAt(sb.length() - 1);
-        return hmacSHA512(vnp_HashSecret, sb.toString());
+        if (signValue.length() > 0) {
+            signValue.deleteCharAt(signValue.length() - 1);
+        }
+        String calculatedHash = hmacSHA512(vnPayConfig.vnp_HashSecret, signValue.toString());
+        return calculatedHash.equals(vnpSecureHash);
     }
 }

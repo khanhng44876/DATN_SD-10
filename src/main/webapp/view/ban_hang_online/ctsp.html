@@ -97,7 +97,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tiếp Tục Mua Sắm</button>
-        <a href="/gio-hang" class="btn btn-primary">Xem Giỏ Hàng</a>
+        <a href="/ban-hang-online/cart" class="btn btn-primary">Xem Giỏ Hàng</a>
       </div>
     </div>
   </div>
@@ -242,10 +242,10 @@
           <td>${item.name}</td>
           <td>${item.size}</td>
           <td>${item.color}-${item.material}</td>
-          <td><input type="number" value="${item.quantity}" min="1" style="width: 60px;" onchange="updateQuantity('${item.ctspId}', '${item.size}', this.value)"></td>
+          <td><input type="number" value="${item.quantity}" min="1" style="width: 60px;" onchange="updateQuantity('${item.id}', '${item.size}', this.value)"></td>
           <td>${formatCurrency(item.price)}</td>
           <td>${formatCurrency(itemTotal)}</td>
-          <td><button class="btn btn-danger btn-sm" onclick="removeFromCart('${item.ctspId}', '${item.size}')">Xóa</button></td>
+          <td><button class="btn btn-danger btn-sm" onclick="removeFromCart('${item.id}')">Xóa</button></td>
         </tr>
       `;
     });
@@ -255,7 +255,7 @@
   // Cập nhật số lượng trong giỏ hàng
   function updateQuantity(ctspId, size, newQuantity) {
     const cart = getCartFromLocalStorage();
-    const item = cart.find(i => i.ctspId === ctspId && i.size === size);
+    const item = cart.find(i => i.id === ctspId && i.size === size);
     const newQty = parseInt(newQuantity);
 
     if (isNaN(newQty) || newQty < 1) {
@@ -279,8 +279,8 @@
   }
 
   // Xóa sản phẩm khỏi giỏ hàng
-  function removeFromCart(ctspId, size) {
-    const cart = getCartFromLocalStorage().filter(item => item.ctspId !== ctspId || item.size !== size);
+  function removeFromCart(id) {
+    const cart = getCartFromLocalStorage().filter(item => item.id !== Number(id));
     saveCartToLocalStorage(cart);
     displayCartPreview();
   }
@@ -294,7 +294,7 @@
     const quantity = parseInt(quantityInput.value);
 
     if (!selectedSizeButton || !selectedVariantButton) {
-      alert('Vui lòng chọn kích thước và biến thể!');
+      alert('Vui lòng chọn kích thước và Mẫu!');
       return;
     }
     if (isNaN(quantity) || quantity < 1) {
@@ -312,7 +312,7 @@
       const donGia = parseFloat(selectedVariantButton.dataset.donGia); // Lấy giá từ biến thể
 
       const cart = getCartFromLocalStorage();
-      const existingProduct = cart.find(item => item.ctspId === ctspId && item.size === selectedSizeButton.dataset.size);
+      const existingProduct = cart.find(item => item.id === Number(ctspId) && item.size === selectedSizeButton.dataset.size);
       const totalQuantity = (existingProduct ? existingProduct.quantity : 0) + quantity;
 
       if (totalQuantity > soLuongTonKho) {

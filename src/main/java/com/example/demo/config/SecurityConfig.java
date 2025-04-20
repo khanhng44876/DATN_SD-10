@@ -28,10 +28,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login","/dang-ky/**","/kich-hoat/**","/forgot-password", "/reset-password").anonymous()
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**").permitAll() // Cho phép truy cập file tĩnh
-                        .requestMatchers("/ban-hang-online/**").permitAll()
-                        .requestMatchers("/hoa-don/**","/ban-hang-online/don-hang","/san-pham/**","/khach-hang/**","/mau-sac/**","/ban-hang-off/**").hasAnyAuthority("QUAN_LY", "NHAN_VIEN") // Nhân viên, admin vào được
+                        .requestMatchers("/ban-hang-online","/ban-hang-online/cart","/ban-hang-online/dsdh-customer","/ban-hang-online/sp","/ban-hang-online/detail").permitAll()
+                        .requestMatchers("/hoa-don/**","/ban-hang-online/don-hang","ban-hang-online/admin/**" ,"/san-pham/**","/khach-hang/**","/mau-sac/**","/ban-hang-off/**").hasAnyAuthority("QUAN_LY", "NHAN_VIEN") // Nhân viên, admin vào được
                         .requestMatchers("/nhan-vien/**","/doanh-thu/**").hasAuthority("QUAN_LY")
-                        .requestMatchers("/ban-hang-online/cart").hasAuthority("KHACH_HANG")// Chỉ quản lý mới vào được
+                        .requestMatchers("/ban-hang-online/create-order/**").hasAuthority("KHACH_HANG")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

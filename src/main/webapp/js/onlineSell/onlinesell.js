@@ -125,6 +125,15 @@ async function confirmOrder() {
     let location = document.getElementById("locationKh").innerText;
     let ghichu = document.getElementById("ghiChu").value;
 
+
+    // Lấy hình thức thanh toán từ input hidden
+    let hiddenInput = document.querySelector('input[name="paymentMethod"][type="hidden"]');
+
+    // Kiểm tra input hidden
+    if (!hiddenInput) {
+        alert("Không tìm thấy thông tin hình thức thanh toán!");
+        return;
+    }
     console.log(idkh, today, total, httt, location, ghichu)
       let  hdJson = {
             id_nhan_vien: 1,
@@ -170,24 +179,35 @@ async function confirmOrder() {
                 trang_thai: "Chờ xác nhận"
             };
             // **Tạo request POST thêm hóa đơn chi tiết**
-            let hdctRequest = fetch("/ban-hang-online/create-order-ct", {
+            return fetch("/ban-hang-online/create-order-ct", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(hdctJson)
-            }).then(response => response.json())
-                .then(data => console.log(data))
-                .catch(err => {
-                    console.error("Lỗi thêm hóa đơn chi tiết:", err);
-                    throw err;
-                });
+            }).then(response => {
+                if (!response.ok) throw new Error("Lỗi khi tạo chi tiết hóa đơn");
+                return response.json();
+            });
+        });
+        await Promise.all(requests);
 
-            return Promise.all([hdctRequest]);
-        })
-        await Promise.all(requests.flat());
-        alert("Thành công");
+        // Xóa giỏ hàng
+        cart = cart.filter(c => !c.active);
+        total_price = 0;
+        saveToLocalStorage();
+        renderCart();
+
+        // Xử lý thanh toán
+        if (httt === "Online" && result.redirectUrl) {
+            window.location.href = result.redirectUrl;
+        } else if (httt === "COD") {
+            alert("Đặt hàng COD thành công!");
+            window.location.href = "/ban-hang-online";
+        } else {
+            throw new Error("Phản hồi không hợp lệ từ server");
+        }
     } catch (error) {
         console.error("Lỗi:", error);
-        alert("Đã xảy ra lỗi khi xác nhận đơn hàng!");
+        alert("Đã xảy ra lỗi khi xác nhận đơn hàng: " + error.message);
     }
 }
 // Gán sự kiện thayddooiri cho checkbox
