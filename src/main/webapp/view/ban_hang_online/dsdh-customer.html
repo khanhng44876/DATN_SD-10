@@ -31,12 +31,12 @@
     <div id="yourOrder"></div>
 </div>
 <script th:inline="javascript">
-    let orders = JSON.parse(localStorage.getItem("orders")) || [];
+    let ordersOnl = JSON.parse(localStorage.getItem("ordersOnl")) || [];
 
     let listhd = /*[[${listhd}]]*/ [];
     let kh = /*[[${kh}]]*/ null;
 
-    let existingIds = orders.map(o => o.id);
+    let existingIds = ordersOnl.map(o => o.id);
 
     let order = listhd.map(item => {
         return {
@@ -66,16 +66,17 @@
                 { label: "Chờ giao hàng", icon: "fas fa-truck" },
                 { label: "Đang giao hàng", icon: "fas fa-shipping-fast" },
                 { label: "Giao hàng thành công", icon: "fa-solid fa-flag-checkered" },
-                { label: "Hoàn thành", icon: "fas fa-check-circle" }
+                { label: "Hoàn thành", icon: "fas fa-check-circle" },
+
             ]
         }
     }).filter(o => !existingIds.includes(o.id));
-    orders.push(...order);
-    localStorage.setItem("orders", JSON.stringify(orders));
+    ordersOnl.push(...order);
+    localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
 
     function renderCustomerOrderList() {
         let orderList = document.getElementById("yourOrder");
-        orders.forEach(o => {
+        ordersOnl.forEach(o => {
             let orderItem = document.createElement("div");
             orderItem.classList.add("row", "mb-4");
 

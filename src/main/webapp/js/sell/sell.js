@@ -139,59 +139,60 @@ function createElementOrder(order){
             </button>
         </div>
         <hr>
-        <div>
-            <div id="product-list-${order.id}" class="product-list"></div>
-            <p style="color: red">
-                <strong>Thành tiền : </strong>
-                <span class="thanh_tien-${order.id}">${order.totalAmount}</span> VND
-            </p>
-        </div>
-        <hr>
-        <div>
-            <h4>Thông tin đơn hàng</h4>
-            <hr>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="d-flex justify-content-between">
-                        <h4>Khách hàng</h4>
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#khModal" class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill">Chọn khách hàng</button>
-                    </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div id="product-list-${order.id}" class="product-list"></div>
+                    <p style="color: red">
+                        <strong>Thành tiền : </strong>
+                        <span class="thanh_tien-${order.id}">${order.totalAmount}</span> VND
+                    </p>
+            </div>
+        
+            <div class="col-md-4">
+                <div>
+                    <h4>Thông tin đơn hàng</h4>
                     <hr>
-                    <div class="kh-container d-flex justify-content-between">
-                        <strong>Tên khách hàng : </strong>
-                        <span class="ten-khach-hang">${order.customer.name}</span>
-                    </div>
-                    <input type="hidden" id="kh-id-${order.id}" value="${order.customer.id}">
-                </div>
-                <div class="col-md-6">
-                    <p>
-                    <input type="text" id="ma-km-${order.id}" placeholder="Mã khuyến mãi" value="${order.discount.ma}" readonly>
-                    <input type="text" id="phan-tram-${order.id}" placeholder="Phần trăm giảm" value="${order.discount.phan_tram + '%'}" readonly>
-                    </p>
-                    <p>Tiền hàng: <span class="thanh_tien-${order.id}">${order.totalAmount}</span> VND</p>
-                    <p>Giảm giá: <span id="tien-giam-${order.id}">${order.discount.tien_giam}</span> VND</p>
-                    <hr>
-                    <h5 class="text-danger">Tổng số tiền: <span id="totalAmount-${order.id}">${order.tien_phai_tra}</span> VND</h5>
-                    <hr>
-                    <p>Hình thức thanh toán : 
-                        <input type="radio" value="Tiền mặt" name="hinhthuctt"> Tiền mặt
-                        <input type="radio" value="Chuyển khoản" name="hinhthuctt"> Chuyển khoản
-                    </p>
-                    <span style="color: red" id="error-httt-${order.id}"></span>
-                    <p>Tiền khách đưa : 
-                        <input type="text" id="customer-pay-${order.id}">
-                    </p>
-                    <span style="color: red" id="error-tkd-${order.id}"></span>
-                    <p>Tiền thừa : 
-                        <input type="text" id="refund-money-${order.id}" readonly>
-                    </p>
-                    <p>
-                        <input type="hidden" id="km-id-${order.id}">
-                        <button class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill" onclick="confirmOrder(${order.id})">Xác nhận</button>
-                    </p>
+                            <div class="d-flex justify-content-between">
+                                <h4>Khách hàng</h4>
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#khModal" class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill">Chọn khách hàng</button>
+                            </div>
+                            <div class="kh-container d-flex justify-content-between">
+                                <strong>Tên khách hàng : </strong>
+                                <span class="ten-khach-hang">${order.customer.name}</span>
+                            </div>
+                            <hr>
+                            
+                            <input type="hidden" id="kh-id-${order.id}" value="${order.customer.id}">
+                        
+                            <p>
+                            <input type="text" id="ma-km-${order.id}" placeholder="Mã khuyến mãi" value="${order.discount.ma}" readonly>
+                            <input type="text" id="phan-tram-${order.id}" placeholder="Phần trăm giảm" value="${order.discount.phan_tram + '%'}" readonly>
+                            </p>
+                            <p>Tiền hàng: <span class="thanh_tien-${order.id}">${order.totalAmount}</span> VND</p>
+                            <p>Giảm giá: <span id="tien-giam-${order.id}">${order.discount.tien_giam}</span> VND</p>
+                            <hr>
+                            <h5 class="text-danger">Tổng số tiền: <span id="totalAmount-${order.id}">${order.tien_phai_tra}</span> VND</h5>
+                            <hr>
+                            <p>Hình thức thanh toán : 
+                                <input type="radio" value="Tiền mặt" name="hinhthuctt"> Tiền mặt
+                                <input type="radio" value="Chuyển khoản" name="hinhthuctt"> Chuyển khoản
+                            </p>
+                            <span style="color: red" id="error-httt-${order.id}"></span>
+                            <p>Tiền khách đưa : 
+                                <input type="text" id="customer-pay-${order.id}">
+                            </p>
+                            <span style="color: red" id="error-tkd-${order.id}"></span>
+                            <p>Tiền thừa : 
+                                <input type="text" id="refund-money-${order.id}" readonly>
+                            </p>
+                            <p>
+                                <input type="hidden" id="km-id-${order.id}">
+                                <button class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill" onclick="confirmOrder(${order.id})">Xác nhận</button>
+                            </p>    
                 </div>
             </div>
         </div>
+
     `;
     document.getElementById("nav-tabContent").appendChild(tabContent);
 }
@@ -215,8 +216,8 @@ function updateQuantity(orderId,productId,change){
         console.log("không tìm thấy product")
         return;
     }
-    product.so_luong = Math.max(1,product.so_luong + change)
-    product.tong_tien = product.so_luong * product.don_gia;
+    product.so_luong = Math.max(1,Number(product.so_luong) + change)
+    product.tong_tien = Number(product.so_luong) * product.don_gia;
     saveOrderToLocalStorage()
     updateThanhTien(orderId)
     renderOrders()
@@ -563,7 +564,7 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
         document.getElementById("errQuantityMes").innerText = "Không được để trống trường này!"
         return;
     }
-    if(inpQuantity < 0){
+    if(inpQuantity <= 0){
         document.getElementById("errQuantityMes").innerText = "Vui lòng nhập số lớn hơn 0"
         return;
     }
@@ -573,7 +574,7 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
     }
     let existingProduct = order.product.find(p => Number(p.id) === Number(productId))
     if(existingProduct){
-        existingProduct.so_luong += inpQuantity
+        existingProduct.so_luong += Number(inpQuantity)
         existingProduct.tong_tien = existingProduct.so_luong * donGia
     }else{
         order.product.push({

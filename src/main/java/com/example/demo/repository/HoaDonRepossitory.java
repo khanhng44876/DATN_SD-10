@@ -31,13 +31,19 @@ public interface HoaDonRepossitory extends JpaRepository<HoaDon, Integer> {
     @Query("SELECT h FROM HoaDon h WHERE FUNCTION('MONTH', h.ngayTao) = :thang AND FUNCTION('YEAR', h.ngayTao) = :nam")
     List<HoaDon> findByThangVaNam(@Param("thang") int thang, @Param("nam") int nam);
 
-    @Query("SELECT h FROM HoaDon h WHERE " +
+    // Truy vấn lọc doanh số theo tháng
+        @Query("SELECT h FROM HoaDon h WHERE " +
             "FUNCTION('MONTH', h.ngayTao) = :thang AND " +
             "FUNCTION('YEAR', h.ngayTao) = :nam AND " +
-            "h.trangThaiThanhToan IN ('Giao hang thanh cong', 'Da thanh toan','Đã thanh toán')")
-    List<HoaDon> findThanhCongByThangVaNam(@Param("thang") int thang, @Param("nam") int nam);
+            "LOWER(TRIM(h.trangThaiThanhToan)) IN :trangThais")
+        List<HoaDon> findByThangNamAndTrangThaiHopLe(
+        @Param("thang") int thang,
+        @Param("nam") int nam,
+        @Param("trangThais") List<String> trangThais
+        );
 
-    // ✅ Truy vấn dùng cho getTodaySales()
+
+    // ✅ Truy vấn dùng cho getTodaySales() lọc doanh số theo ngày
     @Query("SELECT h FROM HoaDon h WHERE h.ngayTao = :ngay AND h.trangThaiThanhToan IN :trangThais")
     List<HoaDon> findByNgayTaoAndTrangThaiThanhToan(
             @Param("ngay") Date ngay,

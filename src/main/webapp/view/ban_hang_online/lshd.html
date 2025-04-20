@@ -120,7 +120,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
 <script th:inline="javascript">
-    let orders = JSON.parse(localStorage.getItem(("orders"))) || [];
+    let ordersOnl = JSON.parse(localStorage.getItem(("ordersOnl"))) || [];
     window.hoaDonData = /*[[${hdNCommit}]]*/ null;
     window.listhdctData = /*[[${listhdct}]]*/ null;
     let order = {
@@ -151,11 +151,12 @@
             {label: "Chờ giao hàng", icon: "fas fa-truck" },
             {label: "Đang giao hàng", icon: "fas fa-shipping-fast" },
             {label: "Giao hàng thành công", icon: "fa-solid fa-flag-checkered" },
-            {label: "Hoàn thành", icon: "fas fa-check-circle" }
+            {label: "Hoàn thành", icon: "fas fa-check-circle" },
+
         ]
     }
-    orders.push(order);
-    localStorage.setItem('orders', JSON.stringify(orders));
+    ordersOnl.push(order);
+    localStorage.setItem('ordersOnl', JSON.stringify(ordersOnl));
 
 </script>
 <script src="../../js/lshd/lshd.js"></script>

@@ -55,7 +55,6 @@ public class ThongKeService {
             item.put("soLuongDaBan", row[4]);
             result.add(item);
         }
-
         return result;
     }
 
@@ -86,26 +85,43 @@ public class ThongKeService {
         return result;
     }
 
-
     // Tổng số sản phẩm đã bán trong tháng
     public Integer getMonthlySoldProductCount() {
         LocalDate now = LocalDate.now();
         LocalDate start = now.withDayOfMonth(1);
         LocalDate end = now;
 
-        return hoaDonCTRepo.findSoldQuantityByDateRange(
-                Date.valueOf(start), Date.valueOf(end)
-        );
+        Integer soldCount = hoaDonCTRepo.findSoldQuantityByDateRange(Date.valueOf(start), Date.valueOf(end));
+        return (soldCount != null) ? soldCount : 0;
     }
 
     // Doanh số tháng hiện tại
+//    public Map<String, Object> getMonthlySales() {
+//        LocalDate now = LocalDate.now();
+//        int thang = now.getMonthValue();
+//        int nam = now.getYear();
+//
+//        List<HoaDon> hoaDons = hoaDonRepo.findThanhCongByThangVaNam(thang, nam);
+//
+//        int totalOrders = hoaDons.size();
+//        float totalRevenue = hoaDons.stream()
+//                .map(HoaDon::getTongTien)
+//                .filter(Objects::nonNull)
+//                .reduce(0f, Float::sum);
+//
+//        return Map.of(
+//                "totalOrders", totalOrders,
+//                "totalRevenue", totalRevenue
+//        );
+//    }
     public Map<String, Object> getMonthlySales() {
         LocalDate now = LocalDate.now();
         int thang = now.getMonthValue();
         int nam = now.getYear();
 
-        // ✅ Chỉ lấy đơn có trạng thái thành công/thanh toán
-        List<HoaDon> hoaDons = hoaDonRepo.findThanhCongByThangVaNam(thang, nam);
+        List<String> trangThaiHopLe = List.of("da thanh toan", "đã thanh toán", "hoàn thành", "tại quầy");
+
+        List<HoaDon> hoaDons = hoaDonRepo.findByThangNamAndTrangThaiHopLe(thang, nam, trangThaiHopLe);
 
         int totalOrders = hoaDons.size();
         float totalRevenue = hoaDons.stream()
@@ -120,13 +136,12 @@ public class ThongKeService {
     }
 
 
-
     // Doanh số hôm nay
     public Map<String, Object> getTodaySales() {
         LocalDate today = LocalDate.now();
 
         List<HoaDon> list = hoaDonRepo.findByNgayTaoAndTrangThaiThanhToan(
-                Date.valueOf(today),  List.of("Đã thanh toán")
+                Date.valueOf(today), List.of("Đã thanh toán")
         );
 
         int tongDon = list.size();
@@ -140,7 +155,6 @@ public class ThongKeService {
                 "totalRevenue", tongTien
         );
     }
-
 
     // Biểu đồ: đơn & sản phẩm theo ngày
     public List<Map<String, Object>> getMonthlyChartData() {
@@ -158,9 +172,10 @@ public class ThongKeService {
 
             List<HoaDonCT> chiTiets = hoaDonCTRepo.findByNgayTao(sqlDate);
             int sanPhamCount = chiTiets.stream()
-                    .mapToInt(HoaDonCT::getSoLuong)
+                    .map(HoaDonCT::getSoLuong)
+                    .filter(Objects::nonNull)
+                    .mapToInt(Integer::intValue)
                     .sum();
-
 
             Map<String, Object> map = new HashMap<>();
             map.put("date", date.toString());
@@ -175,16 +190,16 @@ public class ThongKeService {
     // Trạng thái đơn hàng tháng này
     public Map<String, Object> getOrderStatusData() {
         List<String> labels = Arrays.asList(
-                "Cho giao hang",
-                "Dang giao hang",
-                "Giao hang thanh cong",
-                "Da huy"
+                "Chờ xác nhận",
+                "Chờ giao hàng",
+                "Đang giao hàng",
+                "Giao hàng thành công",
+                "Hoàn thành",
+                "Đã hủy"
         );
 
-        // Gọi DB lấy số lượng thực tế
         List<Object[]> results = hoaDonRepo.countOrderStatusThisMonth(labels);
 
-        // Map để chứa số lượng theo từng trạng thái
         Map<String, Integer> countMap = new HashMap<>();
         for (String label : labels) {
             countMap.put(label, 0); // mặc định 0
@@ -207,5 +222,4 @@ public class ThongKeService {
 
         return response;
     }
-
 }

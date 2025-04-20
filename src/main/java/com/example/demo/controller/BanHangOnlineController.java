@@ -125,6 +125,10 @@ public class BanHangOnlineController {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         KhachHang khachHang = khachHangRepository.findById(userDetails.getId()).orElse(null);
         model.addAttribute("kh", khachHang);
+        List<KhuyenMai> listKm = khuyenMaiRepository.findAll().stream()
+                        .filter(k->k.getTrang_thai().equals("Đang diễn ra"))
+                                .toList();
+        model.addAttribute("listKm",listKm);
         return "ban_hang_online/giohang.html";
     }
 
@@ -154,11 +158,10 @@ public class BanHangOnlineController {
     public String followOrder(@PathVariable Integer id, Model model) {
         HoaDon hoaDon = hoaDonrepo.findById(id).get();
         model.addAttribute("hd", hoaDon);
-        model.addAttribute("id", id);
         return "ban_hang_online/customer.html";
     }
 
-    //
+    // Hủy hóa đơn
     @PutMapping("/ban-hang-online/cancel-order/{id}")
     public ResponseEntity<HoaDon> cancelOrder(@PathVariable Integer id) {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -198,8 +201,10 @@ public class BanHangOnlineController {
         }
     }
 
+
     @MessageMapping("/update-quantity")
     public void handleUpdateQuantity(Map<String, Object> data) {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Integer totalAmount = Integer.valueOf(data.get("totalAmount").toString());
         Integer orderId = Integer.valueOf(data.get("orderId").toString());
         Integer itemId = Integer.valueOf(data.get("itemId").toString());
@@ -211,15 +216,40 @@ public class BanHangOnlineController {
         hd.setTongTien(Float.valueOf(totalAmount));
         ct.setSoLuong(quantity);
         ct.setThanhTien(ct.getSoLuong() * ct.getDonGia());
-        System.out.println("Cập nhật đơn " + orderId + ", sản phẩm " + itemId + " -> " + quantity);
+        ct.setTongTien(ct.getSoLuong() * ct.getDonGia());
 
-        // Gửi lại cho client đang xem đơn
-        simMessagingTemplate.convertAndSend("/topic/order/" + orderId, Map.of(
-                "type", "update-quantity",
-                "itemId", itemId,
-                "quantity", quantity,
-                "totalAmount", totalAmount
-        ));
+        boolean isKhachHang = userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("KHACH_HANG"));
+
+        boolean isNhanVienOrQL = userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("NHAN_VIEN") || auth.getAuthority().equals("QUAN_LY"));
+
+        // Gửi socket đến người còn lại
+        if (isNhanVienOrQL && hd.getKhachHang() != null) {
+            simpMessagingTemplate.convertAndSendToUser(
+                    hd.getKhachHang().getTaiKhoan(),
+                    "/topic/order/" + orderId, Map.of(
+                            "type", "update-quantity",
+                            "itemId", itemId,
+                            "quantity", quantity,
+                            "totalAmount", totalAmount
+                    )
+
+            );
+        }
+
+        if (isKhachHang && hd.getNhanVien() != null) {
+            simpMessagingTemplate.convertAndSendToUser(
+                    hd.getNhanVien().getTaiKhoan(),
+                    "/topic/order/" + orderId,
+                    Map.of(
+                            "type","update-quantity",
+                            "itemId", itemId,
+                            "quantity", quantity,
+                            "totalAmount", totalAmount
+                    )
+            );
+        }
     }
 
     @PostMapping("/ban-hang-online/create-order")
@@ -319,6 +349,7 @@ public class BanHangOnlineController {
         if (status.equals("Giao hàng thành công")) {
             hd.setTrangThaiThanhToan("Hoàn thành");
         }
+
         String newStatus = hd.getTrangThaiThanhToan();
         hoaDonrepo.save(hd);
         simpMessagingTemplate.convertAndSendToUser(
@@ -356,4 +387,26 @@ public class BanHangOnlineController {
         return ResponseEntity.ok(ct);
     }
 
+    //Khi Tổng tiền hàng thay đôi thì gọi cái này
+    @GetMapping("/ban-hang-online/best-km/{totalAmount}")
+    public ResponseEntity<Map<String,Object>> bestKm(@PathVariable Integer totalAmount) {
+        KhuyenMai bestDiscount = khuyenMaiRepository.findAll().stream()
+                .filter(km->totalAmount >= km.getDieu_kien())
+                .filter(km -> km.getTrang_thai().equals("Đang diễn ra") )
+                .max(Comparator.comparing(KhuyenMai::getMuc_giam))
+                .orElse(null);
+        if(bestDiscount != null) {
+            double finalTotalAmount = Math.min((double) (totalAmount * bestDiscount.getMuc_giam()) /100,bestDiscount.getGiam_toi_da());
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", bestDiscount.getId());
+            response.put("ten_khuyen_mai", bestDiscount.getTen_khuyen_mai());
+            response.put("phan_tram_giam", bestDiscount.getMuc_giam());
+            response.put("dieu_kien",bestDiscount.getDieu_kien());
+            response.put("giam_toi_da",bestDiscount.getGiam_toi_da());
+            response.put("tien_giam", finalTotalAmount);
+            return ResponseEntity.ok(response);
+
+        }
+        return ResponseEntity.ok(Collections.emptyMap());
+    }
 }
