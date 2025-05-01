@@ -17,34 +17,37 @@
         <ul class="navbar-nav align-items-center">
             <!-- Hiển thị thông tin người dùng -->
             <li class="nav-item">
-                <span id="user-name" style="color: black; font-weight: bold;"></span>
+<!--                <span id="user-name" style="color: black; font-weight: bold;"></span>-->
             </li>
             <li class="nav-item"></li>
             <li class="nav-item">
-                <a id="auth-button" class="nav-link btn btn-outline-light" href="/login" style="display: flex; align-items: center; gap: 8px; padding: 10px 15px;
-              background: linear-gradient(135deg, #ff416c, #ff4b2b);
-              color: white; border-radius: 8px; transition: 0.3s; text-decoration: none;
-              font-weight: bold; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                    <i class="bi bi-box-arrow-in-right me-1"></i> Đăng nhập
+                <a  id="auth-button" required >
+<!--                    <i class="bi bi-box-arrow-in-right me-1"></i>-->
                 </a>
             </li>
-            <!-- Nút đăng xuất -->
-<!--            <li class="nav-item">-->
-<!--                <a class="nav-link" href="/logout" onclick="return confirmLogout(event)"-->
-<!--                   style="display: flex; align-items: center; gap: 8px; padding: 10px 15px;-->
-<!--              background: linear-gradient(135deg, #ff416c, #ff4b2b);-->
-<!--              color: white; border-radius: 8px; transition: 0.3s; text-decoration: none;-->
-<!--              font-weight: bold; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">-->
-<!--                    <i class="bi bi-box-arrow-right"></i> Đăng xuất-->
-<!--                </a>-->
-<!--            </li>-->
+
         </ul>
+        <ul class="navbar-nav align-items-center">
+            <!-- Hiển thị thông tin người dùng -->
+            <li class="nav-item dropdown">
+        <span id="user-name" class="nav-link dropdown-toggle" style="color: black; font-weight: bold;" data-bs-toggle="dropdown" aria-expanded="false">
+            <!-- Hiển thị tên người dùng nếu đã đăng nhập -->
+            Xin chào, <span th:text="${username}">Khách</span>!
+        </span>
+                <!-- Dropdown menu cho Đăng xuất -->
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/profile">Thông tin tài khoản</a></li>
+                    <li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
+                </ul>
+            </li>
+        </ul>
+
     </div>
 </nav>
 
 <div th:fragment="sidenavAdmin">
 
-    <div class="bg-light pt-3 sidebar">
+    <div class="bg-dark pt-3 sidebar">
         <ul class="nav flex-column gap-2">
             <!-- Quản Lý Sản Phẩm -->
             <li class="nav-item">

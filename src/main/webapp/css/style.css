@@ -80,13 +80,44 @@
     background-color: #f8f9fa;
     border-top: 1px solid #dee2e6;
 }
-.navbar-nav .btn-outline-light:hover {
-    background-color: rgba(255,255,255,0.1);
+/*.navbar-nav .btn-outline-light:hover {*/
+/*    background-color: rgba(255,255,255,0.1);*/
+/*}*/
+
+/*.navbar-nav .text-light {*/
+/*    font-weight: 500;*/
+/*}*/
+/* Thay đổi nền của thanh menu */
+.navbar {
+    background-color: #000000; /* Màu đen */
 }
 
-.navbar-nav .text-light {
-    font-weight: 500;
+/* Thay đổi màu chữ của các mục menu */
+.navbar-nav .nav-link {
+    color: white; /* Màu chữ trắng */
 }
+
+/* Màu nền khi hover vào các mục menu */
+.navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Màu nền khi hover */
+}
+
+/* Thay đổi màu cho submenu */
+.submenu {
+    background-color: #333333; /* Màu đen nhạt cho các submenu */
+}
+
+.submenu .nav-link {
+    color: white; /* Màu chữ trắng trong submenu */
+}
+
+/* Màu nền khi hover vào các mục submenu */
+.submenu .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Màu nền khi hover trong submenu */
+}
+
+
+
 /*Css trạng thái*/
 .badge {
     display: flex;
@@ -162,13 +193,179 @@ td {
     background-color: #c82333; /* Màu hover đậm hơn */
     border-color: #c82333;
 }
+
+
 /*admin==================================*/
+/*.submenu {*/
+/*    display: none;*/
+/*    padding-left: 20px;*/
+/*    transition: all 0.3s ease-in-out;*/
+/*}*/
+
+/*.submenu.show {*/
+/*    display: block;*/
+/*}*/
+/* Thay đổi màu của các submenu */
+/* Ẩn submenu mặc định */
 .submenu {
+    background-color: #333333; /* Màu đen nhạt cho các submenu */
     display: none;
     padding-left: 20px;
     transition: all 0.3s ease-in-out;
 }
 
-.submenu.show {
+/* Hiển thị submenu khi hover vào item của menu chính */
+.nav-item:hover .submenu {
     display: block;
 }
+
+/* Cập nhật màu nền khi hover vào các mục menu */
+.navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Màu nền khi hover */
+}
+
+/* Cập nhật màu chữ của các menu con khi hover */
+.submenu .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Màu nền khi hover trong submenu */
+}
+
+/* Đảm bảo màu chữ của tất cả các mục menu là trắng */
+.sidebar .nav-link {
+    color: white !important;  /* Màu chữ trắng */
+}
+
+/* Đảm bảo màu chữ của các mục submenu cũng là trắng */
+.sidebar .submenu .nav-link {
+    color: white !important;  /* Màu chữ trắng */
+}
+
+/* Thay đổi màu chữ khi hover vào các mục menu */
+.sidebar .nav-link:hover,
+.sidebar .submenu .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Màu nền khi hover */
+    color: white; /* Màu chữ vẫn trắng khi hover */
+}
+
+/* Màu nền tối cho sidebar */
+.sidebar {
+    background-color: #2C3E50; /* Màu nền tối */
+    height: 100vh; /* Chiều cao đầy đủ */
+    padding-top: 20px;
+}
+
+/* Điều chỉnh màu chữ cho các mục menu */
+.sidebar .nav-link {
+    color: #BDC3C7; /* Màu chữ xám nhạt */
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    padding: 12px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+/* Màu chữ khi hover vào các mục menu */
+.sidebar .nav-link:hover {
+    background-color: #34495E; /* Màu nền khi hover */
+    color: white; /* Màu chữ trắng khi hover */
+}
+
+/* Cập nhật màu chữ cho submenu */
+.sidebar .submenu .nav-link {
+    color: #BDC3C7; /* Màu chữ cho submenu */
+}
+
+/* Màu nền khi hover vào các mục submenu */
+.sidebar .submenu .nav-link:hover {
+    background-color: #34495E;
+    color: white;
+}
+
+/* Hiển thị submenu khi hover hoặc click vào */
+.sidebar .nav-item.active > .submenu {
+    display: block;
+}
+
+.submenu {
+    display: none;
+    padding-left: 20px;
+}
+
+/* Màu nền của biểu tượng trong menu */
+.sidebar .nav-link i {
+    font-size: 18px;
+    color: #BDC3C7; /* Màu biểu tượng */
+}
+
+/* Màu khi hover trên biểu tượng */
+.sidebar .nav-link:hover i {
+    color: white; /* Màu biểu tượng khi hover */
+}
+
+/* Chỉnh sửa icon trong submenu */
+.submenu .nav-link i {
+    font-size: 16px;
+}
+
+/* Điều chỉnh chiều cao của navbar */
+.navbar {
+    padding: 5px 15px;  /* Giảm padding để thanh navbar nhỏ lại */
+    height: 50px;  /* Giảm chiều cao của navbar */
+}
+
+/* Điều chỉnh chiều cao của logo */
+.navbar .container-fluid .d-flex img {
+    max-height: 50px; /* Giảm chiều cao tối đa của logo */
+}
+
+/* Điều chỉnh kích thước chữ trong navbar */
+.navbar-nav .nav-item .nav-link {
+    font-size: 14px; /* Giảm kích thước chữ của các mục menu */
+    padding: 8px 12px;  /* Giảm padding của các mục menu */
+}
+
+/* Điều chỉnh kích thước của nút "Đăng nhập" */
+#auth-button {
+    font-size: 14px; /* Giảm kích thước chữ trong nút */
+    padding: 6px 10px; /* Giảm padding của nút */
+    border-radius: 6px; /* Bo tròn nhẹ hơn */
+}
+
+/* Giảm kích thước icon trong nút "Đăng nhập" */
+#auth-button i {
+    font-size: 16px; /* Giảm kích thước icon */
+}
+
+/* Tạo hiệu ứng cho thanh menu dropdown */
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+    background-color: #f8f9fa; /* Màu nền cho dropdown */
+    border-radius: 6px; /* Bo tròn các góc */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Đổ bóng cho dropdown */
+}
+
+/* Thay đổi màu chữ của item trong dropdown */
+.dropdown-item {
+    font-weight: bold;
+    padding: 8px 15px; /* Điều chỉnh padding */
+    color: #333; /* Màu chữ */
+}
+
+/* Màu nền khi hover vào item trong dropdown */
+.dropdown-item:hover {
+    background-color: #ddd; /* Màu nền khi hover */
+    color: #000; /* Màu chữ khi hover */
+}
+
+/* Điều chỉnh cho dropdown toggle (chữ "Xin chào, Minh!") */
+#user-name {
+    cursor: pointer; /* Thêm con trỏ khi hover vào chữ */
+}
+#auth-button {
+    display: none;
+}
+
+
