@@ -30,6 +30,7 @@
 <div class="container">
     <div id="yourOrder"></div>
 </div>
+
 <script th:inline="javascript">
     let ordersOnl = JSON.parse(localStorage.getItem("ordersOnl")) || [];
 
@@ -121,5 +122,6 @@
 
     renderCustomerOrderList();
 </script>
+<div th:replace="giao_dien_chinh/footer :: footer"></div>
 </body>
 </html>

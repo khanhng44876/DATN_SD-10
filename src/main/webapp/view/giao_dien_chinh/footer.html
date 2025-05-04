@@ -1,6 +1,118 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <!-- Font Awesome để thêm icon mạng xã hội -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
 <div th:fragment="footer">
-    Footer ở đây!
+    <footer style="background-color: #ffffff; color: #333333; padding: 3rem 0; font-family: 'Arial', sans-serif; border-top: 2px solid #e0e0e0; margin-top: 2rem;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 15px;">
+            <div class="row" style="display: flex; flex-wrap: wrap; margin: 0 -15px;">
+                <!-- Logo trang web -->
+                <div class="col-md-3 mb-4" style="flex: 0 0 25%; max-width: 25%; padding: 0 15px; margin-bottom: 2rem;">
+                    <h5 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; position: relative; color: #333333;">
+                        <span style="content: ''; position: absolute; width: 50px; height: 3px; background-color: #007bff; bottom: -5px; left: 0;"></span>
+                    </h5>
+                    <!-- Logo với kích thước điều chỉnh -->
+                    <div>
+                        <img th:src="@{/images/logo.ico}" style="width: 100px; height: auto;" alt="Logo Cửa Hàng XYZ">
+                    </div>
+                    <p style="font-size: 0.95rem; line-height: 1.8; margin-top: 1rem; color: #666666;">
+                        Cửa hàng bán hàng online uy tín, chất lượng.
+                    </p>
+                </div>
+
+                <!-- Thông tin liên hệ -->
+                <div class="col-md-3 mb-4" style="flex: 0 0 25%; max-width: 25%; padding: 0 15px; margin-bottom: 2rem;">
+                    <h5 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; position: relative; color: #333333;">
+                        Liên hệ
+                        <span style="content: ''; position: absolute; width: 50px; height: 3px; background-color: #007bff; bottom: -5px; left: 0;"></span>
+                    </h5>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="font-size: 0.95rem; line-height: 1.8; margin-bottom: 0.75rem; color: #666666;">
+                            <i class="fas fa-map-marker-alt" style="margin-right: 0.5rem; color: #007bff;"></i> Địa chỉ: 123 Đường Láng, Hà Nội
+                        </li>
+                        <li style="font-size: 0.95rem; line-height: 1.8; margin-bottom: 0.75rem; color: #666666;">
+                            <i class="fas fa-phone-alt" style="margin-right: 0.5rem; color: #007bff;"></i> Hotline: 0123 456 789
+                        </li>
+                        <li style="font-size: 0.95rem; line-height: 1.8; margin-bottom: 0.75rem; color: #666666;">
+                            <i class="fas fa-envelope" style="margin-right: 0.5rem; color: #007bff;"></i> Email: support@shop.com
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Liên kết nhanh -->
+                <div class="col-md-3 mb-4" style="flex: 0 0 25%; max-width: 25%; padding: 0 15px; margin-bottom: 2rem;">
+                    <h5 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; position: relative; color: #333333;">
+                        Liên kết nhanh
+                        <span style="content: ''; position: absolute; width: 50px; height: 3px; background-color: #007bff; bottom: -5px; left: 0;"></span>
+                    </h5>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.75rem;">
+                            <a th:href="@{/ban-hang-online}" style="color: #333333; text-decoration: none; transition: color 0.3s ease;" onmouseover="this.style.color='#007bff'" onmouseout="this.style.color='#333333'">Trang chủ</a>
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <a th:href="@{/ban-hang-online/sp}" style="color: #333333; text-decoration: none; transition: color 0.3s ease;" onmouseover="this.style.color='#007bff'" onmouseout="this.style.color='#333333'">Sản phẩm</a>
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <a th:href="@{/ban-hang-online/gioi-thieu}" style="color: #333333; text-decoration: none; transition: color 0.3s ease;" onmouseover="this.style.color='#007bff'" onmouseout="this.style.color='#333333'">Giới thiệu</a>
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <a th:href="@{/ban-hang-online/lien-he}" style="color: #333333; text-decoration: none; transition: color 0.3s ease;" onmouseover="this.style.color='#007bff'" onmouseout="this.style.color='#333333'">Liên hệ</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Mạng xã hội và Chứng nhận -->
+                <div class="col-md-3 mb-4" style="flex: 0 0 25%; max-width: 25%; padding: 0 15px; margin-bottom: 2rem;">
+                    <h5 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; position: relative; color: #333333;">
+                        Theo dõi chúng tôi
+                        <span style="content: ''; position: absolute; width: 50px; height: 3px; background-color: #007bff; bottom: -5px; left: 0;"></span>
+                    </h5>
+                    <div style="display: flex; align-items: center; margin-bottom: 2rem;">
+                        <a href="https://facebook.com" target="_blank" style="color: #333333; margin: 0 0.75rem; text-decoration: none;">
+                            <i class="fab fa-facebook-f" style="font-size: 1.5rem; transition: transform 0.3s ease, color 0.3s ease;" onmouseover="this.style.transform='scale(1.2)'; this.style.color='#007bff';" onmouseout="this.style.transform='scale(1)'; this.style.color='#333333';"></i>
+                        </a>
+                        <a href="https://instagram.com" target="_blank" style="color: #333333; margin: 0 0.75rem; text-decoration: none;">
+                            <i class="fab fa-instagram" style="font-size: 1.5rem; transition: transform 0.3s ease, color 0.3s ease;" onmouseover="this.style.transform='scale(1.2)'; this.style.color='#007bff';" onmouseout="this.style.transform='scale(1)'; this.style.color='#333333';"></i>
+                        </a>
+                        <a href="https://twitter.com" target="_blank" style="color: #333333; margin: 0 0.75rem; text-decoration: none;">
+                            <i class="fab fa-twitter" style="font-size: 1.5rem; transition: transform 0.3s ease, color 0.3s ease;" onmouseover="this.style.transform='scale(1.2)'; this.style.color='#007bff';" onmouseout="this.style.transform='scale(1)'; this.style.color='#333333';"></i>
+                        </a>
+                        <a href="https://youtube.com" target="_blank" style="color: #333333; margin: 0 0.75rem; text-decoration: none;">
+                            <i class="fab fa-youtube" style="font-size: 1.5rem; transition: transform 0.3s ease, color 0.3s ease;" onmouseover="this.style.transform='scale(1.2)'; this.style.color='#007bff';" onmouseout="this.style.transform='scale(1)'; this.style.color='#333333';"></i>
+                        </a>
+                    </div>
+
+                    <!-- Chứng nhận Bộ Công Thương -->
+                    <div>
+                        <h5 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; position: relative; color: #333333;">
+                            Chứng nhận
+                            <span style="content: ''; position: absolute; width: 50px; height: 3px; background-color: #007bff; bottom: -5px; left: 0;"></span>
+                        </h5>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                            <!-- Hình ảnh chứng nhận với kích thước nhỏ hơn -->
+                            <a href="https://bo-cong-thuong-link-1" target="_blank">
+                                <img th:src="@{/images/logoSaleNoti.png}" style="width: 60px; height: auto;" alt="Chứng nhận Bộ Công Thương">
+                            </a>
+                            <a href="https://bo-cong-thuong-link-2" target="_blank">
+                                <img th:src="@{/images/logoSaleNoti.png}" style="width: 60px; height: auto;" alt="Chứng nhận Bộ Công Thương">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bản quyền -->
+            <div style="text-align: center; margin-top: 2rem; border-top: 1px solid #e0e0e0; padding-top: 1.5rem;">
+                <p style="margin-bottom: 0; font-size: 0.95rem; color: #666666;">
+                    © <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}"></span> Cửa hàng Sky football. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
 </div>
+</body>
 </html>

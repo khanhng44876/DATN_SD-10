@@ -1,0 +1,76 @@
+/* Nền tổng thể */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Style cho card */
+.card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.card-header {
+    padding: 1rem;
+    font-size: 1.5rem;
+}
+
+/* Style cho thông tin */
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 1.1rem;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-item strong {
+    color: #343a40;
+    font-weight: 600;
+}
+
+.info-item span {
+    color: #6c757d;
+}
+
+/* Style cho button */
+.btn-custom {
+    transition: all 0.3s ease;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    border-radius: 5px;
+}
+
+.btn-custom:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Hiệu ứng fade-in */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .card-header h2 {
+        font-size: 1.25rem;
+    }
+    .info-item {
+        flex-direction: column;
+        gap: 0.5rem;
+        font-size: 1rem;
+    }
+    .btn-custom {
+        width: 100%;
+        text-align: center;
+    }
+}
