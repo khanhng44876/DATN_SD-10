@@ -88,8 +88,16 @@
                 <div class="status-bar" id="status-bar">
 
                 </div>
-                <div >
-                    <button type="button" class="btn btn-warning rounded-pill" id="confirm-status" onclick="updateOrder()">Xác nhận</button>
+                <div id="confirm-button">
+                    <!-- Nút gọi API xác nhận khi chưa hoàn thành -->
+                    <button
+                            type="button"
+                            class="btn btn-warning rounded-pill"
+                            th:if="${hdNCommit.trangThaiThanhToan} != 'Hoàn thành'"
+                            th:onclick="'updateOrder()'"
+                    >
+                        Xác nhận
+                    </button>
                 </div>
                 <div>
                     <div class="row mt-3">
@@ -113,6 +121,26 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="completeModal" tabindex="-1" aria-labelledby="completeModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="completeModalLabel">Hoàn thành đơn hàng</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <label for="customer-pay" class="form-label">Tiền khách đưa</label>
+                    <input type="text" class="form-control" id="customer-pay">
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="updateOrder()">Save changes</button>
             </div>
         </div>
     </div>

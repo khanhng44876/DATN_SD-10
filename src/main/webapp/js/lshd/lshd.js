@@ -1,11 +1,27 @@
 
 // Reload trang
 function renderOnlOrder(){
-    document.getElementById("product-list").innerHTML = ""
+    document.getElementById("product-list").innerHTML = "";
+    let confirm_div = document.getElementById("confirm-button");
     let orderId = Number(document.getElementById("orderId").value);
     let order = ordersOnl.find(o => o.id === orderId)
     console.log(order)
     let status = order.status;
+    if(status === "Hoàn thành"){
+        confirm_div.innerHTML=`
+                    <button
+                            type="button"
+                            class="btn btn-secondary rounded-pill"
+                            data-bs-toggle="modal"
+                            data-bs-target="#completeModal"
+                    >
+                        Hoàn thành
+                    </button>
+        `;
+    }
+    if(status === "Đã hoàn thành"){
+        confirm_div.innerHTML=``;
+    }
     if(status!=="Chờ xác nhận"){
         document.querySelector(".btn.btn-danger").style.display = "none";
     }
@@ -63,10 +79,32 @@ function renderOnlOrder(){
     updateStatusBar(status,order.id);
 }
 
+function validateLast(id, customer_pay) {
+    let order = ordersOnl.find(o => o.id === id)
+    if(order.total > customer_pay){
+        return false;
+    }
+    if(order.total < customer_pay){
+        customer_pay = order.total
+        document.getElementById("customer-pay").value = customer_pay;
+        return false;
+    }
+    return true;
+}
+
 // Hàm này sẽ cập nhật trạng thái đơn hàng Vào DB và Local
 async function updateOrder() {
     let orderId = Number(document.getElementById("orderId").value);
+    let customer_pay = Number(document.getElementById('customer-pay').value);
     let order = ordersOnl.find(o => o.id === orderId)
+    if(order.status === "Hoàn thành"){
+        if(!validateLast(order.id,customer_pay)){
+            return;
+        }
+    }
+    if (!confirm("Bạn có chắc muốn xác nhận đơn hàng này?")) {
+        return;
+    }
     let hdctList = order.listhdct
     for (const hdct of hdctList) {
         try {
@@ -82,11 +120,11 @@ async function updateOrder() {
     if (order.status === "Chờ giao hàng") {
         for (const hdct of hdctList) {
             try {
-                const response = await fetch(`/ban-hang-online/update-sp/${hdct.ctsp_id}/${hdct.soLuong}`, {
+                const response = await fetch(`/ban-hang-online/update-sp/${hdct.id}/${hdct.quantity}`, {
                     method: "PUT"
                 });
                 const updated = await response.json();
-                hdct.soLuong = updated.soLuong;
+                hdct.quantity = updated.quantity;
             } catch (error) {
                 console.error("Lỗi cập nhật số lượng sp:", error);
             }
@@ -110,7 +148,7 @@ function updateQuantity(itemId,num){
     let order = ordersOnl.find(o => o.id === orderId)
     console.log(order)
     let item = order.listhdct.find(c=>c.id===itemId)
-    order.total_amount = 0;
+    order.total = 0;
     console.log(item)
     if(!item){
         alert("không tìm thấy item")
@@ -119,21 +157,21 @@ function updateQuantity(itemId,num){
     item.quantity = Math.max(1,item.quantity+num)
     item.total = item.quantity * item.price
     order.listhdct.forEach(c=>{
-        order.total_amount += c.total;
+        order.total += c.total;
     })
     localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
     const payload = {
         orderId : order.id,
         itemId : item.id,
-        totalAmount : order.totalAmount,
+        totalAmount : order.total,
         quantity : item.quantity
     }
-    stompClient.send("app/update-quantity",{},JSON.stringify(payload));
+    stompClient.send("/app/update-quantity",{},JSON.stringify(payload));
     renderOnlOrder()
 
 }
 
-// Hàm này đê
+// Hàm này để kết nối Socket Nhận tin nhắn socket từ người khác
 function connectSocket() {
     const socket = new SockJS("/ws");
     stompClient = Stomp.over(socket);
@@ -147,37 +185,38 @@ function connectSocket() {
         // Lắng nghe thông báo từ server gửi riêng cho user
         stompClient.subscribe("/user/topic/order/" + orderId, function (message) {
             console.log(message.body)
-            const newStatus = message.body;
-            const payload = JSON.parse(message.body);
+            const newStatus = JSON.parse(message.body)
             console.log("Nhận trạng thái mới từ Admin:", newStatus);
-            if(payload.type === "update-quantity"){
+
+            if(newStatus.type === "update-quantity"){
                 let order = ordersOnl.find(o => o.id === orderId)
-                let item = order.listhdct.find(p => p.id === payload.itemId)
+                let item = order.listhdct.find(p => p.id === newStatus.itemId)
                 if(item){
-                    item.quantity = payload.quantity;
-                    item.total = payload.quantity * item.price;
+                    item.quantity = newStatus.quantity;
+                    item.total = newStatus.quantity * item.price;
                 }
-                order.total_amount = payload.totalAmount;
+                order.total = newStatus.total;
                 localStorage.setItem("ordersOnl",JSON.stringify(ordersOnl))
                 renderOnlOrder()
-            }
-            // Cập nhật localStorage và giao diện
-            const order = ordersOnl.find(o => o.id === orderId);
-            const oldStatus = order.status;
-            if (order) {
-                order.status = newStatus;
+            }else {
+                // Cập nhật localStorage và giao diện
+                const order = ordersOnl.find(o => o.id === orderId);
+                const oldStatus = order.status;
+                if (order) {
+                    order.status = newStatus;
 
-                // Nếu trạng thái mới chưa có trong steps thì thêm vào
-                if (!order.steps.some(s => s.label === newStatus)) {
-                    let currentStep = order.steps.findIndex(step => step.label === oldStatus);
-                    order.steps.splice(currentStep+1, 0, {
-                        label: "Đã hủy",
-                        icon: "fas fa-times-circle"
-                    });
+                    // Nếu trạng thái mới chưa có trong steps thì thêm vào
+                    if (!order.steps.some(s => s.label === newStatus)) {
+                        let currentStep = order.steps.findIndex(step => step.label === oldStatus);
+                        order.steps.splice(currentStep + 1, 0, {
+                            label: "Đã hủy",
+                            icon: "fas fa-times-circle"
+                        });
+                    }
+
+                    localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
+                    renderOnlOrder();
                 }
-
-                localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
-                renderOnlOrder();
             }
         });
     });
@@ -212,31 +251,36 @@ function cancelOrder() {
 }
 
 // Hàm này sẽ update thanh trạng thái
-function updateStatusBar(status,orderId) {
-    console.log(status)
-    let order = ordersOnl.find(o => o.id === orderId)
+function updateStatusBar(status, orderId) {
+    const order = ordersOnl.find(o => o.id === orderId);
     const statusBar = document.getElementById("status-bar");
     statusBar.innerHTML = "";
 
-    const currentIndex = order.steps.findIndex(step => step.label === status);
+    // Nếu trạng thái là "Đã Hoàn thành", coi mọi step là completed
+    const isFinished = (status === "Đã hoàn thành");
+    const lastIndex = order.steps.length - 1;
+    const currentIndex = isFinished
+        ? lastIndex
+        : order.steps.findIndex(step => step.label === status);
 
-    order.steps.slice(0, currentIndex + 1).forEach((step, index) => {
+    order.steps.forEach((step, index) => {
         const stepDiv = document.createElement("div");
         stepDiv.classList.add("step");
 
-        if (index < currentIndex) {
+        if (isFinished || index < currentIndex) {
             stepDiv.classList.add("completed");
         } else if (index === currentIndex) {
             stepDiv.classList.add("current");
         }
 
-        let iconColor = "";
-        if (step.label === "Đã hủy") {
-            iconColor = "style='background-color:red;color:white;'";
-        }
+        const iconAttrs = step.label === "Đã hủy"
+            ? "style='background-color:red;color:white;'"
+            : "";
 
         stepDiv.innerHTML = `
-            <div class="icon" ${iconColor}><i class="${step.icon}"></i></div>
+            <div class="icon" ${iconAttrs}>
+                <i class="${step.icon}"></i>
+            </div>
             <p>${step.label}</p>
         `;
         statusBar.appendChild(stepDiv);

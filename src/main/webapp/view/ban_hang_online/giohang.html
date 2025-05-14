@@ -62,7 +62,9 @@
             <div id="product">
 
             </div>
-            <strong class="text-danger">Thành tiền : <span id="total-price"></span> VNĐ</strong>
+            <div id="total_price">
+
+            </div>
         </div>
         <div class="col-5" id="info">
             <h3>Thông tin của bạn</h3>
@@ -133,7 +135,7 @@
                     </div>
                     <div class="row" th:each="k : ${listKm}" th:if="${not #lists.isEmpty(listKm)}">
                         <div class="promo-box"
-                             th:attr="data-id=${k.id}, data-condition=${k.dieu_kien}"
+                             th:attr="data-id=${k.id}, data-condition=${k.dieu_kien},data-name=${k.ten_khuyen_mai},data-discount=${k.muc_giam},data-max=${k.giam_toi_da}"
                              onclick="selectPromo(this)">
                             <span class="promo-check">✔️</span>
                             <input type="hidden" th:value="${k.id}">

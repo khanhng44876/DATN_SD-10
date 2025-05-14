@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.stream.Collectors;
 import java.util.*;
 import org.slf4j.Logger;
 
@@ -24,6 +24,45 @@ public class VNPAYController {
 
     @Autowired
     private HoaDonRepossitory hoaDonRepository;
+
+    @GetMapping("/ban-hang-off/payment-return")
+    public String offlineReturn(HttpServletRequest request ,Model model) {
+        String vnp_TxnRef      = request.getParameter("vnp_TxnRef");      // mã tham chiếu bạn gửi lên
+        String vnp_ResponseCode= request.getParameter("vnp_ResponseCode");
+        String vnp_SecureHash  = request.getParameter("vnp_SecureHash");
+        String status = "fail";
+        Map<String, String[]> raw = request.getParameterMap();
+        Map<String, String> params = raw.entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> (e.getValue()!=null && e.getValue().length>0)
+                                ? e.getValue()[0]
+                                : ""
+                ));
+
+        boolean valid = vnPayService.verifySignature(params, vnp_SecureHash);
+        if (!valid) {
+            model.addAttribute("status", "error");
+            model.addAttribute("message", "Chữ ký không hợp lệ!");
+            return "ban_hang_off/paymentResult";
+        }
+
+        // 3) Kiểm tra kết quả thanh toán
+        if ("00".equals(vnp_ResponseCode)) {
+            model.addAttribute("status", "success");
+            model.addAttribute("message", "Thanh toán thành công!");
+            model.addAttribute("txnRef", vnp_TxnRef);
+             status = "success";
+        } else {
+            model.addAttribute("status", "fail");
+            model.addAttribute("message",
+                    "Thanh toán thất bại, mã lỗi: " + vnp_ResponseCode);
+        }
+
+        // 4) Trả về view để frontend hiển thị span + nút Xác nhận lưu hóa đơn
+        return "redirect:/ban-hang-off/hien-thi?paymentResult="+ status ;
+    }
 
     @GetMapping("/vnpay-payment-return")
     public String paymentCompleted(HttpServletRequest request, Model model) {
@@ -43,7 +82,7 @@ public class VNPAYController {
                 return "ban_hang_online/paymentResult";
             }
 
-            String status = paymentStatus == 1 ? "Đã thanh toán" : getFailureStatus(responseCode);
+            String status = paymentStatus == 1 ? "Chờ xác nhận" : getFailureStatus(responseCode);
             updateOrderStatus(orderId, status);
 
             model.addAttribute("orderId", orderInfo);

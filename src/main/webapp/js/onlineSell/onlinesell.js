@@ -1,11 +1,34 @@
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 let total_price = JSON.parse(localStorage.getItem("total_price")) || 0;
+let selected_promo = JSON.parse(localStorage.getItem("selected_promo"))||null;
+let old_total = JSON.parse(localStorage.getItem("old_total"))||0;
+let total_div = document.getElementById('total_price');
 
 let applied_promo = document.getElementById("applied-promo")
 
 const modal = new bootstrap.Modal(document.getElementById('promoModal'));
 
 function openPromoModal() {
+    document.querySelectorAll('#promoModal .promo-box').forEach(box => {
+            box.classList.remove('selected');
+            const chk = box.querySelector('.promo-check');
+            if (chk) chk.style.visibility = 'hidden';
+        });
+
+    // 2. Lấy promo đã chọn (nếu có)
+    const selected = JSON.parse(localStorage.getItem('selected_promo'));
+    if (selected) {
+        // 3. Tìm box trong modal và đánh dấu
+        const box = document.querySelector(`#promoModal .promo-box[data-id="${selected.id}"]`);
+        if (box) {
+            box.classList.add('selected');
+            const chk = box.querySelector('.promo-check');
+            if (chk) chk.style.visibility = 'visible';
+            // optional: scroll vào view
+            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
     modal.show();
 }
 
@@ -17,12 +40,28 @@ function saveToLocalStorage(){
 function renderCart(){
     document.getElementById("countItem").innerText= cart !== "" ? cart.length : 0;
     document.getElementById("product").innerHTML = ""
-    document.getElementById("total-price").innerText = total_price
+    if(selected_promo===null){
+        total_div.innerHTML = `
+            <strong class="text-danger">Thành tiền : <span>${total_price}</span> VNĐ</strong>
+        `
+    }else{
+        old_total = total_price;
+        let discount = total_price * selected_promo.discount / 100;
+        total_price -= Math.min(discount,selected_promo.max);
+        localStorage.setItem('old_total',old_total);
+        localStorage.setItem('total_price',total_price);
+        total_div.innerHTML=`
+            <strong class="text-danger">Thành tiền :</strong><span style="color: #888;text-decoration: line-through;">${old_total.toLocaleString("vi-VN")} VNĐ</span>
+            <strong class="text-danger">${total_price.toLocaleString("vi-VN")} VNĐ</strong>
+        `
+    }
     createElementCart()
     if(total_price === 0){
-        let promoActive = document.createElement("p")
-        promoActive.innerHTML = "Chọn khuyến mãi"
-        applied_promo.appendChild(promoActive)
+        applied_promo.innerHTML = `
+                <div class="promo-box apply" onclick="openPromoModal()">
+                    <p>Chọn khuyến mãi</p>
+                </div>
+            `
     }
     updatePromoListByTotal()
 }
@@ -122,33 +161,54 @@ async function handleCheckboxChange(event) {
             total += parseInt(checkbox.getAttribute('data-price')) || 0;
         });
 
-        let total_price = total;
+        total_price = total;
 
         saveToLocalStorage();
         localStorage.setItem("total_price", JSON.stringify(total_price));
 
-        document.getElementById('total-price').innerText = total_price.toLocaleString("vi-VN");
         const res = await fetch(`/ban-hang-online/best-km/${total_price}`,{
             method:"GET"
         })
         const data = await res.json();
-        if(data === [] || total_price === 0){
+        console.log(data)
+        if(data.id && total_price > 0){
             applied_promo.innerHTML = `
-                <div className="promo-box" onClick="openPromoModal()">
+                <div class="promo-box apply" data-id="${data.id}" data-condition="${data.dieu_kien}" onclick="openPromoModal()">
+                    <span class="promo-check" style="visibility:visible;">✔️</span>
+                    <h5>Tên KM: ${data.ten_khuyen_mai}</h5>
+                    <p>Giảm: ${data.phan_tram_giam}% (tối đa ${Number(data.giam_toi_da).toLocaleString('vi-VN')}₫)</p>
+                    <p>Áp dụng cho đơn từ ${Number(data.dieu_kien).toLocaleString('vi-VN')}₫</p>
+                </div>
+            `
+            selected_promo = {
+                id:data.id,
+                discount:data.phan_tram_giam,
+                max:data.giam_toi_da
+            }
+            localStorage.setItem('selected_promo',JSON.stringify(selected_promo));
+        }else {
+            applied_promo.innerHTML = `
+                <div class="promo-box apply" onclick="openPromoModal()">
                     <p>Chọn khuyến mãi</p>
                 </div>
             `
-        }else {
-            applied_promo.innerHTML = `
-                <div className="promo-box" onClick="openPromoModal()">
-                    <h5 id="promo-name">Tên khuyến mãi: ${data.ten_khuyen_mai}</h5>
-                    <p id="promo-discount">Phần trăm giảm: ${Number(data.phan_tram_giam)}%</p>
-                    <p id="promo-condition">Điều kiện: Áp dụng cho đơn từ ${Number(data.dieu_kien).toLocaleString("vi-VN")} VNĐ</p>
-                    <p id="promo-max-discount">Giảm tối đa: ${Number(data.giam_toi_da).toLocaleString("vi-VN")} VNĐ</p>
-                </div>
-            `
+            selected_promo = null
         }
-
+        if(selected_promo === null){
+            total_div.innerHTML = `
+            <strong class="text-danger">Thành tiền : <span>${total_price}</span> VNĐ</strong>
+        `
+        }else{
+            old_total = total_price;
+            let discount = total_price * selected_promo.discount / 100;
+            total_price -= Math.min(discount,selected_promo.max);
+            localStorage.setItem('old_total',JSON.stringify(old_total));
+            localStorage.setItem('total_price',JSON.stringify(total_price));
+            total_div.innerHTML=`
+            <strong class="text-danger">Thành tiền :</strong><span style="color: #888;text-decoration: line-through;">${old_total.toLocaleString("vi-VN")} VNĐ</span>
+            <strong class="text-danger">${total_price.toLocaleString("vi-VN")} VNĐ</strong>
+        `
+        }
         updatePromoListByTotal()
 
     }
@@ -158,12 +218,12 @@ async function handleCheckboxChange(event) {
 async function confirmOrder() {
     let idkh = Number(document.getElementById("idkh").value);
     let today = new Date().toISOString().split("T")[0];
-    let total = document.getElementById("total-price").innerText.replace(/[^\d]/g, "");
+    let total = total_price;
     let activeElement = document.querySelector('.payment-option.active');
     let httt = activeElement.querySelector('input[type="hidden"]').value;
     let location = document.getElementById("locationKh").innerText;
     let ghichu = document.getElementById("ghiChu").value;
-
+    console.log(total);
 
     // Lấy hình thức thanh toán từ input hidden
     let hiddenInput = document.querySelector('input[name="paymentMethod"][type="hidden"]');
@@ -177,7 +237,7 @@ async function confirmOrder() {
       let  hdJson = {
             id_nhan_vien: 1,
             id_khach_hang: Number(idkh),
-            id_khuyen_mai: null,
+            id_khuyen_mai: selected_promo===null?null:selected_promo.id,
             ngay_tao: today,
             ngay_sua: null,
             don_gia: null,
@@ -269,8 +329,12 @@ function changeLocation(){
 }
 
 function updatePromoListByTotal() {
-    const total = parseFloat(localStorage.getItem("total_price")) || 0;
-    const promoBoxes = document.querySelectorAll(".promo-box");
+    let total = parseFloat(localStorage.getItem("total_price")) || 0;
+    let old_total = parseFloat(localStorage.getItem("old_total"))||0;
+    if(old_total !== 0){
+        total = old_total;
+    }
+    const promoBoxes = document.querySelectorAll(".promo-box:not(.apply)");
     promoBoxes.forEach(box => {
         const condition = parseFloat(box.getAttribute("data-condition")) || 0;
 
@@ -282,22 +346,37 @@ function updatePromoListByTotal() {
     });
 }
 
-function selectPromo(element) {
-    if (element.classList.contains("disabled")) return;
-
-    // Clear all selections
-    document.querySelectorAll(".promo-box").forEach(box => {
-        box.classList.remove("selected");
-        box.querySelector(".promo-check").style.visibility = "hidden";
+function selectPromo(el) {
+    document.querySelectorAll('.promo-box').forEach(box => {
+        box.classList.remove('selected');
+        const chk = box.querySelector('.promo-check');
+        if (chk) chk.style.visibility = 'hidden';
     });
 
-    // Mark current
-    element.classList.add("selected");
-    element.querySelector(".promo-check").style.visibility = "visible";
+    el.classList.add('selected');
+    const promoCheck = el.querySelector('.promo-check');
+    if (promoCheck) promoCheck.style.visibility = 'visible';
 
-    // Gán ID promo đã chọn vào local hoặc gửi về server
-    const selectedId = element.getAttribute("data-id");
-    localStorage.setItem("selected_promo", selectedId);
+    const id        = el.dataset.id;
+    const name      = el.dataset.name;
+    const discount  = el.dataset.discount;
+    const condition = el.dataset.condition;
+    const max       = el.dataset.max;
+
+    applied_promo.innerHTML = `
+    <div class="promo-box apply" data-id="${id}" data-condition="${condition}" onclick="openPromoModal()">
+      <span class="promo-check" style="visibility:visible;">✔️</span>
+      <h5>Tên KM: ${name}</h5>
+      <p>Giảm: ${discount}% (tối đa ${Number(max).toLocaleString('vi-VN')}₫)</p>
+      <p>Áp dụng cho đơn từ ${Number(condition).toLocaleString('vi-VN')}₫</p>
+    </div>
+   `;
+    let selected_promo = {
+        id:id,
+        discount:discount,
+        max:max
+    }
+    localStorage.setItem('selected_promo', JSON.stringify(selected_promo));
 }
 
 // Gán sự kiện cho 2 nút Hình thức thanh toán

@@ -101,7 +101,8 @@ function createOrder(){
             phan_tram:0,
             tien_giam:0
         },
-        tien_phai_tra:0
+        tien_phai_tra:0,
+        hinh_thuc_thanh_toan: null
 
     }
     orders.push(order)
@@ -174,17 +175,13 @@ function createElementOrder(order){
                             <h5 class="text-danger">Tổng số tiền: <span id="totalAmount-${order.id}">${order.tien_phai_tra}</span> VND</h5>
                             <hr>
                             <p>Hình thức thanh toán : 
-                                <input type="radio" value="Tiền mặt" name="hinhthuctt"> Tiền mặt
-                                <input type="radio" value="Chuyển khoản" name="hinhthuctt"> Chuyển khoản
+                                <input type="radio" value="Tiền mặt" name="hinhthuctt" onchange="paymentChange(this,${order.id})"> Tiền mặt
+                                <input type="radio" value="Chuyển khoản" name="hinhthuctt" onchange="paymentChange(this,${order.id})"> Chuyển khoản
                             </p>
                             <span style="color: red" id="error-httt-${order.id}"></span>
-                            <p>Tiền khách đưa : 
-                                <input type="text" id="customer-pay-${order.id}">
-                            </p>
-                            <span style="color: red" id="error-tkd-${order.id}"></span>
-                            <p>Tiền thừa : 
-                                <input type="text" id="refund-money-${order.id}" readonly>
-                            </p>
+                            <div id="httt-${order.id}">
+                            
+                            </div>
                             <p>
                                 <input type="hidden" id="km-id-${order.id}">
                                 <button class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill" onclick="confirmOrder(${order.id})">Xác nhận</button>
@@ -195,6 +192,60 @@ function createElementOrder(order){
 
     `;
     document.getElementById("nav-tabContent").appendChild(tabContent);
+}
+
+function paymentChange(radio,orderId){
+    let value = radio.value;
+    let order = orders.find(o=>o.id===orderId);
+    order.hinh_thuc_thanh_toan = value;
+    saveOrderToLocalStorage()
+    renderPaymentMethod(order)
+}
+
+async function renderPaymentMethod(order){
+    let methodDiv = document.getElementById(`httt-${order.id}`);
+    methodDiv.innerHTML = '';
+    if(order.hinh_thuc_thanh_toan){
+        if(order.hinh_thuc_thanh_toan === "Tiền mặt"){
+            methodDiv.innerHTML=`
+             <p>Tiền khách đưa : 
+                 <input type="text" id="customer-pay-${order.id}">
+             </p>
+             <span style="color: red" id="error-tkd-${order.id}"></span>
+             <p>Tiền thừa : 
+                 <input type="text" id="refund-money-${order.id}" readonly>
+             </p>
+        `;
+        }else{
+            const res = await fetch(`/ban-hang-off/generate-qr/${order.tien_phai_tra}`);
+            const { redirectUrl } = await res.json();
+            order.qrUrl = redirectUrl;
+            saveOrderToLocalStorage();
+            methodDiv.innerHTML = `
+              <canvas id="qr-${order.id}"></canvas>
+              <p>Quét QR để thanh toán ${order.tien_phai_tra.toLocaleString()} VND</p>
+            `;
+            // Nếu đã có URL thanh toán sandbox (order.qrUrl), thì vẽ QR
+            if (order.qrUrl) {
+                QRCode.toCanvas(
+                    document.getElementById(`qr-${order.id}`),
+                    order.qrUrl,
+                    { width: 300,
+                        // Margin viền trắng chỉ 1 module
+                        margin: 1,
+                        // Chỉ sửa lỗi tối thiểu, máy quét vẫn đọc được
+                        errorCorrectionLevel: 'L',
+                        // Màu đen-trắng cơ bản
+                        color: {
+                            dark: '#000000',
+                            light: '#FFFFFF'
+                        }
+                    },
+                    err => err && console.error('QR lỗi:', err)
+                );
+            }
+        }
+    }
 }
 
 // Hàm xóa đơn hàng
@@ -330,102 +381,99 @@ document.addEventListener("input", function (event) {
 });
 
 async function confirmOrder(orderId) {
-
-    let order = orders.find(o => o.id === orderId);
-    if (order.product.length === 0) {
-        alert("Vui lòng thêm sản phẩm vào đơn hàng");
-        return;
+    const order = orders.find(o => o.id === orderId);
+    // 1. Validate
+    if (!order || order.product.length === 0) {
+        return alert("Vui lòng thêm sản phẩm vào đơn hàng");
     }
-    if(!validateOrder(order.id)){
-        alert("Vui lòng nhập đủ thông tin thanh toán")
-        return
+    if (!validateOrder(orderId)) {
+        return alert("Vui lòng nhập đủ thông tin thanh toán");
     }
-    idnv = document.getElementById("idNv").value
-    let paymentMethods = document.querySelector(`input[name="hinhthuctt"]:checked`)?.value;
-    let today = new Date().toISOString().split("T")[0];
 
-    let hdJson = {
-        id_nhan_vien:idnv,
-        id_khach_hang:order.customer.id,
-        id_khuyen_mai:order.discount.id,
+    const idnv = document.getElementById("idNv").value;
+    const paymentMethod = document.querySelector(`input[name="hinhthuctt-${orderId}"]:checked`)?.value;
+    if (!paymentMethod) {
+        return alert("Vui lòng chọn hình thức thanh toán");
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+    // Dữ liệu chung chung cho cả offline & online
+    const hdJson = {
+        id_nhan_vien: Number(idnv),
+        id_khach_hang: order.customer.id,
+        id_khuyen_mai: order.discount.id,
         ngay_tao: today,
-        ngay_sua: null,
-        don_gia: null,
-        tong_tien: parseFloat(order.totalAmount),
+        tong_tien: order.tien_phai_tra,
         trang_thai_thanh_toan: "Đã thanh toán",
-        hinh_thuc_thanh_toan: paymentMethods,
+        hinh_thuc_thanh_toan: paymentMethod,
         dia_chi_giao_hang: "Tại cửa hàng",
         ghi_chu: null
     };
-    console.log("Dữ liệu gửi đi:", JSON.stringify(hdJson));
+
     try {
-        // Gửi request tạo hóa đơn
-        let response = await fetch("/ban-hang-off/add-hoa-don", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(hdJson)
-        });
+        // Nếu chuyển khoản: gọi API online sandbox để lấy redirectUrl
+        if (paymentMethod === "Chuyển khoản") {
+            const res = await fetch("/ban-hang-online/create-order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(hdJson)
+            });
+            if (!res.ok) throw new Error("Lỗi tạo đơn online");
+            const result = await res.json();
+            if (!result.redirectUrl) throw new Error("Server không trả redirectUrl");
 
-        let hoaDon = await response.json();
-        let idHoaDon = hoaDon.id;
-
-        if (!idHoaDon) {
-            alert("Không thể tạo hóa đơn!");
-            return;
+            // Gán QR URL và hiển thị QR
+            order.qrUrl = result.redirectUrl;
+            saveOrderToLocalStorage();
+            renderPaymentMethod(order);
+            return; // dừng ở đây, chờ người dùng quét QR
         }
 
-        let productList = order.product;
+        // Ngược lại: flow Tiền mặt (offline)
+        // 2. Tạo hoá đơn offline
+        const resOffline = await fetch("/ban-hang-off/add-hoa-don", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(hdJson)
+        });
+        if (!resOffline.ok) throw new Error("Lỗi tạo đơn tiền mặt");
+        const hoaDon = await resOffline.json();
+        const idHoaDon = hoaDon.id;
+        if (!idHoaDon) throw new Error("Không lấy được ID hóa đơn");
 
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        // **Tạo danh sách request để gửi song song**
-        let requests = productList.map((p) => {
-            let hdctJson = {
-                id_hoa_don:idHoaDon,
-                id_san_pham_chi_tiet:Number(p.id),
-                so_luong:p.so_luong,
-                don_gia:p.don_gia,
-                tong_tien:p.tong_tien,
-                thanh_tien:p.tong_tien,
+        // 3. Tạo chi tiết & cập nhật tồn kho, KM
+        const tasks = order.product.map(p => {
+            const hdct = {
+                id_hoa_don: idHoaDon,
+                id_san_pham_chi_tiet: Number(p.id),
+                so_luong: p.so_luong,
+                don_gia: p.don_gia,
+                tong_tien: p.tong_tien,
+                thanh_tien: p.tong_tien,
                 ngay_tao: today,
                 ngay_sua: null,
                 trang_thai: "Đã thanh toán"
             };
-            // **Tạo request POST thêm hóa đơn chi tiết**
-            let hdctRequest = fetch("/ban-hang-off/add-hoa-don-ct", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(hdctJson)
-            }).then(response => response.json())
-                .then(data => console.log("Dữ liệu trả về : ",data))
-                .catch(err => console.error("Lỗi thêm hóa đơn chi tiết:", err))
-
-            // **Tạo request PUT cập nhật số lượng sản phẩm**
-            let updateSpRequest = fetch(`/ban-hang-off/update-sp/${p.id}/${p.so_luong}`, {
-                method: "PUT"
-            }).catch(err => console.error("Lỗi cập nhật spct:", err));
-
-            return Promise.all([hdctRequest, updateSpRequest]); // Gửi cả 2 request song song
+            const req1 = fetch("/ban-hang-off/add-hoa-don-ct", {
+                method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(hdct)
+            });
+            const req2 = fetch(`/ban-hang-off/update-sp/${p.id}/${p.so_luong}`, { method: "PUT" });
+            return Promise.all([req1, req2]);
         });
-        if(order.discount.id !== null){
-            let updateKmRequest = fetch(`/ban-hang-off/update-km/${order.discount.id}`,{
-                method:"PUT"
-            }).catch(err => console.error("Lỗi cập nhật khuyến mãi:", err));
-            requests.push(updateKmRequest)
+        if (order.discount.id !== null) {
+            tasks.push(fetch(`/ban-hang-off/update-km/${order.discount.id}`, { method: "PUT" }));
         }
-        // **Chạy tất cả các request cùng lúc**
-        await Promise.all(requests.flat());
+        await Promise.all(tasks.flat());
 
-        alert("Xác nhận đơn hàng thành công!");
-        printInvoice(order.id)
-        orders = orders.filter(o => o.id !== order.id);
-        saveOrderToLocalStorage()
-        await renderOrders()
-    } catch (error) {
-        console.error("Lỗi:", error);
-        alert("Đã xảy ra lỗi khi xác nhận đơn hàng!");
+        // 4. Kết thúc offline: in hoá đơn, xoá order, render lại
+        alert("Xác nhận đơn hàng thành công (Tiền mặt)!");
+        printInvoice(orderId);
+        orders = orders.filter(o => o.id !== orderId);
+        saveOrderToLocalStorage();
+        await renderOrders();
+    } catch (err) {
+        console.error(err);
+        alert("Lỗi: " + err.message);
     }
 }
 
@@ -534,7 +582,6 @@ function printInvoice(orderId) {
     printWindow.document.write(invoiceHTML);
     printWindow.document.close();
 }
-
 
 // Lấy thông tin ở form nhập số lượng truyền vào order.product
 document.querySelector("#quantityModal .btn-primary").addEventListener("click",function (){

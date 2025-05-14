@@ -57,7 +57,9 @@
                             <td th:text="${a.tongTien}"></td>
                             <td th:text="${a.trangThaiThanhToan}"></td>
                             <td>
-                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${a.id})}" class="btn btn-primary">
+                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${a.id})}"
+                                   class="btn btn-primary"
+                                   th:onclick="|return confirm('Bạn có chắc chắn muốn xác nhận đơn hàng #${a.id} không?');|">
                                     Xác nhận
                                 </a>
                             </td>
@@ -83,7 +85,9 @@
                             <td th:text="${b.tongTien}"></td>
                             <td th:text="${b.trangThaiThanhToan}"></td>
                             <td>
-                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${b.id})}" class="btn btn-primary">
+                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${b.id})}"
+                                   class="btn btn-primary"
+                                   th:onclick="|return confirm('Bạn có chắc chắn muốn xác nhận đơn hàng #${b.id} không?');|">
                                     Xác nhận
                                 </a>
                             </td>
@@ -109,7 +113,9 @@
                             <td th:text="${c.tongTien}"></td>
                             <td th:text="${c.trangThaiThanhToan}"></td>
                             <td>
-                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${c.id})}" class="btn btn-primary">
+                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${c.id})}"
+                                   class="btn btn-primary"
+                                   th:onclick="|return confirm('Bạn có chắc chắn muốn xác nhận đơn hàng #${c.id} không?');|">
                                     Xác nhận
                                 </a>
                             </td>
@@ -135,7 +141,9 @@
                             <td th:text="${d.tongTien}"></td>
                             <td th:text="${d.trangThaiThanhToan}"></td>
                             <td>
-                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${d.id})}" class="btn btn-primary">
+                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${d.id})}"
+                                   class="btn btn-primary"
+                                   th:onclick="|return confirm('Bạn có chắc chắn muốn xác nhận đơn hàng #${d.id} không?');|">
                                     Xác nhận
                                 </a>
                             </td>
@@ -161,7 +169,9 @@
                             <td th:text="${e.tongTien}"></td>
                             <td th:text="${e.trangThaiThanhToan}"></td>
                             <td>
-                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${e.id})}" class="btn btn-primary">
+                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${e.id})}"
+                                   class="btn btn-primary"
+                                   th:onclick="|return confirm('Bạn có chắc chắn muốn xác nhận đơn hàng #${e.id} không?');|">
                                     Xác nhận
                                 </a>
                             </td>
@@ -187,7 +197,9 @@
                             <td th:text="${f.tongTien}"></td>
                             <td th:text="${f.trangThaiThanhToan}"></td>
                             <td>
-                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${f.id})}" class="btn btn-primary">
+                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${f.id})}"
+                                   class="btn btn-primary"
+                                   th:onclick="|return confirm('Bạn có chắc chắn muốn xác nhận đơn hàng #${f.id} không?');|">
                                     Xác nhận
                                 </a>
                             </td>

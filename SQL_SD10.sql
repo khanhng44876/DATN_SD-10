@@ -48,6 +48,7 @@ CREATE TABLE danh_muc (
                           mo_ta NVARCHAR (200),
                           trang_thai NVARCHAR(50)
 );
+
 CREATE TABLE hoa_don_chi_tiet (
                                   id INT IDENTITY(1,1) PRIMARY KEY,
                                   id_hoa_don INT NOT NULL,
@@ -125,6 +126,19 @@ CREATE TABLE chat_lieu (
                            id INT IDENTITY(1,1) PRIMARY KEY,
                            ten_chat_lieu NVARCHAR(50) NOT NULL UNIQUE,
                            mo_ta NVARCHAR(255)
+);
+
+CREATE TABLE thong_bao (
+                           id INT IDENTITY(1,1) PRIMARY KEY,
+                           id_khach_hang INT NOT NULL,
+                           noi_dung NVARCHAR(500) NOT NULL,
+                           ngay_tao DATE NOT NULL,
+                           link VARCHAR(255) NULL,
+                           is_read TINYINT NOT NULL DEFAULT 0,
+                           CONSTRAINT FK_thong_bao_khach_hang
+                               FOREIGN KEY (id_khach_hang)
+                                   REFERENCES khach_hang(id)
+                                   ON DELETE CASCADE
 );
 
 --------San pham chi tiet---------------
@@ -316,6 +330,7 @@ insert into hoa_don_chi_tiet(id_hoa_don, id_san_pham_chi_tiet, so_luong,don_gia,
 values (1,3,100,1900,111111.0,22222.0),
     (2,2,120,1500,100000.0,1266628.0),
     (3,1,180,1000,1333333.0,1976128.0)
+
 
 
 

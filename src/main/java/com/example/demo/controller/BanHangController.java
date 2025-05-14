@@ -5,6 +5,8 @@ import com.example.demo.dto.HoaDonCT_DTO;
 import com.example.demo.dto.HoaDonRequestNew;
 import com.example.demo.entity.*;
 import com.example.demo.repository.*;
+import com.example.demo.service.VNPAYService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,9 @@ import java.util.*;
 @Controller
 @RequestMapping("/ban-hang-off")
 public class BanHangController {
+    @Autowired
+    private VNPAYService vnPayService;
+
     @Autowired
     SanPhamCTRepository ctRepository;
 
@@ -74,6 +79,13 @@ public class BanHangController {
 
         }
         return ResponseEntity.ok(Collections.emptyMap());
+    }
+
+    @GetMapping("/generate-qr/{amount}")
+    public ResponseEntity<Map<String,String>> genQr(@PathVariable long amount, HttpServletRequest req) {
+        String orderInfo = "PREVIEW " + UUID.randomUUID();
+        String redirectUrl = vnPayService.createOrder(req, (int)amount, orderInfo);
+        return ResponseEntity.ok(Map.of("redirectUrl", redirectUrl));
     }
 
     @PostMapping("/add-hoa-don")
