@@ -184,5 +184,16 @@
     box-shadow: 0 8px 16px rgba(0, 123, 255, 0.3);
     transform: translateY(-4px);
 }
+.noti-item.unread .dropdown-item {
+    font-weight: bold !important;
+    background-color: lightgreen !important; /* tuỳ chọn nền để nổi bật */
+}
+
+/* Thông báo đã đọc (is_read = true) sẽ nhạt đi */
+.noti-item.read .dropdown-item {
+    font-weight: normal !important;
+    color: #6c757d !important;           /* text-muted */
+    opacity: 0.6 !important;             /* hoặc chỉ opacity cho toàn bộ item */
+}
 
 

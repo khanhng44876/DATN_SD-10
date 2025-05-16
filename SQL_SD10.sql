@@ -132,9 +132,9 @@ CREATE TABLE thong_bao (
                            id INT IDENTITY(1,1) PRIMARY KEY,
                            id_khach_hang INT NOT NULL,
                            noi_dung NVARCHAR(500) NOT NULL,
-                           ngay_tao DATE NOT NULL,
+                           ngay_tao DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
                            link VARCHAR(255) NULL,
-                           is_read TINYINT NOT NULL DEFAULT 0,
+                           is_read BIT NOT NULL DEFAULT 0,
                            CONSTRAINT FK_thong_bao_khach_hang
                                FOREIGN KEY (id_khach_hang)
                                    REFERENCES khach_hang(id)

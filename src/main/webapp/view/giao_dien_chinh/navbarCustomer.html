@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
+
 </head>
 <body>
 <nav th:fragment="headerCustomer" class="navbar navbar-expand-sm bg-light shadow">
@@ -46,17 +47,38 @@
                         <i class="bi bi-receipt-cutoff"></i>
                     </a>
                 </div>
-                <div class=" position-relative btn-group">
+                <div class="position-relative btn-group">
                     <a href="/ban-hang-online/notifications" class="text-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-bell fs-4"></i>
                     </a>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifCount">
-                        3
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifCount"
+                        th:if="${notiCount > 0}"
+                        th:text="${notiCount}">
+
                     </span>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Menu item</a></li>
-                        <li><a class="dropdown-item" href="#">Menu item</a></li>
-                        <li><a class="dropdown-item" href="#">Menu item</a></li>
+                    <ul class="dropdown-menu noti-dropdown" id="notiList"
+                        style="min-width:300px;max-width:300px;white-space:normal;word-break:break-word;overflow-wrap:break-word;max-height:300px;overflow-y:auto;">
+                        <li th:each="n : ${noti}"
+                            th:class="|'noti-item'+ (n.read ? 'read' : 'unread')|"
+                            style="cursor:pointer; padding:.5rem 1rem; white-space:normal; word-break:break-word;"
+                            >
+                            <button
+                                    class="dropdown-item d-block"
+                                    th:data-id="${n.id}"
+                                    th:data-link="${n.link}"
+                                    th:onclick="|handleClick(event, this)|"
+                                    style="white-space:normal; word-break:break-word;" th:text="${n.noi_dung}"></button>
+                            <br/>
+                            <small class="text-muted"
+                                   th:text="${'Vào lúc: ' + #dates.format(n.ngayTao,'HH:mm dd/MM/yyyy')}">
+                                Vào lúc: …
+                            </small>
+                            <!-- đường phân cách -->
+                            <hr class="dropdown-divider"/>
+                        </li>
+                        <li th:if="${#lists.isEmpty(noti)}" style="padding:.5rem 1rem;">
+                            <span>Không có thông báo</span>
+                        </li>
                     </ul>
                 </div>
                 <!-- Tài khoản -->
@@ -78,6 +100,9 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+    <script src="../../js/nav/navClient.js"></script>
 </nav>
 
 <div th:fragment="navCustomer">
@@ -107,4 +132,5 @@
 </div>
 
 </body>
+
 </html>

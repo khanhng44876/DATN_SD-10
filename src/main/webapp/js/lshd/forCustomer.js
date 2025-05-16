@@ -1,5 +1,5 @@
 let ordersOnl = JSON.parse(localStorage.getItem("ordersOnl"));
-let stompClient = null;
+window.stompClient = null;
 // Reload trang
 function renderOnlOrder(){
     document.getElementById("product-list").innerHTML = "";
@@ -207,5 +207,6 @@ function updateStatusBar(status, orderId) {
         statusBar.appendChild(stepDiv);
     });
 }
+
 renderOnlOrder()
 connectSocket()

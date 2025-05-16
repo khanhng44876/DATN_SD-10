@@ -46,13 +46,13 @@ public class BanHangOnlineController {
     @Autowired
     private KhuyenMaiRepository khuyenMaiRepository;
     @Autowired
-    private SimpMessagingTemplate simMessagingTemplate;
-    @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     private HoaDonCTRepository hoaDonCTRepository;
     @Autowired
     private VNPAYService vnPayService;
+    @Autowired
+    private ThongBaoRepository thongBaoRepository;
 
     // Bán hàng online cua admin
     @RequestMapping("/ban-hang-online/admin")
@@ -296,18 +296,21 @@ public class BanHangOnlineController {
             hoaDon.setHinhThucThanhToan(hd.getHinhThucThanhToan());
             hoaDon.setDiaChiGiaoHang(hd.getDiaChiGiaoHang());
             hoaDon.setGhiChu(hd.getGhiChu());
+
             if (hd.getIdKhuyenMai() != null) {
                 KhuyenMai km = khuyenMaiRepository.findById(hd.getIdKhuyenMai())
                         .orElseThrow(() -> new EntityNotFoundException("KM không tồn tại"));
-                km.setSo_luong(km.getSo_luong() - 1);
-                km.setSo_luong_sd(km.getSo_luong_sd()+1);
-
-                khuyenMaiRepository.save(km);
-
-                hoaDon.setKhuyenMai(km);
                 if (km.getSo_luong() <= 0) {
                     throw new IllegalStateException("Khuyến mãi đã hết số lượng");
                 }
+                km.setSo_luong(km.getSo_luong() - 1);
+                km.setSo_luong_sd(km.getSo_luong_sd()+1);
+                if(km.getSo_luong() == 0){
+                    km.setTrang_thai("Đã kết thúc");
+                }
+                khuyenMaiRepository.save(km);
+
+                hoaDon.setKhuyenMai(km);
             }
             return khachHangRepository.findById(hd.getIdKhachHang())
                     .map(khachHang -> {
@@ -321,6 +324,17 @@ public class BanHangOnlineController {
                                     }
                                     HoaDon savedHoaDon = hoaDonrepo.save(hoaDon);
 
+                                    ThongBao thongBao = new ThongBao();
+                                    thongBao.setLink("/ban-hang-online/follow-order/"+savedHoaDon.getId());
+                                    thongBao.setNoi_dung("Đơn hàng HD"+savedHoaDon.getId()+"của bạn đã được đặt thành công. Đang trong trạng thái: Chờ xác nhận ");
+                                    thongBao.setNgayTao(new Date());
+                                    thongBao.setKhachHang(savedHoaDon.getKhachHang());
+                                    thongBaoRepository.save(thongBao);
+                                    simpMessagingTemplate.convertAndSendToUser(
+                                            savedHoaDon.getKhachHang().getTaiKhoan(),
+                                            "/topic/notification",
+                                            thongBaoRepository.findByKhachHang_IdOrderByNgayTaoDesc(savedHoaDon.getKhachHang().getId())
+                                    );
                                     response.put("id", savedHoaDon.getId());
                                     if ("Online".equals(hd.getHinhThucThanhToan())) {
                                         String orderInfo = "Thanh toan don hang " + savedHoaDon.getId() + " cua KH: " + hd.getIdKhachHang();
@@ -390,6 +404,13 @@ public class BanHangOnlineController {
         }
         String newStatus = hd.getTrangThaiThanhToan();
         hoaDonrepo.save(hd);
+        ThongBao thongBao = new ThongBao();
+        thongBao.setNgayTao(new Date());
+        thongBao.setLink("/ban-hang-online/follow-order/"+hd.getId());
+        thongBao.setNoi_dung("Đơn hàng HD"+hd.getId()+"của bạn đang trong trạng thái: "+hd.getTrangThaiThanhToan());
+        thongBao.setKhachHang(hd.getKhachHang());
+        thongBaoRepository.save(thongBao);
+
         Map<String, Object> payload = Map.of(
                 "type",        "update-status",
                 "status", newStatus
@@ -398,6 +419,11 @@ public class BanHangOnlineController {
                 hd.getKhachHang().getTaiKhoan(),     // username (chính là getUsername())
                 "/topic/order/" + id,                // sẽ trở thành /user/queue/order/{id}
                 payload
+        );
+        simpMessagingTemplate.convertAndSendToUser(
+                hd.getKhachHang().getTaiKhoan(),
+                "/topic/notification",
+                thongBaoRepository.findByKhachHang_IdOrderByNgayTaoDesc(hd.getKhachHang().getId())
         );
         return ResponseEntity.ok(hd);
     }
@@ -450,5 +476,13 @@ public class BanHangOnlineController {
 
         }
         return ResponseEntity.ok(Collections.emptyMap());
+    }
+
+    @PutMapping("/read-noti/{id}")
+    public ResponseEntity<ThongBao> readNoti(@PathVariable Integer id) {
+        ThongBao tb = thongBaoRepository.findById(id).get();
+        tb.setRead(true);
+        thongBaoRepository.save(tb);
+        return ResponseEntity.ok(tb);
     }
 }
