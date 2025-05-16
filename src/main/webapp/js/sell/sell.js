@@ -391,8 +391,8 @@ async function confirmOrder(orderId) {
     }
 
     const idnv = document.getElementById("idNv").value;
-    const paymentMethod = document.querySelector(`input[name="hinhthuctt-${orderId}"]:checked`)?.value;
-    if (!paymentMethod) {
+    const paymentMethod = order.hinh_thuc_thanh_toan;
+    if (paymentMethod === null) {
         return alert("Vui lòng chọn hình thức thanh toán");
     }
 
@@ -577,7 +577,7 @@ function printInvoice(orderId) {
         </html>
     `;
 
-    let printWindow = window.open("", "", "width=900,height=700");
+    let printWindow = window.open('about:blank', '_blank', 'width=900,height=700');
     printWindow.document.open();
     printWindow.document.write(invoiceHTML);
     printWindow.document.close();
