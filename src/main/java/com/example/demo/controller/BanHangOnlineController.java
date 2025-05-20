@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 import java.security.Principal;
@@ -27,7 +28,6 @@ import java.util.*;
 
 
 @Controller
-
 public class BanHangOnlineController {
     @Autowired
     private SanPhamRepository spRepository;
@@ -160,11 +160,24 @@ public class BanHangOnlineController {
         return "ban_hang_online/dsdh-customer.html";
     }
 
-    // trang này để theo dõi đơn hàng của Customer
+    // trang này để Customer theo dõi đơn hàng của mình
     @RequestMapping("/ban-hang-online/follow-order/{id}")
-    public String followOrder(@PathVariable Integer id, Model model) {
-        HoaDon hoaDon = hoaDonrepo.findById(id).get();
-        model.addAttribute("hd", hoaDon);
+    public String followOrder(@PathVariable Integer id, Model model,Authentication authentication) {
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+        KhachHang kh = khachHangRepository.findById(userDetails.getId())
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User không hợp lệ"));
+
+        HoaDon hoaDon = hoaDonrepo.findById(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Hoá đơn không tồn tại"));
+
+        Map<String, Object> hoaDonMap = new HashMap<>();
+        hoaDonMap.put("hoaDon", hoaDon);
+        hoaDonMap.put("chiTiet",hdctRepository.findByHoaDonId(hoaDon.getId()));
+        model.addAttribute("kh", kh);
+        model.addAttribute("hoadonMap", hoaDonMap);
         return "ban_hang_online/customer.html";
     }
 
@@ -333,7 +346,7 @@ public class BanHangOnlineController {
                                     simpMessagingTemplate.convertAndSendToUser(
                                             savedHoaDon.getKhachHang().getTaiKhoan(),
                                             "/topic/notification",
-                                            thongBaoRepository.findByKhachHang_IdOrderByNgayTaoDesc(savedHoaDon.getKhachHang().getId())
+                                            thongBaoRepository.findByKhachHang_IdOrderByReadAscNgayTaoDesc(savedHoaDon.getKhachHang().getId())
                                     );
                                     response.put("id", savedHoaDon.getId());
                                     if ("Online".equals(hd.getHinhThucThanhToan())) {
@@ -423,7 +436,7 @@ public class BanHangOnlineController {
         simpMessagingTemplate.convertAndSendToUser(
                 hd.getKhachHang().getTaiKhoan(),
                 "/topic/notification",
-                thongBaoRepository.findByKhachHang_IdOrderByNgayTaoDesc(hd.getKhachHang().getId())
+                thongBaoRepository.findByKhachHang_IdOrderByReadAscNgayTaoDesc(hd.getKhachHang().getId())
         );
         return ResponseEntity.ok(hd);
     }

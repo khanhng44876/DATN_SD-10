@@ -1,4 +1,4 @@
-let ordersOnl = JSON.parse(localStorage.getItem("ordersOnl"));
+
 window.stompClient = null;
 // Reload trang
 function renderOnlOrder(){

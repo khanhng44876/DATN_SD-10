@@ -51,15 +51,15 @@
                     <a href="/ban-hang-online/notifications" class="text-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-bell fs-4"></i>
                     </a>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifCount"
-                        th:if="${notiCount > 0}"
-                        th:text="${notiCount}">
-
+                    <span th:class="${notiCount > 0 ? 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger'
+                            :'d-none'}" id="notifCount"
+                            th:text="${notiCount > 0 ? notiCount : ''}"
+                    >
                     </span>
                     <ul class="dropdown-menu noti-dropdown" id="notiList"
                         style="min-width:300px;max-width:300px;white-space:normal;word-break:break-word;overflow-wrap:break-word;max-height:300px;overflow-y:auto;">
                         <li th:each="n : ${noti}"
-                            th:class="|'noti-item'+ (n.read ? 'read' : 'unread')|"
+                            th:class="${n.read}?'noti-item read':'noti-item unread'"
                             style="cursor:pointer; padding:.5rem 1rem; white-space:normal; word-break:break-word;"
                             >
                             <button

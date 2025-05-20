@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="giao_dien_chinh/libCustomer :: libheadercustomer">
     <title>Giỏ Hàng</title>
     <meta charset="utf-8">
-    <head th:replace="giao_dien_chinh/libCustomer :: libheadercustomer"></head>
+
 </head>
 <style>
     .status-bar {
@@ -69,7 +69,6 @@
         background: yellow;
     }
 </style>
-
 <body>
 <div th:replace="giao_dien_chinh/navbarCustomer :: headerCustomer"></div>
 <div>
@@ -86,7 +85,7 @@
         </ol>
     </div>
     <div class="container">
-        <input type="hidden" th:value="${hd.id}" id="orderId">
+        <input type="hidden" th:value="${hoadonMap.hoaDon.id}" id="orderId">
         <h2 style="text-align: center;">Lịch sử đơn hàng</h2>
         <div>
             <button type="button" class="btn btn-danger" onclick="cancelOrder()">Hủy đơn hàng</button>
@@ -101,16 +100,16 @@
             <div class="col">
                 Thông tin của bạn:
                 <p>
-                    Họ và tên : <span th:text="${hd.khachHang.tenKhachHang}"></span>
+                    Họ và tên : <span th:text="${kh.tenKhachHang}"></span>
                 </p>
                 <p>
-                    Số điện thoại : <span th:text="${hd.khachHang.soDienThoai}"></span>
+                    Số điện thoại : <span th:text="${kh.soDienThoai}"></span>
                 </p>
                 <p>
-                    Địa chỉ nhận hàng : <span th:text="${hd.diaChiGiaoHang}"></span>
+                    Địa chỉ nhận hàng : <span th:text="${hoadonMap.hoaDon.diaChiGiaoHang}"></span>
                 </p>
                 <p>
-                    Tổng số tiền hàng : <span th:text="${hd.tongTien}"></span>
+                    Tổng số tiền hàng : <span th:text="${hoadonMap.hoaDon.tongTien}"></span>
                 </p>
                 <div>
 
@@ -121,6 +120,51 @@
 
 
 </div>
+<script th:inline="javascript">
+    let ordersOnl = JSON.parse(localStorage.getItem("ordersOnl")) || [];
+
+    let hoadonMap = /*[[${hoadonMap}]]*/ {};
+    let kh        = /*[[${kh}]]*/ {};
+    let listhd     = hoadonMap ? [hoadonMap] : [];
+
+    let existingIds = ordersOnl.map(o => o.id);
+
+    let order = listhd.map(item => {
+        return {
+            id: item.hoaDon.id,
+            status: item.hoaDon.trangThaiThanhToan,
+            total: item.hoaDon.tongTien,
+            listhdct: item.chiTiet.map(ct => {
+                return {
+                    id: ct.id,
+                    name: ct.sanPhamChiTiet.sanPham.tenSanPham,
+                    price: ct.sanPhamChiTiet.donGia,
+                    quantity: ct.soLuong,
+                    size: ct.sanPhamChiTiet.kichThuoc.tenKichThuoc,
+                    color: ct.sanPhamChiTiet.mauSac.ten_mau_sac,
+                    total: ct.tongTien,
+                    image: ct.sanPhamChiTiet.anhSanPham
+                }
+            }),
+            customer: kh,
+            date: item.hoaDon.ngayTao,
+            payment: item.hoaDon.hinhThucThanhToan,
+            address: item.hoaDon.diaChiGiaoHang,
+            note: item.hoaDon.ghiChu,
+            total_amount: item.hoaDon.tongTien,
+            steps: [
+                { label: "Chờ xác nhận", icon: "fas fa-file-alt" },
+                { label: "Chờ giao hàng", icon: "fas fa-truck" },
+                { label: "Đang giao hàng", icon: "fas fa-shipping-fast" },
+                { label: "Giao hàng thành công", icon: "fa-solid fa-flag-checkered" },
+                { label: "Hoàn thành", icon: "fas fa-check-circle" },
+
+            ]
+        }
+    }).filter(o => !existingIds.includes(o.id));
+    ordersOnl.push(...order);
+    localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
+</script>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
 <script src="../../js/lshd/forCustomer.js"></script>

@@ -10,7 +10,7 @@ function handleClick(event,a){
     fetch(`/read-noti/${id}`,{
         method:"PUT"
     })
-        .catch(err=>onsole.error(err))
+        .catch(err=>console.error(err))
         .finally(()=>{
             window.location.href = link;
         })
@@ -24,7 +24,7 @@ function connectSocketNoti() {
         console.log("Connected to WebSocket: " + frame);
 
         // Lắng nghe thông báo từ server gửi riêng cho user
-        stompClient1.subscribe("/user/topic/notification", function (message) {
+        stompClient1 .subscribe("/user/topic/notification", function (message) {
             console.log(message.body)
             notiList = JSON.parse(message.body)
             console.log("Nhận trạng thái mới từ Admin:", notiList);
@@ -62,7 +62,20 @@ function connectSocketNoti() {
 
                     ul.appendChild(li);
                 });
-                document.getElementById('notiCount').textContent = notiList.length;
+                const notifElem = document.getElementById("notifCount");
+                const text = notifElem.innerText.trim();
+                if(!text){
+                    notifElem.classList.remove('d-none');
+                    notifElem.classList.add("position-absolute",
+                        "top-0",
+                        "start-100",
+                        "translate-middle",
+                        "badge",
+                        "rounded-pill",
+                        "bg-danger");
+                }
+                notifElem.innerText = text ? (parseInt(text,10)+1):"1";
+
             }
         });
     });

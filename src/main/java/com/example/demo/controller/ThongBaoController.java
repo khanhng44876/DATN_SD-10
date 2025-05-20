@@ -24,7 +24,7 @@ public class ThongBaoController {
         if(userDetails == null){
             return Collections.emptyList(); //Chưa đăng nhập thì trả về list rỗng
         }
-        return repo.findByKhachHang_IdOrderByNgayTaoDesc(userDetails.getId());//Trả về list noti của người dùng đó
+        return repo.findByKhachHang_IdOrderByReadAscNgayTaoDesc(userDetails.getId());//Trả về list noti của người dùng đó
     }
 
     @ModelAttribute("notiCount")

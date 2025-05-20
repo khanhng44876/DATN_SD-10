@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface ThongBaoRepository extends JpaRepository<ThongBao, Integer> {
 
-    List<ThongBao> findByKhachHang_IdOrderByNgayTaoDesc(Integer khachHangId);
+    List<ThongBao> findByKhachHang_IdOrderByReadAscNgayTaoDesc(Integer khachHangId);
 
     Long countByKhachHang_IdAndReadFalse(Integer khachHangId);
 }
