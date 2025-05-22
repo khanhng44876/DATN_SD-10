@@ -119,8 +119,13 @@ public class ThongKeService {
         int thang = now.getMonthValue();
         int nam = now.getYear();
 
-        List<String> trangThaiHopLe = List.of("da thanh toan", "đã thanh toán", "hoàn thành", "tại quầy");
+        // Chuẩn hóa trạng thái hợp lệ
+        List<String> trangThaiHopLe = List.of("đã thanh toán", "hoàn thành", "tại quầy", "da thanh toan,Da thanh toan", "Đã hoàn thành")
+                .stream()
+                .map(s -> s.trim().toLowerCase())
+                .collect(Collectors.toList());
 
+        // Query với trạng thái đã chuẩn hóa
         List<HoaDon> hoaDons = hoaDonRepo.findByThangNamAndTrangThaiHopLe(thang, nam, trangThaiHopLe);
 
         int totalOrders = hoaDons.size();
@@ -136,12 +141,15 @@ public class ThongKeService {
     }
 
 
+
+
+
     // Doanh số hôm nay
     public Map<String, Object> getTodaySales() {
         LocalDate today = LocalDate.now();
 
         List<HoaDon> list = hoaDonRepo.findByNgayTaoAndTrangThaiThanhToan(
-                Date.valueOf(today), List.of("Đã thanh toán")
+                Date.valueOf(today), List.of("đã thanh toán", "hoàn thành", "tại quầy", "da thanh toan,Da thanh toan", "Đã hoàn thành")
         );
 
         int tongDon = list.size();
@@ -189,6 +197,7 @@ public class ThongKeService {
 
     // Trạng thái đơn hàng tháng này
     public Map<String, Object> getOrderStatusData() {
+        // Danh sách hiển thị cố định cho biểu đồ
         List<String> labels = Arrays.asList(
                 "Chờ xác nhận",
                 "Chờ giao hàng",
@@ -198,28 +207,49 @@ public class ThongKeService {
                 "Đã hủy"
         );
 
-        List<Object[]> results = hoaDonRepo.countOrderStatusThisMonth(labels);
+        // Mapping trạng thái trong DB -> nhãn cố định trong labels
+        Map<String, String> statusMapping = Map.of(
+                "Chua thanh toan", "Chờ xác nhận",
+                "Da thanh toan", "Hoàn thành",
+                "Đã hoàn thành", "Hoàn thành",
+                "Dang giao", "Đang giao hàng",
+                "Giao thanh cong", "Giao hàng thành công",
+                "Cho giao", "Chờ giao hàng",
+                "Da huy", "Đã hủy"
+                // Thêm nếu DB có khác nữa
+        );
 
-        Map<String, Integer> countMap = new HashMap<>();
+        // Mặc định mỗi trạng thái có 0 đơn
+        Map<String, Integer> countMap = new LinkedHashMap<>();
         for (String label : labels) {
-            countMap.put(label, 0); // mặc định 0
+            countMap.put(label, 0);
         }
+
+        // Lấy tất cả đơn hàng tháng này
+        List<Object[]> results = hoaDonRepo.countOrderStatusThisMonthAll();
 
         for (Object[] row : results) {
-            String status = (String) row[0];
+            String rawStatus = ((String) row[0]).trim();
             Long count = (Long) row[1];
-            countMap.put(status, count.intValue());
+
+            // Ánh xạ về label cố định (nếu có)
+            String mappedStatus = statusMapping.getOrDefault(rawStatus, rawStatus);
+
+            // Chỉ cộng nếu trạng thái đó có trong labels
+            if (countMap.containsKey(mappedStatus)) {
+                countMap.put(mappedStatus, count.intValue());
+            }
         }
 
-        List<Integer> data = labels.stream().map(countMap::get).collect(Collectors.toList());
+        List<Integer> data = labels.stream()
+                .map(countMap::get)
+                .collect(Collectors.toList());
 
         Map<String, Object> trangThai = new HashMap<>();
         trangThai.put("labels", labels);
         trangThai.put("data", data);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("trangThaiDonHang", trangThai);
-
-        return response;
+        return Map.of("trangThaiDonHang", trangThai);
     }
+
 }

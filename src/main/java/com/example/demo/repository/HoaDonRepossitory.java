@@ -14,15 +14,15 @@ import java.util.List;
 @Repository
 public interface HoaDonRepossitory extends JpaRepository<HoaDon, Integer> {
     @Query("SELECT h FROM HoaDon h WHERE (:trangThai IS NULL OR h.trangThaiThanhToan = :trangThai) ORDER BY h.id DESC")
-    List<HoaDon> findByTrangThai(@Param("trangThai") String trangThai);
-
-    List<HoaDon> findByTrangThaiThanhToanIn(List<String> trangThaiList);
+//    List<HoaDon> findByTrangThai(@Param("trangThai") String trangThai);
+//
+//    List<HoaDon> findByTrangThaiThanhToanIn(List<String> trangThaiList);
 
 
     List<HoaDon> findByTrangThaiThanhToan(String trangThai);
 
     List<HoaDon> findAllByOrderByIdDesc();
-    List<HoaDon> findByTrangThaiThanhToanOrderByIdDesc(String trangThai);
+//    List<HoaDon> findByTrangThaiThanhToanOrderByIdDesc(String trangThai);
 
     // Tìm theo ngày cụ thể
     List<HoaDon> findByNgayTao(Date ngayTao);
@@ -50,14 +50,28 @@ public interface HoaDonRepossitory extends JpaRepository<HoaDon, Integer> {
             @Param("trangThais") List<String> trangThais
     );
     // lấy dữ liệu từ hóa đơn cho biểu đồ quạt
+//    @Query("SELECT TRIM(h.trangThaiThanhToan), COUNT(h) " +
+//            "FROM HoaDon h " +
+//            "WHERE MONTH(h.ngayTao) = MONTH(CURRENT_DATE) " +
+//            "AND YEAR(h.ngayTao) = YEAR(CURRENT_DATE) " +
+//            "AND TRIM(h.trangThaiThanhToan) IN :trangThais " +
+//            "GROUP BY TRIM(h.trangThaiThanhToan)")
+//    List<Object[]> countOrderStatusThisMonth(@Param("trangThais") List<String> trangThais);
+
+//
+@Query("SELECT h.trangThaiThanhToan, COUNT(h) " +
+        "FROM HoaDon h " +
+        "WHERE MONTH(h.ngayTao) = MONTH(CURRENT_DATE) " +
+        "AND YEAR(h.ngayTao) = YEAR(CURRENT_DATE) " +
+        "GROUP BY h.trangThaiThanhToan")
+List<Object[]> countOrderStatusThisMonthDynamic();
+
     @Query("SELECT TRIM(h.trangThaiThanhToan), COUNT(h) " +
             "FROM HoaDon h " +
             "WHERE MONTH(h.ngayTao) = MONTH(CURRENT_DATE) " +
             "AND YEAR(h.ngayTao) = YEAR(CURRENT_DATE) " +
-            "AND TRIM(h.trangThaiThanhToan) IN :trangThais " +
             "GROUP BY TRIM(h.trangThaiThanhToan)")
-    List<Object[]> countOrderStatusThisMonth(@Param("trangThais") List<String> trangThais);
-
+    List<Object[]> countOrderStatusThisMonthAll();
 
 
 }
