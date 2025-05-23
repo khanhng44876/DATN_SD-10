@@ -30,13 +30,19 @@ function themMs(){
     let tenMau = document.getElementById("ten_mau_sac").value.trim();
     let moTa = document.getElementById("mo_ta").value.trim();
 
-    // Lấy danh sách tên màu đã tồn tại
+    // VALIDATE:
+    if (tenMau === "" || moTa === "") {
+        alert("Vui lòng nhập đầy đủ thông tin tên màu và mô tả!");
+        return;
+    }
+
+    // CHECK TRÙNG (như đã thêm ở trên)
     let existingRows = document.querySelectorAll("#msTable tbody tr");
     for (let row of existingRows) {
         let existingName = row.cells[0].innerText.trim().toLowerCase();
         if (existingName === tenMau.toLowerCase()) {
             alert("Tên màu đã tồn tại!");
-            return; // dừng thêm mới
+            return;
         }
     }
 
@@ -70,10 +76,17 @@ function themMs(){
         })
         .catch(error => console.error("Lỗi", error));
 }
+
 //
 function updateMs(id){
     let tenMau = document.getElementById("ten_mau_sac").value.trim();
     let moTa = document.getElementById("mo_ta").value.trim();
+
+    // VALIDATE
+    if (tenMau === "" || moTa === "") {
+        alert("Vui lòng nhập đầy đủ thông tin tên màu và mô tả!");
+        return;
+    }
 
     let existingRows = document.querySelectorAll("#msTable tbody tr");
     for (let row of existingRows) {
@@ -108,6 +121,7 @@ function updateMs(id){
         })
         .catch(error => console.error("Lỗi", error));
 }
+
 
 
 //
