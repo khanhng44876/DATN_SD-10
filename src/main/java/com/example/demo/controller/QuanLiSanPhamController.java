@@ -184,11 +184,7 @@ public class QuanLiSanPhamController {
         }
     }
 
-    @GetMapping("/check-ma-san-pham")
-    @ResponseBody
-    public boolean checkMaSanPham(@RequestParam String maSanPham) {
-        return sanPhamRepository.findByMaSanPham(maSanPham).isPresent();
-    }
+
 
     @PutMapping("/cap-nhat-san-pham/{id}")
     public ResponseEntity<?> updateSanPham(@PathVariable Integer id, @RequestBody Map<String, Object> payload) {
@@ -333,6 +329,34 @@ public class QuanLiSanPhamController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi: " + e.getMessage());
         }
     }
+    // Check trung ma va ten sản phẩm
+
+    @GetMapping("/check-ma-san-pham")
+    @ResponseBody
+    public boolean checkMaSanPham(@RequestParam String maSanPham) {
+        return sanPhamRepository.existsByMaSanPham(maSanPham);
+    }
+
+    @GetMapping("/check-ten-san-pham")
+    @ResponseBody
+    public boolean checkTenSanPham(@RequestParam String tenSanPham) {
+        return sanPhamRepository.existsByTenSanPham(tenSanPham);
+    }
+
+    // check trung update san pham
+    @GetMapping("/check-ma-trung-update")
+    @ResponseBody
+    public boolean checkMaUpdate(@RequestParam String maSanPham, @RequestParam Long id) {
+        return sanPhamRepository.existsByMaSanPhamAndIdNot(maSanPham, id);
+    }
+
+    @GetMapping("/check-ten-trung-update")
+    @ResponseBody
+    public boolean checkTenUpdate(@RequestParam String tenSanPham, @RequestParam Long id) {
+        return sanPhamRepository.existsByTenSanPhamAndIdNot(tenSanPham, id);
+    }
+
+
 
 
     // check trung san pham chi tiet

@@ -106,10 +106,8 @@
         document.getElementById("errorNgaySua").innerText = "";
         document.getElementById("errorTrangThai").innerText = "";
 
-        // Lấy ngày hôm nay (YYYY-MM-DD)
         const today = new Date().toISOString().split("T")[0];
 
-        // Get values
         const maSanPham = document.getElementById("maSanPham").value;
         const tenSanPham = document.getElementById("tenSanPham").value;
         const ngayNhap = document.getElementById("ngayNhap").value;
@@ -120,21 +118,13 @@
 
         let isValid = true;
 
-        // Validate mã sản phẩm (bỏ qua khi hành động là update)
+        // Validate mã sản phẩm
         if (maSanPham.trim() === "") {
             document.getElementById("errorMaSanPham").innerText = "Mã sản phẩm không được để trống.";
             isValid = false;
         } else if (hasNegativeNumber(maSanPham)) {
             document.getElementById("errorMaSanPham").innerText = "Mã sản phẩm không được chứa số âm.";
             isValid = false;
-        }
-        else if (action !== 'update') {
-            // Check mã sản phẩm trùng chỉ khi không phải hành động update
-            const isDuplicate = await checkMaSanPham(maSanPham);
-            if (isDuplicate) {
-                document.getElementById("errorMaSanPham").innerText = "Mã sản phẩm đã tồn tại.";
-                isValid = false;
-            }
         }
 
         // Validate tên sản phẩm
@@ -147,71 +137,66 @@
         }
 
         // Validate ngày nhập
-
         if (ngayNhap === "") {
             document.getElementById("errorNgayNhap").innerText = "Ngày nhập không được để trống.";
             isValid = false;
         } else if (isNaN(Date.parse(ngayNhap))) {
             document.getElementById("errorNgayNhap").innerText = "Ngày nhập không hợp lệ.";
             isValid = false;
-        }else if (ngayNhap !== today) {
+        } else if (ngayNhap !== today || ngayNhap > today) {
             document.getElementById("errorNgayNhap").innerText = "Ngày nhập phải là ngày hôm nay.";
             isValid = false;
         }
-        else {
-            if (ngayNhap > today) {
-                document.getElementById("errorNgayNhap").innerText = "Ngày nhập không được là ngày trong tương lai.";
-                isValid = false;
-            }
-        }
+
         // Validate ngày sửa
-
-
         if (ngaySua === "") {
             document.getElementById("errorNgaySua").innerText = "Ngày sửa không được để trống.";
             isValid = false;
         } else if (isNaN(Date.parse(ngaySua))) {
             document.getElementById("errorNgaySua").innerText = "Ngày sửa không hợp lệ.";
             isValid = false;
-        }else if (ngaySua !== today) {
-            document.getElementById("errorNgayNhap").innerText = "Ngày nhập phải là ngày hôm nay.";
+        } else if (ngaySua !== today || ngaySua > today) {
+            document.getElementById("errorNgaySua").innerText = "Ngày sửa phải là ngày hôm nay.";
             isValid = false;
         }
-        else {
-            if (ngaySua > today) {
-                document.getElementById("errorNgaySua").innerText = "Ngày sửa không được là ngày trong tương lai.";
-                isValid = false;
-            }
-        }
 
-
-
-        // Validate danh mục
+        // Validate danh mục, hãng, trạng thái
         if (danhMuc === "") {
             document.getElementById("errorDanhMuc").innerText = "Vui lòng chọn danh mục.";
             isValid = false;
         }
-
         if (hang === "") {
             document.getElementById("errorHang").innerText = "Vui lòng chọn hãng.";
             isValid = false;
         }
-
-        // Validate trạng thái
         if (trangThai === "") {
             document.getElementById("errorTrangThai").innerText = "Vui lòng chọn trạng thái.";
             isValid = false;
         }
 
-        // If all fields are valid, proceed with action
-        if (isValid) {
-            if (action === 'ADD') {
-                themSP();
-            } else if (action === 'update') {
-                capNhatSP(window.currentSanPhamId);
+        // Kiểm tra trùng mã hoặc tên (chỉ khi thêm)
+        if (isValid && action === 'ADD') {
+            const [isMaTrung, isTenTrung] = await Promise.all([
+                checkMaSanPham(maSanPham),
+                checkTenSanPham(tenSanPham)
+            ]);
+
+            if (isMaTrung) {
+                document.getElementById("errorMaSanPham").innerText = "Mã sản phẩm đã tồn tại.";
+                isValid = false;
+            }
+            if (isTenTrung) {
+                document.getElementById("errorTenSanPham").innerText = "Tên sản phẩm đã tồn tại.";
+                isValid = false;
             }
         }
+
+        // Gọi xử lý thêm nếu hợp lệ
+        if (isValid && action === 'ADD') {
+            themSP();
+        }
     }
+
 
 
 
@@ -247,6 +232,7 @@
         const result = await response.text();
         alert(result);
         if (response.ok) {
+            window.scrollTo(0, 0); //  Tự động cuộn lên đầu trang
             window.location.href = "/san-pham/hien-thi";
         } else {
             alert("Đã có lỗi xảy ra khi thêm sản phẩm.");
@@ -255,25 +241,29 @@
 
 
 
-    // Hàm gọi API kiểm tra mã sản phẩm trùng
-    async function checkMaSanPham(maSanPham) {
+    // Check mã riêng
+    async function checkMaSanPham(ma) {
+        if (!ma) return false;
         try {
-            const response = await fetch(`/san-pham/check-ma-san-pham?maSanPham=${encodeURIComponent(maSanPham)}`);
-            if (response.ok) {
-                return await response.json(); // Trả về true nếu mã trùng
-            }
-            console.error("Failed to check mã sản phẩm.");
-            return false;
-        } catch (error) {
-            console.error("Error checking mã sản phẩm:", error);
+            const response = await fetch(`/san-pham/check-ma-san-pham?maSanPham=${encodeURIComponent(ma)}`);
+            return response.ok ? await response.json() : false;
+        } catch (err) {
+            console.error("Lỗi check mã:", err);
             return false;
         }
     }
 
-
-
-
-
+    // Check tên riêng
+    async function checkTenSanPham(ten) {
+        if (!ten) return false;
+        try {
+            const response = await fetch(`/san-pham/check-ten-san-pham?tenSanPham=${encodeURIComponent(ten)}`);
+            return response.ok ? await response.json() : false;
+        } catch (err) {
+            console.error("Lỗi check tên:", err);
+            return false;
+        }
+    }
 
 
 
@@ -284,6 +274,40 @@
         document.getElementById("ngaySua").value = today;
     });
 
+    document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("ngayNhap").value = today;
+        document.getElementById("ngaySua").value = today;
+
+        const maInput = document.getElementById("maSanPham");
+        const tenInput = document.getElementById("tenSanPham");
+
+        maInput.addEventListener("input", async () => {
+            const ma = maInput.value.trim();
+            const ten = tenInput.value.trim();
+            if (ma !== "" && ten !== "") {
+                const isDuplicate = await checkTrungMaHoacTen(ma, ten);
+                if (!isDuplicate) {
+                    document.getElementById("errorMaSanPham").innerText = "";
+                    document.getElementById("errorTenSanPham").innerText = "";
+                }
+            }
+        });
+
+        tenInput.addEventListener("input", async () => {
+            const ma = maInput.value.trim();
+            const ten = tenInput.value.trim();
+            if (ma !== "" && ten !== "") {
+                const isDuplicate = await checkTrungMaHoacTen(ma, ten);
+                if (!isDuplicate) {
+                    document.getElementById("errorMaSanPham").innerText = "";
+                    document.getElementById("errorTenSanPham").innerText = "";
+                }
+            }
+        });
+    });
+
+
 
 
     function formatmoney(money) {
@@ -293,6 +317,8 @@
         });
         return VND.format(money);
     }
+
+
 </script>
 </html>
 

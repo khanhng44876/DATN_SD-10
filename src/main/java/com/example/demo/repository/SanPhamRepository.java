@@ -13,5 +13,15 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     @Query("SELECT h FROM SanPham h WHERE h.id = :idsp")
     Optional<SanPham> findByIdSP(@Param("idsp") Integer idsp);
 
-    Optional<SanPham> findByMaSanPham(String maSanPham);
+
+// check trung khi them
+    boolean existsByMaSanPham(String maSanPham);
+    boolean existsByTenSanPham(String tenSanPham);
+
+    // check trung khi update
+    boolean existsByMaSanPhamAndIdNot(String maSanPham, Long id);
+    boolean existsByTenSanPhamAndIdNot(String tenSanPham, Long id);
+
+
+
 }

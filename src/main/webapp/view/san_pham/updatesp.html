@@ -196,178 +196,102 @@
 
         // If all fields are valid, proceed with action
         if (isValid) {
-            if (action === 'ADD') {
-                themSP();
-            } else if (action === 'update') {
-                capNhatSP(window.currentSanPhamId);
-            }
-        }
-    }
-
-
-
-
-    async function themSP() {
-        var con = window.confirm("Bạn có chắc chắn muốn thêm sản phẩm?");
-        if (con == false) {
-            return;
+            capNhatSP(window.currentSanPhamId);
         }
 
-        // Thu thập dữ liệu từ form
-        const danhMucValue = document.getElementById("danhMuc").value;
-        const iddanhMuc = danhMucValue === "" ? null : parseInt(danhMucValue);
-
-        const hangValue = document.getElementById("hang").value;
-        const idhang = hangValue === "" ? null : parseInt(hangValue);
-
-        const payload = {
-            maSanPham: document.getElementById("maSanPham").value,
-            tenSanPham: document.getElementById("tenSanPham").value,
-            ngayNhap: document.getElementById("ngayNhap").value,
-            ngaySua: document.getElementById("ngaySua").value,
-            iddanhMuc: iddanhMuc,
-            idhang: idhang,
-            trangThai: document.getElementById("trangThai").value
-        };
-
-        const response = await fetch("/san-pham/them-san-pham", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        const result = await response.text();
-        alert(result);
-        if (response.ok) {
-            window.location.href = "/san-pham/hien-thi";
-        } else {
-            alert("Đã có lỗi xảy ra khi thêm sản phẩm.");
-        }
-    }
-
-    async function loadSanPhamData(idsp) {
-        console.log("ID sản phẩm nhận được:", idsp); // In ra để kiểm tra idsp
-        try {
-            const id = parseInt(idsp, 10);
-            if (isNaN(id)) {
-                console.error("ID sản phẩm không hợp lệ:", idsp);
-                alert("ID sản phẩm không hợp lệ.");
-                return;
-            }
-            // Gửi yêu cầu GET đến server để lấy dữ liệu sản phẩm
-            const response = await fetch(`/san-pham/danh-sach-san-pham/${id}`);
-
-            // Kiểm tra nếu phản hồi không thành công
-            if (!response.ok) {
-                console.error("Lỗi khi tải dữ liệu sản phẩm:", response.statusText);
-                alert("Không thể tải dữ liệu sản phẩm.");
-                return;
-            }
-
-
-            const sanPham = await response.json();
-
-            // Điền dữ liệu vào form
-            document.getElementById("maSanPham").value = sanPham.maSanPham;
-            document.getElementById("tenSanPham").value = sanPham.tenSanPham;
-            document.getElementById("ngayNhap").value = sanPham.ngayNhap;
-            document.getElementById("ngaySua").value = sanPham.ngaySua;
-            document.getElementById("danhMuc").value = sanPham.danhMuc.id;
-            document.getElementById("hang").value = sanPham.hang.id;
-            document.getElementById("trangThai").value = sanPham.trangThai;
-
-            window.currentSanPhamId = idsp;
-        } catch (error) {
-            console.error("Đã có lỗi xảy ra khi tải dữ liệu sản phẩm:", error);
-            alert("Không thể tải dữ liệu sản phẩm.");
-        }
     }
 
 
     // Hàm gọi API kiểm tra mã sản phẩm trùng
-    async function checkMaSanPham(maSanPham) {
+    async function checkMaTrungUpdate(ma, id) {
+        if (!ma || !id) return false;
         try {
-            const response = await fetch(`/san-pham/check-ma-san-pham?maSanPham=${encodeURIComponent(maSanPham)}`);
-            if (response.ok) {
-                return await response.json(); // Trả về true nếu mã trùng
-            }
-            console.error("Failed to check mã sản phẩm.");
-            return false;
+            const response = await fetch(`/san-pham/check-ma-trung-update?maSanPham=${encodeURIComponent(ma)}&id=${id}`);
+            return response.ok ? await response.json() : false;
         } catch (error) {
-            console.error("Error checking mã sản phẩm:", error);
+            console.error("Lỗi kiểm tra mã:", error);
             return false;
         }
     }
 
-
-
-
-    async function openChiTietModal(sanPhamId){
-        var url = '/san-pham/ctsp?idctsp='+sanPhamId
-        const response = await fetch(url, {
-            method: 'GET'
-        });
-        var result = await response.json();
-        console.log(result)
-        var main = '';
-        for(var i=0; i< result.length; i++){
-            main += `
-                <tr>
-                    <td>${result[i].id}</td>
-                    <td>${result[i].sanPham.tenSanPham}</td>
-                    <td>${result[i].mauSac.tenMau}</td>
-                    <td>${result[i].kichThuoc.tenKichThuoc}</td>
-                    <td>${result[i].chatLieu.tenChatLieu}</td>
-                    <td>${result[i].soLuong}</td>
-                    <td>${formatmoney(result[i].donGia)}</td>
-                    <td>${result[i].moTa}</td>
-                    <td><img th:src="${result[i].anhSanPham}" style="width: 100px; height: 100px; object-fit: cover;"></td>
-
-                </tr>
-            `
+    async function checkTenTrungUpdate(ten, id) {
+        if (!ten || !id) return false;
+        try {
+            const response = await fetch(`/san-pham/check-ten-trung-update?tenSanPham=${encodeURIComponent(ten)}&id=${id}`);
+            return response.ok ? await response.json() : false;
+        } catch (error) {
+            console.error("Lỗi kiểm tra tên:", error);
+            return false;
         }
-        document.getElementById("listctsp").innerHTML = main
     }
-
-
-
-
-
 
     async function capNhatSanPham() {
-        var con = window.confirm("Bạn có chắc chắn muốn cập nhật sản phẩm?");
-        if (!con) {
+        const idsp = document.getElementById("idSanPham").value;
+        const maSanPham = document.getElementById("maSanPham").value.trim();
+        const tenSanPham = document.getElementById("tenSanPham").value.trim();
+
+        // Reset lỗi cũ
+        document.getElementById("errorMaSanPham").innerText = "";
+        document.getElementById("errorTenSanPham").innerText = "";
+
+        let isValid = true;
+
+        // Kiểm tra trống
+        if (maSanPham === "") {
+            document.getElementById("errorMaSanPham").innerText = "Không được để trống mã sản phẩm.";
+            isValid = false;
+        }
+
+        if (tenSanPham === "") {
+            document.getElementById("errorTenSanPham").innerText = "Không được để trống tên sản phẩm.";
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        // Kiểm tra trùng
+        const isMaTrung = await checkMaTrungUpdate(maSanPham, idsp);
+        const isTenTrung = await checkTenTrungUpdate(tenSanPham, idsp);
+
+        if (isMaTrung) {
+            document.getElementById("errorMaSanPham").innerText = "Mã sản phẩm đã tồn tại.";
             return;
         }
 
-        // Lấy ID sản phẩm
-        let idsp = document.getElementById("idSanPham").value;
+        if (isTenTrung) {
+            document.getElementById("errorTenSanPham").innerText = "Tên sản phẩm đã tồn tại.";
+            return;
+        }
+
+        // Xác nhận
+        const confirmUpdate = window.confirm("Bạn có chắc chắn muốn cập nhật sản phẩm?");
+        if (!confirmUpdate) return;
 
         const today = new Date().toISOString().split("T")[0];
-        // Thu thập dữ liệu từ form
+
         const payload = {
-            maSanPham: document.getElementById("maSanPham").value,
-            tenSanPham: document.getElementById("tenSanPham").value,
+            maSanPham: maSanPham,
+            tenSanPham: tenSanPham,
             ngayNhap: document.getElementById("ngayNhap").value,
             ngaySua: today,
             iddanhMuc: document.getElementById("danhMuc").value,
             idhang: document.getElementById("hang").value,
-            trangThai: document.getElementById("trangThai").value,
+            trangThai: document.getElementById("trangThai").value
         };
 
         try {
             const response = await fetch(`/san-pham/cap-nhat-san-pham/${idsp}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
 
             const result = await response.text();
 
             if (response.ok) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 alert("Cập nhật thành công!");
-                window.location.href = "/san-pham/hien-thi";
+                window.location.href = "/san-pham/hien-thi#top";
             } else {
                 alert("Lỗi: " + result);
             }
@@ -377,16 +301,75 @@
         }
     }
 
+    // async function capNhatSanPham() {
+    //     var con = window.confirm("Bạn có chắc chắn muốn cập nhật sản phẩm?");
+    //     if (!con) return;
+    //
+    //     const idsp = document.getElementById("idSanPham").value;
+    //     const maSanPham = document.getElementById("maSanPham").value.trim();
+    //     const tenSanPham = document.getElementById("tenSanPham").value.trim();
+    //
+    //     let isValid = true;
+    //
+    //     // Kiểm tra trống
+    //     if (maSanPham === "") {
+    //         document.getElementById("errorMaSanPham").innerText = "Không được để trống mã sản phẩm.";
+    //         isValid = false;
+    //     }
+    //
+    //     if (tenSanPham === "") {
+    //         document.getElementById("errorTenSanPham").innerText = "Không được để trống tên sản phẩm.";
+    //         isValid = false;
+    //     }
+    //
+    //     if (!isValid) return;
+    //
+    //     // Check trùng mã hoặc tên
+    //     const isMaTrung = await checkMaTrungUpdate(maSanPham, idsp);
+    //     const isTenTrung = await checkTenTrungUpdate(tenSanPham, idsp);
+    //
+    //     if (isMaTrung) {
+    //         document.getElementById("errorMaSanPham").innerText = "Mã sản phẩm đã tồn tại.";
+    //         return;
+    //     }
+    //     if (isTenTrung) {
+    //         document.getElementById("errorTenSanPham").innerText = "Tên sản phẩm đã tồn tại.";
+    //         return;
+    //     }
+    //
+    //     const today = new Date().toISOString().split("T")[0];
+    //     const payload = {
+    //         maSanPham: maSanPham,
+    //         tenSanPham: tenSanPham,
+    //         ngayNhap: document.getElementById("ngayNhap").value,
+    //         ngaySua: today,
+    //         iddanhMuc: document.getElementById("danhMuc").value,
+    //         idhang: document.getElementById("hang").value,
+    //         trangThai: document.getElementById("trangThai").value,
+    //     };
+    //
+    //     try {
+    //         const response = await fetch(`/san-pham/cap-nhat-san-pham/${idsp}`, {
+    //             method: 'PUT',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             body: JSON.stringify(payload)
+    //         });
+    //
+    //         const result = await response.text();
+    //
+    //         if (response.ok) {
+    //             window.scrollTo({ top: 0, behavior: 'smooth' });
+    //             alert("Cập nhật thành công!");
+    //             window.location.href = "/san-pham/hien-thi#top";
+    //         } else {
+    //             alert("Lỗi: " + result);
+    //         }
+    //     } catch (error) {
+    //         console.error("Lỗi khi cập nhật sản phẩm:", error);
+    //         alert("Đã có lỗi xảy ra khi cập nhật sản phẩm.");
+    //     }
+    // }
 
-
-
-    function formatmoney(money) {
-        const VND = new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-        });
-        return VND.format(money);
-    }
 </script>
 </html>
 
