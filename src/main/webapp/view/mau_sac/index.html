@@ -13,6 +13,19 @@
     <div class="pt-3" style="width: calc(100% - 250px);">
         <div class="container">
             <h2 style="text-align: center;">Quản lý màu sắc</h2>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label>Sắp xếp theo tên màu:</label>
+                    <select class="form-select" onchange="sortTable(this.value)">
+                        <option value="">-- Chọn --</option>
+                        <option value="az">A → Z</option>
+                        <option value="za">Z → A</option>
+                    </select>
+                </div>
+            </div>
+
+
+
             <table class="table table-bordered" id="msTable">
                 <thead>
                 <tr>
