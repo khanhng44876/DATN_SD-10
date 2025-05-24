@@ -50,8 +50,11 @@ public class BanHangController {
     public String hienThi(Model model) {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Integer idnv = userDetails.getId();
+        List<SanPhamChiTiet> listCt = ctRepository.findAll().stream()
+                        .filter(c -> c.getTrangThai().equals("Còn hàng"))
+                                .toList();
         model.addAttribute("idnv", idnv);
-        model.addAttribute("listCTSP", ctRepository.findAll());
+        model.addAttribute("listCTSP", listCt);
         model.addAttribute("listKH", khRepository.findAll());
         return "/sell/index.html";
     }

@@ -133,9 +133,9 @@ public class BanHangOnlineController {
         KhachHang khachHang = khachHangRepository.findById(userDetails.getId()).orElse(null);
         model.addAttribute("kh", khachHang);
         List<KhuyenMai> listKm = khuyenMaiRepository.findAll().stream()
-                        .filter(k->k.getTrang_thai().equals("Đang diễn ra"))
-                                .toList();
-        model.addAttribute("listKm",listKm);
+                .filter(k -> k.getTrang_thai().equals("Đang diễn ra"))
+                .toList();
+        model.addAttribute("listKm", listKm);
         return "ban_hang_online/giohang.html";
     }
 
@@ -162,7 +162,7 @@ public class BanHangOnlineController {
 
     // trang này để Customer theo dõi đơn hàng của mình
     @RequestMapping("/ban-hang-online/follow-order/{id}")
-    public String followOrder(@PathVariable Integer id, Model model,Authentication authentication) {
+    public String followOrder(@PathVariable Integer id, Model model, Authentication authentication) {
         CustomUserDetails userDetails =
                 (CustomUserDetails) authentication.getPrincipal();
         KhachHang kh = khachHangRepository.findById(userDetails.getId())
@@ -175,7 +175,7 @@ public class BanHangOnlineController {
 
         Map<String, Object> hoaDonMap = new HashMap<>();
         hoaDonMap.put("hoaDon", hoaDon);
-        hoaDonMap.put("chiTiet",hdctRepository.findByHoaDonId(hoaDon.getId()));
+        hoaDonMap.put("chiTiet", hdctRepository.findByHoaDonId(hoaDon.getId()));
         model.addAttribute("kh", kh);
         model.addAttribute("hoadonMap", hoaDonMap);
         return "ban_hang_online/customer.html";
@@ -183,7 +183,7 @@ public class BanHangOnlineController {
 
     // Hủy hóa đơn
     @PutMapping("/ban-hang-online/cancel-order/{id}")
-    public ResponseEntity<HoaDon> cancelOrder(@PathVariable Integer id,Principal principal) {
+    public ResponseEntity<HoaDon> cancelOrder(@PathVariable Integer id, Principal principal) {
         CustomUserDetails userDetails =
                 (CustomUserDetails) ((Authentication) principal).getPrincipal();
         HoaDon hd = hoaDonrepo.findById(id).get();
@@ -200,12 +200,12 @@ public class BanHangOnlineController {
                     .anyMatch(auth -> auth.getAuthority().equals("NHAN_VIEN") || auth.getAuthority().equals("QUAN_LY"));
 
             Map<String, Object> payload = Map.of(
-                    "type",        "status-cancel",
-                    "status","Đã hủy"
+                    "type", "status-cancel",
+                    "status", "Đã hủy"
             );
             KhuyenMai km = hd.getKhuyenMai();
-            km.setSo_luong(km.getSo_luong()+1);
-            km.setSo_luong_sd(km.getSo_luong_sd()-1);
+            km.setSo_luong(km.getSo_luong() + 1);
+            km.setSo_luong_sd(km.getSo_luong_sd() - 1);
             khuyenMaiRepository.save(km);
             // Gửi socket đến người còn lại
             if (isNhanVienOrQL && hd.getKhachHang() != null) {
@@ -240,9 +240,9 @@ public class BanHangOnlineController {
         CustomUserDetails userDetails =
                 (CustomUserDetails) ((Authentication) principal).getPrincipal();
         // 1. Parse dữ liệu
-        Integer orderId     = Integer.valueOf(data.get("orderId").toString());
-        Integer itemId      = Integer.valueOf(data.get("itemId").toString());
-        Integer quantity    = Integer.valueOf(data.get("quantity").toString());
+        Integer orderId = Integer.valueOf(data.get("orderId").toString());
+        Integer itemId = Integer.valueOf(data.get("itemId").toString());
+        Integer quantity = Integer.valueOf(data.get("quantity").toString());
         Integer totalAmount = Integer.valueOf(data.get("totalAmount").toString());
 
         // 2. Lấy ra cập nhật vao entity
@@ -262,15 +262,15 @@ public class BanHangOnlineController {
         // 3. Xác định vai trò người gửi
         boolean isKhachHang = userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("KHACH_HANG"));
-        boolean isNVorQL    = userDetails.getAuthorities().stream()
+        boolean isNVorQL = userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("NHAN_VIEN") || a.getAuthority().equals("QUAN_LY"));
 
         // 4. Gửi message real‑time cho bên còn lại
         Map<String, Object> payload = Map.of(
-                "type",        "update-quantity",
-                "orderId",     orderId,
-                "itemId",      itemId,
-                "quantity",    quantity,
+                "type", "update-quantity",
+                "orderId", orderId,
+                "itemId", itemId,
+                "quantity", quantity,
                 "totalAmount", totalAmount
         );
         System.out.println(hd.getNhanVien());
@@ -305,7 +305,11 @@ public class BanHangOnlineController {
             hoaDon.setNgaySua(hd.getNgaySua());
             hoaDon.setDonGia(hd.getDonGia());
             hoaDon.setTongTien(hd.getTongTien());
-            hoaDon.setTrangThaiThanhToan(hd.getTrangThaiThanhToan());
+            if(hd.getHinhThucThanhToan().equals("Online")){
+                hoaDon.setTrangThaiThanhToan("Chờ thanh toán");
+            }else{
+                hoaDon.setTrangThaiThanhToan(hd.getTrangThaiThanhToan());
+            }
             hoaDon.setHinhThucThanhToan(hd.getHinhThucThanhToan());
             hoaDon.setDiaChiGiaoHang(hd.getDiaChiGiaoHang());
             hoaDon.setGhiChu(hd.getGhiChu());
@@ -336,7 +340,14 @@ public class BanHangOnlineController {
                                                 .ifPresent(hoaDon::setKhuyenMai);
                                     }
                                     HoaDon savedHoaDon = hoaDonrepo.save(hoaDon);
-
+                                    response.put("id", savedHoaDon.getId());
+                                    if (hd.getHinhThucThanhToan().equals("Online")) {
+                                        String orderInfo = "Thanh toan don hang " + savedHoaDon.getId() + " cua KH: " + hd.getIdKhachHang();
+                                        String vnpayUrl = vnPayService.createOrder(request, savedHoaDon.getTongTien().intValue(), orderInfo);
+                                        response.put("redirectUrl", vnpayUrl);
+                                        response.put("id", savedHoaDon.getId());
+                                        return ResponseEntity.ok(response);
+                                    }
                                     ThongBao thongBao = new ThongBao();
                                     thongBao.setLink("/ban-hang-online/follow-order/"+savedHoaDon.getId());
                                     thongBao.setNoi_dung("Đơn hàng HD"+savedHoaDon.getId()+"của bạn đã được đặt thành công. Đang trong trạng thái: Chờ xác nhận ");
@@ -348,12 +359,6 @@ public class BanHangOnlineController {
                                             "/topic/notification",
                                             thongBaoRepository.findByKhachHang_IdOrderByReadAscNgayTaoDesc(savedHoaDon.getKhachHang().getId())
                                     );
-                                    response.put("id", savedHoaDon.getId());
-                                    if ("Online".equals(hd.getHinhThucThanhToan())) {
-                                        String orderInfo = "Thanh toan don hang " + savedHoaDon.getId() + " cua KH: " + hd.getIdKhachHang();
-                                        String vnpayUrl = vnPayService.createOrder(request, savedHoaDon.getTongTien().intValue(), orderInfo);
-                                        response.put("redirectUrl", vnpayUrl);
-                                    }
                                     return ResponseEntity.ok(response);
                                 })
                                 .orElseGet(() -> {
@@ -370,6 +375,7 @@ public class BanHangOnlineController {
             return ResponseEntity.status(500).body(response);
         }
     }
+
 
     @PostMapping("/ban-hang-online/create-order-ct")
     @Transactional

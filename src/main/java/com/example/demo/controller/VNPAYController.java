@@ -1,15 +1,21 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.HoaDon;
-import com.example.demo.repository.HoaDonRepossitory;
+import com.example.demo.entity.*;
+import com.example.demo.repository.*;
 import com.example.demo.service.VNPAYService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 import java.util.stream.Collectors;
 import java.util.*;
 import org.slf4j.Logger;
@@ -20,10 +26,21 @@ public class VNPAYController {
     private static final Logger logger = LoggerFactory.getLogger(VNPAYController.class);
 
     @Autowired
+    SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
     private VNPAYService vnPayService;
 
     @Autowired
     private HoaDonRepossitory hoaDonRepository;
+    @Autowired
+    private ThongBaoRepository thongBaoRepository;
+    @Autowired
+    private HoaDonCTRepository hoaDonCTRepository;
+    @Autowired
+    private SanPhamCTRepository sanPhamCTRepository;
+    @Autowired
+    private KhuyenMaiRepository khuyenMaiRepository;
 
     @GetMapping("/ban-hang-off/payment-return")
     public String offlineReturn(HttpServletRequest request ,Model model) {
@@ -65,6 +82,7 @@ public class VNPAYController {
     }
 
     @GetMapping("/vnpay-payment-return")
+    @Transactional
     public String paymentCompleted(HttpServletRequest request, Model model) {
         try {
             int paymentStatus = vnPayService.orderReturn(request);
@@ -81,9 +99,6 @@ public class VNPAYController {
                 model.addAttribute("error", "Lỗi xử lý đơn hàng: Không tìm thấy ID hóa đơn");
                 return "ban_hang_online/paymentResult";
             }
-
-            String status = paymentStatus == 1 ? "Chờ xác nhận" : getFailureStatus(responseCode);
-            updateOrderStatus(orderId, status);
 
             model.addAttribute("orderId", orderInfo);
             model.addAttribute("totalPrice", totalPrice != null ? Long.parseLong(totalPrice) / 100 : 0);
@@ -125,11 +140,35 @@ public class VNPAYController {
             }
 
             if ("00".equals(vnp_ResponseCode)) {
-                updateOrderStatus(orderId, "Đã thanh toán");
+                updateOrderStatus(orderId, "Chờ xác nhận");
+                HoaDon hd = hoaDonRepository.findById(Integer.parseInt(orderId))
+                        .orElseThrow(()->new EntityNotFoundException("HD không tìm thấy"));
+//                Trừ số lượng sản phẩm
+                List<HoaDonCT> chiTiet = hoaDonCTRepository.findByHoaDonId(Integer.valueOf(orderId));
+                for(HoaDonCT ct : chiTiet) {
+                    SanPhamChiTiet sp = ct.getSanPhamChiTiet();
+                    sp.setSoLuong(sp.getSoLuong()-ct.getSoLuong());
+                    if(sp.getSoLuong() == 0){
+                        sp.setTrangThai("Hết hàng");
+                    }
+                    sanPhamCTRepository.save(sp);
+                }
+//                - khuyến mãi
+                KhuyenMai km = hd.getKhuyenMai();
+                if(km != null){
+                    km.setSo_luong(km.getSo_luong()-1);
+                    km.setSo_luong_sd(km.getSo_luong_sd()+1);
+                    if(km.getSo_luong() == 0){
+                        km.setTrang_thai("Đã kết thúc");
+                    }
+                    khuyenMaiRepository.save(km);
+                }
+
                 response.put("RspCode", "00");
                 response.put("Message", "Confirm Success");
             } else {
-                updateOrderStatus(orderId, getFailureStatus(vnp_ResponseCode));
+//                Không thành công thì xóa hóa đơn
+                hoaDonRepository.deleteById(Integer.parseInt(orderId));
                 response.put("RspCode", "99");
                 response.put("Message", "Confirm Failed");
             }
@@ -168,11 +207,29 @@ public class VNPAYController {
             Optional<HoaDon> optionalHoaDon = hoaDonRepository.findById(Integer.parseInt(orderId));
             if (optionalHoaDon.isPresent()) {
                 HoaDon hoaDon = optionalHoaDon.get();
-                hoaDon.setTrangThaiThanhToan(status);
                 hoaDon.setNgaySua(new Date());
-                hoaDonRepository.save(hoaDon);
+                hoaDon.setTrangThaiThanhToan(status);
+                HoaDon savedHoaDon =  hoaDonRepository.save(hoaDon);
+                ThongBao thongBao = new ThongBao();
+                if(status.equals("Chờ xác nhận")){
+                    thongBao.setLink("/ban-hang-online/follow-order/"+savedHoaDon.getId());
+                    thongBao.setNoi_dung("Đơn hàng HD"+savedHoaDon.getId()+"của bạn đã được đặt thành công. Đang trong trạng thái: Chờ xác nhận ");
+                    thongBao.setNgayTao(new Date());
+                    thongBao.setKhachHang(savedHoaDon.getKhachHang());
+                }else{
+                    thongBao.setLink(null);
+                    thongBao.setNoi_dung("Thanh toán thất bại!");
+                    thongBao.setKhachHang(savedHoaDon.getKhachHang());
+                    thongBao.setNgayTao(new Date());
+                }
+                thongBaoRepository.save(thongBao);
+                messagingTemplate.convertAndSendToUser(
+                        savedHoaDon.getKhachHang().getTaiKhoan(),
+                        "/topic/notification",
+                        "success"
+                );
                 logger.info("Cập nhật trạng thái hóa đơn {} thành {}", orderId, status);
-            } else {
+               } else {
                 logger.warn("Không tìm thấy hóa đơn với ID: {}", orderId);
             }
         } catch (NumberFormatException e) {

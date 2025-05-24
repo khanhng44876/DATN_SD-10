@@ -631,7 +631,7 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
             mau_sac:mauSac,
             kich_thuoc:kichThuoc,
             don_gia:donGia,
-            so_luong:inpQuantity,
+            so_luong:Number(inpQuantity),
             tong_tien:tongTien
         })
     }

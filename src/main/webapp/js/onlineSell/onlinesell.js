@@ -214,6 +214,98 @@ async function handleCheckboxChange(event) {
     }
 }
 
+function buying(){
+    let activeElement = document.querySelector('.payment-option.active');
+    let httt = activeElement.querySelector('input[type="hidden"]').value;
+    if(httt === "Online"){
+        confirmOrder_Vnpay();
+    }else{
+        confirmOrder();
+    }
+}
+
+ async function confirmOrder_Vnpay(){
+     let idkh = Number(document.getElementById("idkh").value);
+     let today = new Date().toISOString().split("T")[0];
+     let total = total_price;
+     let activeElement = document.querySelector('.payment-option.active');
+     let httt = activeElement.querySelector('input[type="hidden"]').value;
+     let location = document.getElementById("locationKh").innerText;
+     let ghichu = document.getElementById("ghiChu").value;
+
+     // Lấy hình thức thanh toán từ input hidden
+     let hiddenInput = document.querySelector('input[name="paymentMethod"][type="hidden"]');
+
+     // Kiểm tra input hidden
+     if (!hiddenInput) {
+         alert("Không tìm thấy thông tin hình thức thanh toán!");
+         return;
+     }
+     console.log(idkh, today, total, httt, location, ghichu)
+     let  hdJson = {
+         id_nhan_vien: 1,
+         id_khach_hang: Number(idkh),
+         id_khuyen_mai: selected_promo===null?null:selected_promo.id,
+         ngay_tao: today,
+         ngay_sua: null,
+         don_gia: null,
+         tong_tien: total,
+         trang_thai_thanh_toan: "Chờ xác nhận",
+         hinh_thuc_thanh_toan: "Online",
+         dia_chi_giao_hang: location,
+         ghi_chu: ghichu || null
+     }
+     try {
+         const resp = await fetch("/ban-hang-online/create-order", {
+             method: "POST",
+             headers: { "Content-Type": "application/json" },
+             body: JSON.stringify(hdJson)
+         });
+
+         if (!resp.ok) {
+             // đọc thêm message từ server nếu cần
+             const error = await resp.json();
+             throw new Error(error.error || "Lỗi khi tạo đơn Online");
+         }
+
+         const result = await resp.json();
+
+         let productList = cart.filter(c => c.active === true);
+         let requests = productList.map((p) => {
+             let hdctJson = {
+                 id_hoa_don:result.id,
+                 id_san_pham_chi_tiet:Number(p.id),
+                 so_luong:p.quantity,
+                 don_gia:p.price,
+                 tong_tien:p.total,
+                 thanh_tien:p.total,
+                 ngay_tao: today,
+                 ngay_sua: null,
+                 trang_thai: "Chưa thanh toán"
+             };
+             // **Tạo request POST thêm hóa đơn chi tiết**
+             return fetch("/ban-hang-online/create-order-ct", {
+                 method: "POST",
+                 headers: { "Content-Type": "application/json" },
+                 body: JSON.stringify(hdctJson)
+             }).then(response => {
+                 if (!response.ok) throw new Error("Lỗi khi tạo chi tiết hóa đơn");
+                 return response.json();
+             });
+         });
+         await Promise.all(requests);
+
+         if (result.redirectUrl) {
+             window.location.href = result.redirectUrl;
+         } else {
+             throw new Error("VnPay không trả về URL");
+         }
+     } catch (error) {
+         console.error(error);
+         alert("Lỗi VNPay: " + error.message);
+     }
+}
+
 // Hàm này sẽ confirm hóa đơn gửi về DB
 async function confirmOrder() {
     let idkh = Number(document.getElementById("idkh").value);
@@ -223,7 +315,6 @@ async function confirmOrder() {
     let httt = activeElement.querySelector('input[type="hidden"]').value;
     let location = document.getElementById("locationKh").innerText;
     let ghichu = document.getElementById("ghiChu").value;
-    console.log(total);
 
     // Lấy hình thức thanh toán từ input hidden
     let hiddenInput = document.querySelector('input[name="paymentMethod"][type="hidden"]');
@@ -243,7 +334,7 @@ async function confirmOrder() {
             don_gia: null,
             tong_tien: total,
             trang_thai_thanh_toan: "Chờ xác nhận",
-            hinh_thuc_thanh_toan: httt,
+            hinh_thuc_thanh_toan: "COD",
             dia_chi_giao_hang: location,
             ghi_chu: ghichu || null
         }

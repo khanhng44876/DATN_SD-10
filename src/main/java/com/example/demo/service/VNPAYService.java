@@ -61,7 +61,6 @@ public class VNPAYService {
             vnpayUrl.append("&");
         }
         vnpayUrl.deleteCharAt(vnpayUrl.length() - 1);
-
         return vnpayUrl.toString();
     }
 
