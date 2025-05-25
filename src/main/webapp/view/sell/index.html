@@ -16,10 +16,11 @@
         <div class="container">
             <div class="d-flex justify-content-between">
                 <h3>Bán hàng</h3>
-                <button id="createOrderBtn" onclick="createOrder()" class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill">
+                <button id="createOrderBtn" onclick="createOrder()"
+                        class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill">
                     <i class="fas fa-plus"></i> Tạo đơn hàng
                 </button>
-        </div>
+            </div>
             <ul class="nav nav-tabs" id="nav-tab" role="tablist">
 
             </ul>
@@ -33,7 +34,7 @@
 
                 </table>
             </div>
-<!--            Modal hiển thị danh sách sản phẩm-->
+            <!--            Modal hiển thị danh sách sản phẩm-->
             <div class="modal fade" id="spModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered">
                     <div class="modal-content">
@@ -65,11 +66,16 @@
                                     <td th:text="${d.kichThuoc.tenKichThuoc}"></td>
                                     <td th:text="${d.chatLieu.tenChatLieu}"></td>
                                     <td th:text="${d.soLuong}"></td>
-                                    <td><span th:inline="text">[[${#numbers.formatDecimal(d.donGia, 0, 'COMMA', 0, 'POINT')}]]</span></td>
+                                    <td><span th:inline="text">[[${#numbers.formatDecimal(d.donGia, 0, 'COMMA', 0, 'POINT')}]]</span>
+                                    </td>
                                     <td th:text="${d.moTa}"></td>
-                                    <td><img th:src="@{'../../images/' + ${d.anhSanPham}}" alt="Ảnh sản phẩm" style="width: 100px; height: 100px;"></td>
+                                    <td><img th:src="@{'../../images/' + ${d.anhSanPham}}" alt="Ảnh sản phẩm"
+                                             style="width: 100px; height: 100px;"></td>
                                     <td>
-                                        <button type="button" id="save" class="btn btn-primary" th:attr="data-id=${d.id}" data-bs-toggle="modal" data-bs-target="#quantityModal" onclick="openModalQuantity(this)">Chọn</button>
+                                        <button type="button" id="save" class="btn btn-primary"
+                                                th:attr="data-id=${d.id}" data-bs-toggle="modal"
+                                                data-bs-target="#quantityModal" onclick="openModalQuantity(this)">Chọn
+                                        </button>
                                     </td>
                                 </tbody>
                             </table>
@@ -81,13 +87,13 @@
                 </div>
             </div>
 
-<!--            Modal để chọn số lượng -->
+            <!--            Modal để chọn số lượng -->
             <div class="modal fade" id="quantityModal" tabindex="-1" aria-labelledby="quantityLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5" id="quantityLabel">Nhập số lượng</h1>
-                            <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <input type="hidden" id="ctsp_id">
@@ -122,7 +128,7 @@
                 </div>
             </div>
 
-<!--            Modal chọn khach hang-->
+            <!--            Modal chọn khach hang-->
             <div class="modal fade" id="khModal" tabindex="-1" aria-labelledby="khModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered">
                     <div class="modal-content">
@@ -133,40 +139,62 @@
                         <div class="modal-body">
                             <table>
                                 <thead>
-                                    <tr>
-                                        <th>Mã khách hàng</th>
-                                        <th>Tên khách hàng</th>
-                                        <th>Giới tính</th>
-                                        <th>Email</th>
-                                        <th>Số điện thoại</th>
-                                        <th>Ngày sinh</th>
-                                        <th>Địa chỉ</th>
-                                        <th>Thao tác</th>
-                                    </tr>
+                                <tr>
+                                    <th>Mã khách hàng</th>
+                                    <th>Tên khách hàng</th>
+                                    <th>Giới tính</th>
+                                    <th>Email</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Ngày sinh</th>
+                                    <th>Địa chỉ</th>
+                                    <th>Thao tác</th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="k : ${listKH}">
-                                        <td th:text="${k.id}"></td>
-                                        <td th:text="${k.tenKhachHang}"></td>
-                                        <td th:text="${k.gioiTinh}"></td>
-                                        <td th:text="${k.email}"></td>
-                                        <td th:text="${k.soDienThoai}"></td>
-                                        <td th:text="${k.ngaySinh}"></td>
-                                        <td th:text="${k.diaChi}"></td>
-                                        <td>
-                                            <button type="button" class="btn btn-primary" th:data-id="${k.id}" th:data-name="${k.tenKhachHang}" onclick="selectKH(this)">Chọn</button>
-                                        </td>
-                                    </tr>
+                                <tr th:each="k : ${listKH}">
+                                    <td th:text="${k.id}"></td>
+                                    <td th:text="${k.tenKhachHang}"></td>
+                                    <td th:text="${k.gioiTinh}"></td>
+                                    <td th:text="${k.email}"></td>
+                                    <td th:text="${k.soDienThoai}"></td>
+                                    <td th:text="${k.ngaySinh}"></td>
+                                    <td th:text="${k.diaChi}"></td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary" th:data-id="${k.id}"
+                                                th:data-name="${k.tenKhachHang}" onclick="selectKH(this)">Chọn
+                                        </button>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
     </div>
 </div>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
 <script src="/js/sell/sell.js"></script>
 </body>
 </html>
+<!-- Modal quét QR -->
+<div class="modal fade" id="qrScannerModal" tabindex="-1" aria-labelledby="qrScannerLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="qrScannerLabel">Quét mã QR sản phẩm</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="stopQrScanner()"></button>
+            </div>
+            <div class="modal-body text-center">
+                <video id="qrVideo" width="100%" height="auto" autoplay></video>
+                <canvas id="qrCanvas" style="display: none;"></canvas>
+                <p id="qrMessage" class="mt-3">Đặt mã QR vào khung hình</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="stopQrScanner()">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>

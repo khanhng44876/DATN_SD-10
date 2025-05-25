@@ -1,5 +1,141 @@
-let orders = JSON.parse(localStorage.getItem("orders")) || []
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
+let videoStream = null;
 
+// Hàm quét QR
+function openQrScanner() {
+    let activeTab = document.querySelector("#nav-tab .nav-link.active");
+    if (!activeTab) {
+        alert("Vui lòng chọn hoặc tạo một đơn hàng trước!");
+        return;
+    }
+
+    $('#qrScannerModal').modal('show');
+    document.getElementById('qrMessage').innerText = 'Đặt mã QR vào khung hình';
+    document.getElementById('qrMessage').style.color = 'black';
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(stream => {
+            videoStream = stream;
+            const video = document.getElementById('qrVideo');
+            video.srcObject = stream;
+            video.play();
+            scanQrCode();
+        })
+        .catch(err => {
+            document.getElementById('qrMessage').innerText = 'Không thể truy cập camera: ' + err.message;
+            document.getElementById('qrMessage').style.color = 'red';
+        });
+}
+
+function stopQrScanner() {
+    if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+        videoStream = null;
+    }
+}
+
+function scanQrCode() {
+    const video = document.getElementById('qrVideo');
+    const canvas = document.getElementById('qrCanvas');
+    const context = canvas.getContext('2d');
+
+    function tick() {
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvas.height = video.videoHeight;
+            canvas.width = video.videoWidth;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+            if (code) {
+                const productId = extractProductId(code.data);
+                if (productId) {
+                    addProductFromQr(productId);
+                    $('#qrScannerModal').modal('hide');
+                    stopQrScanner();
+                    return;
+                } else {
+                    document.getElementById('qrMessage').innerText = 'Mã QR không hợp lệ';
+                    document.getElementById('qrMessage').style.color = 'red';
+                }
+            }
+        }
+        requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+}
+
+function extractProductId(qrData) {
+    const match = qrData.match(/(\d+)/);
+    return match ? match[0] : null;
+}
+
+async function addProductFromQr(productId) {
+    try {
+        // Lấy tab đang hoạt động
+        let activeTab = document.querySelector("#nav-tab .nav-link.active");
+        if (!activeTab) {
+            throw new Error('Vui lòng chọn một đơn hàng trước!');
+        }
+        let orderId = parseInt(activeTab.getAttribute("data-order-id"));
+        let order = orders.find(o => o.id === orderId);
+        if (!order) {
+            throw new Error('Không tìm thấy đơn hàng!');
+        }
+
+        // Lấy chi tiết sản phẩm từ API
+        const response = await fetch(`/ban-hang-off/detail/${productId}`, {
+            headers: { 'Accept': 'application/json' }
+        });
+        if (!response.ok) throw new Error('Sản phẩm không tồn tại');
+        const product = await response.json();
+
+        // Kiểm tra số lượng tồn kho
+        const quantityToAdd = 1; // Mặc định thêm 1 sản phẩm
+        if (product.soLuong < quantityToAdd) {
+            throw new Error('Sản phẩm đã hết hàng!');
+        }
+
+        // Cập nhật số lượng tồn kho
+        const updateResponse = await fetch(`/ban-hang-off/update-sp/${productId}/${quantityToAdd}`, {
+            method: 'PUT',
+            headers: { 'Accept': 'application/json' }
+        });
+        if (!updateResponse.ok) throw new Error('Không thể cập nhật số lượng: Hết hàng hoặc lỗi hệ thống');
+        const updatedProduct = await updateResponse.json();
+
+        // Thêm sản phẩm vào mảng orders.product
+        const productData = {
+            id: product.id,
+            anh_san_pham: product.anhSanPham,
+            ten_san_pham: product.sanPham.tenSanPham,
+            mau_sac: product.mauSac.ten_mau_sac,
+            kich_thuoc: product.kichThuoc.tenKichThuoc,
+            don_gia: product.donGia,
+            so_luong: quantityToAdd,
+            tong_tien: product.donGia * quantityToAdd
+        };
+
+        // Kiểm tra xem sản phẩm đã tồn tại trong đơn hàng chưa
+        let existingProduct = order.product.find(p => Number(p.id) === Number(productId));
+        if (existingProduct) {
+            existingProduct.so_luong += quantityToAdd;
+            existingProduct.tong_tien = existingProduct.so_luong * existingProduct.don_gia;
+        } else {
+            order.product.push(productData);
+        }
+
+        // Cập nhật tổng tiền và khuyến mãi
+        updateThanhTien(orderId);
+        await updateDiscount(order);
+
+        // Lưu vào localStorage và làm mới giao diện
+        saveOrderToLocalStorage();
+        await renderOrders();
+    } catch (err) {
+        alert('Lỗi: ' + err.message);
+    }
+}
 // Hàm load lại đơn hàng
 async function renderOrders() {
     console.log(orders)
@@ -133,10 +269,13 @@ function createElementOrder(order){
     tabContent.classList.add("tab-pane", "fade");
     tabContent.id = `content-${order.id}`;
     tabContent.innerHTML = `
-        <div class="d-flex justify-content-between mt-3">
+        <div class="justify-content-between mt-3">
             <h4>Sản phẩm</h4>
             <button type="button" class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill" data-bs-toggle="modal" data-bs-target="#spModal">
                 + Thêm sản phẩm
+            </button>
+            <button id="scanQrBtn" onclick="openQrScanner()" class="btn btn-primary px-4 py-2 fw-bold text-white rounded-pill">
+                        <i class="fas fa-qrcode"></i> Quét QR
             </button>
         </div>
         <hr>

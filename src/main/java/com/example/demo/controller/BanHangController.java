@@ -139,13 +139,14 @@ public class BanHangController {
     @PutMapping("/update-sp/{id}/{so_luong}")
     public ResponseEntity<SanPhamChiTiet> updateSanPham(@PathVariable Integer id,@PathVariable Integer so_luong) {
         Optional<SanPhamChiTiet> optionalSanPham = ctRepository.findById(id);
-
         if (!optionalSanPham.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-
         SanPhamChiTiet ctSp = optionalSanPham.get();
-        ctSp.setSoLuong(ctSp.getSoLuong()-so_luong);
+        if (ctSp.getSoLuong() < so_luong) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        ctSp.setSoLuong(ctSp.getSoLuong() - so_luong);
         ctRepository.save(ctSp);
         return ResponseEntity.ok(ctSp);
     }
