@@ -18,7 +18,7 @@ import java.util.Optional;
 @Controller
 @RequestMapping("khach-hang")
 public class KhachHangController {
-@Autowired
+    @Autowired
     private KhachHangRepository khachHangRepository;
     @GetMapping("hien-thi")
     public String index(HttpSession session, Model model) {
@@ -38,11 +38,19 @@ public class KhachHangController {
     public String hienThi(){
         return "/khach_hang/add";
     }
-
     @PostMapping("/them-khach-hang")
     public ResponseEntity<?> themSM(@RequestBody Map<String, Object> payload) {
+        String ten = (String) payload.get("tenKhachHang");
+
+        if (khachHangRepository.existsByTenKhachHang(ten)) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Tên khách hàng đã tồn tại!");
+        }
+
         KhachHang khachHang = new KhachHang();
-        khachHang.setTenKhachHang((String) payload.get("tenKhachHang"));
+        khachHang.setTenKhachHang(ten);
+        // ... set các trường khác như trước
         khachHang.setEmail((String) payload.get("email"));
         khachHang.setSoDienThoai((String) payload.get("soDienThoai"));
         khachHang.setDiaChi((String) payload.get("diaChi"));
@@ -50,9 +58,11 @@ public class KhachHangController {
         khachHang.setTaiKhoan((String) payload.get("taiKhoan"));
         khachHang.setMatKhau((String) payload.get("matKhau"));
         khachHang.setGioiTinh((String) payload.get("gioiTinh"));
+
         khachHangRepository.save(khachHang);
         return ResponseEntity.ok("Khách hàng đã được thêm thành công!");
     }
+
 
     @GetMapping("/update")
     public String update(){
@@ -60,10 +70,18 @@ public class KhachHangController {
     }
     @PutMapping("/cap-nhat-khach-hang/{id}")
     public ResponseEntity<?> updateSM(@PathVariable Integer id, @RequestBody Map<String, Object> payload) {
+        String tenMoi = (String) payload.get("tenKhachHang");
 
-        KhachHang khachHang= khachHangRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Khach hang không tồn tại"));
-        khachHang.setTenKhachHang((String) payload.get("tenKhachHang"));
+        if (khachHangRepository.existsByTenKhachHangAndIdNot(tenMoi, id)) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Tên khách hàng đã tồn tại!");
+        }
+
+        KhachHang khachHang = khachHangRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Khách hàng không tồn tại"));
+
+        khachHang.setTenKhachHang(tenMoi);
         khachHang.setEmail((String) payload.get("email"));
         khachHang.setSoDienThoai((String) payload.get("soDienThoai"));
         khachHang.setDiaChi((String) payload.get("diaChi"));
@@ -71,8 +89,10 @@ public class KhachHangController {
         khachHang.setTaiKhoan((String) payload.get("taiKhoan"));
         khachHang.setMatKhau((String) payload.get("matKhau"));
         khachHang.setGioiTinh((String) payload.get("gioiTinh"));
+
         khachHangRepository.save(khachHang);
         return ResponseEntity.ok("Khách hàng đã được cập nhật thành công!");
     }
+
 
 }

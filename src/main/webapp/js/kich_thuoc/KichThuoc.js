@@ -1,22 +1,22 @@
 function validateForm(action) {
     // Clear error messages
-    document.getElementById("errorChatLieu").innerText = "";
+    document.getElementById("errorTenKichThuoc").innerText = "";
     document.getElementById("errorMoTa").innerText = "";
 
 
 
     // Get values
-    const tenChatLieu = document.getElementById("tenChatLieu").value;
+    const tenKichThuoc = document.getElementById("tenKichThuoc").value;
     const moTa = document.getElementById("moTa").value;
 
     let isValid = true;
 
     // Validate fields
-    if (tenChatLieu.trim() === "") {
-        document.getElementById("errorChatLieu").innerText = "Chất liệu không được để trống.";
+    if (tenKichThuoc.trim() === "") {
+        document.getElementById("errorTenKichThuoc").innerText = "Kích thước không được để trống.";
         isValid = false;
-    } else if (!isNaN(tenChatLieu) && parseInt(tenChatLieu, 10) < 0) {
-        document.getElementById("errorChatLieu").innerText = "Không được là số âm.";
+    } else if (!isNaN(tenKichThuoc) && parseInt(tenKichThuoc, 10) < 0) {
+        document.getElementById("errorTenKichThuoc").innerText = "Không được là số âm.";
         isValid = false;
     }
     if (moTa.trim() === "") {
@@ -36,59 +36,59 @@ function validateForm(action) {
     }
 }
 
-async function loadMSData(idct) {
+async function loadKTData(idct) {
     console.log("ID chất liệu nhận được:", idct);
     try {
         const id = parseInt(idct, 10);
         if (isNaN(id)) {
-            console.error("ID màu sắc không hợp lệ:", idct);
-            alert("ID chất liệu không hợp lệ.");
+            console.error("ID không hợp lệ:", idct);
+            alert("ID kích thước không hợp lệ.");
             return;
         }
         // Gửi yêu cầu GET đến server để lấy dữ liệu
-        const response = await fetch(`/san-pham/danh-sach-chat-lieu/${id}`);
+        const response = await fetch(`/san-pham/danh-sach-kich-thuoc/${id}`);
 
         if (!response.ok) {
-            console.error("Lỗi khi tải dữ liệu chất liệu:", response.statusText);
-            alert(`Không thể tải dữ liệu chất liệu. Mã lỗi: ${response.status}`);
+            console.error("Lỗi khi tải dữ liệu kích thước:", response.statusText);
+            alert(`Không thể tải dữ liệu kích thước. Mã lỗi: ${response.status}`);
             return;
         }
 
-        const chatLieu = await response.json();
+        const kichThuoc = await response.json();
 
         // Kiểm tra dữ liệu trả về
-        if (!chatLieu.tenChatLieu || !chatLieu.moTa) {
-            console.error("Dữ liệu trả về không hợp lệ:", chatLieu);
-            alert("Không thể tải dữ liệu chất liệu. Vui lòng kiểm tra lại.");
+        if (!kichThuoc.tenKichThuoc || !kichThuoc.moTa) {
+            console.error("Dữ liệu trả về không hợp lệ:", kichThuoc);
+            alert("Không thể tải dữ liệu kích thước. Vui lòng kiểm tra lại.");
             return;
         }
 
         // Điền dữ liệu vào form
-        document.getElementById("tenChatLieu").value = chatLieu.tenChatLieu;
-        document.getElementById("moTa").value = chatLieu.moTa;
+        document.getElementById("tenKichThuoc").value = kichThuoc.tenKichThuoc;
+        document.getElementById("moTa").value = kichThuoc.moTa;
 
         window.currentMsId = idct; // Lưu lại ID màu sắc hiện tại
     } catch (error) {
-        console.error("Đã có lỗi xảy ra khi tải dữ liệu chất liệu:", error);
-        alert("Không thể tải dữ liệu chất liệu.");
+        console.error("Đã có lỗi xảy ra khi tải dữ liệu kích thước:", error);
+        alert("Không thể tải dữ liệu kích thước.");
     }
 }
 
 async function themMS() {
-    var con = window.confirm("Bạn có chắc chắn muốn thêm chất liệu?");
+    var con = window.confirm("Bạn có chắc chắn muốn thêm kích thước?");
     if (con == false) {
         return;
     }
 
     // Thu thập dữ liệu từ form
     var payload = {
-        "tenChatLieu": document.getElementById("tenChatLieu").value,
+        "tenKichThuoc": document.getElementById("tenKichThuoc").value,
         "moTa": document.getElementById("moTa").value,
 
     };
 
     // Gửi dữ liệu đến server (POST request)
-    const response = await fetch("/san-pham/them-chat-lieu", {
+    const response = await fetch("/san-pham/them-kich-thuoc", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -98,29 +98,29 @@ async function themMS() {
 
     // Kiểm tra phản hồi từ server
     if (response.ok) {
-        alert("Chất liệu đã được thêm thành công!");
+        alert("Kích thước đã được thêm thành công!");
         // Chuyển hướng về trang hiển thị danh sách sản phẩm
-        window.location.href = "/san-pham/chat-lieu";
+        window.location.href = "/san-pham/kich-thuoc";
     } else {
-        alert("Tên chất liệu đã bị trùng.");
+        alert("Tên kích thước đã bị trùng.");
     }
 }
 
 async function capNhatS(idct) {
-    var con = window.confirm("Bạn có chắc chắn muốn cập nhật chất liệu?");
+    var con = window.confirm("Bạn có chắc chắn muốn cập nhật kích thước?");
     if (con == false) {
         return;
     }
 
     // Thu thập dữ liệu từ form
     var payload = {
-        "tenChatLieu": document.getElementById("tenChatLieu").value,
+        "tenKichThuoc": document.getElementById("tenKichThuoc").value,
         "moTa": document.getElementById("moTa").value,
 
     };
 
     // Gửi dữ liệu đến server (PUT request)
-    const response = await fetch(`/san-pham/cap-nhat-chat-lieu/${idct}`, {
+    const response = await fetch(`/san-pham/cap-nhat-kich-thuoc/${idct}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -130,17 +130,17 @@ async function capNhatS(idct) {
 
     // Kiểm tra phản hồi từ server
     if (response.ok) {
-        alert("Chất liệu đã được cập nhật thành công!");
+        alert("Kích thước đã được cập nhật thành công!");
         // Chuyển hướng về trang hiển thị danh sách sản phẩm
-        window.location.href = "/san-pham/chat-lieu";
+        window.location.href = "/san-pham/kich-thuoc";
     } else {
-        alert("Tên chất liệu đã bị trùng.");
+        alert("Tên kích thước đã bị trùng.");
     }
 }
 document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id'); // Lấy ID từ URL
     if (id) {
-        loadMSData(id); // Gọi hàm tải dữ liệu
+        loadKTData(id); // Gọi hàm tải dữ liệu
     }
 });
