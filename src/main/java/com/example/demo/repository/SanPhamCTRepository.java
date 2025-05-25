@@ -31,7 +31,7 @@ public interface SanPhamCTRepository extends JpaRepository<SanPhamChiTiet,Intege
 
     // Lấy sản phẩm có số lượng <= ngưỡng
     List<SanPhamChiTiet> findBySoLuongLessThanEqual(int soLuong);
-    List<SanPhamChiTiet> findBySanPham(SanPham sanPham);
+
 
     @Query("SELECT spct FROM SanPhamChiTiet spct " +
             "WHERE (:minPrice IS NULL OR spct.donGia >= :minPrice) " +

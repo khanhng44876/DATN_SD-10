@@ -60,7 +60,11 @@ public class ThongKeService {
 
     // Sản phẩm sắp hết hàng
     public List<Map<String, Object>> getLowStockProducts(int threshold) {
-        List<SanPhamChiTiet> list = sanPhamChiTietRepo.findBySoLuongLessThanEqual(threshold);
+        List<SanPhamChiTiet> list = sanPhamChiTietRepo.findBySoLuongLessThanEqual(threshold)
+                .stream()
+                .filter(ct -> ct.getSoLuong() > 0)
+                .collect(Collectors.toList());
+
         List<Map<String, Object>> result = new ArrayList<>();
 
         for (SanPhamChiTiet ct : list) {
@@ -85,6 +89,7 @@ public class ThongKeService {
         return result;
     }
 
+
     // Tổng số sản phẩm đã bán trong tháng
     public Integer getMonthlySoldProductCount() {
         LocalDate now = LocalDate.now();
@@ -96,24 +101,6 @@ public class ThongKeService {
     }
 
     // Doanh số tháng hiện tại
-//    public Map<String, Object> getMonthlySales() {
-//        LocalDate now = LocalDate.now();
-//        int thang = now.getMonthValue();
-//        int nam = now.getYear();
-//
-//        List<HoaDon> hoaDons = hoaDonRepo.findThanhCongByThangVaNam(thang, nam);
-//
-//        int totalOrders = hoaDons.size();
-//        float totalRevenue = hoaDons.stream()
-//                .map(HoaDon::getTongTien)
-//                .filter(Objects::nonNull)
-//                .reduce(0f, Float::sum);
-//
-//        return Map.of(
-//                "totalOrders", totalOrders,
-//                "totalRevenue", totalRevenue
-//        );
-//    }
     public Map<String, Object> getMonthlySales() {
         LocalDate now = LocalDate.now();
         int thang = now.getMonthValue();
@@ -175,15 +162,21 @@ public class ThongKeService {
             LocalDate date = LocalDate.of(nam, thang, i);
             Date sqlDate = Date.valueOf(date);
 
-            List<HoaDon> hoaDons = hoaDonRepo.findByNgayTao(sqlDate);
+            List<HoaDon> hoaDons = hoaDonRepo.findByNgayTao(sqlDate).stream()
+                    .filter(hd -> !"Đã huỷ".equalsIgnoreCase(hd.getTrangThaiThanhToan()))
+                    .collect(Collectors.toList());
             int hoaDonCount = hoaDons.size();
 
-            List<HoaDonCT> chiTiets = hoaDonCTRepo.findByNgayTao(sqlDate);
+            List<HoaDonCT> chiTiets = hoaDonCTRepo.findByNgayTao(sqlDate).stream()
+                    .filter(ct -> ct.getHoaDon() != null && !"Đã huỷ".equalsIgnoreCase(ct.getHoaDon().getTrangThaiThanhToan()))
+                    .collect(Collectors.toList());
+
             int sanPhamCount = chiTiets.stream()
                     .map(HoaDonCT::getSoLuong)
                     .filter(Objects::nonNull)
                     .mapToInt(Integer::intValue)
                     .sum();
+
 
             Map<String, Object> map = new HashMap<>();
             map.put("date", date.toString());

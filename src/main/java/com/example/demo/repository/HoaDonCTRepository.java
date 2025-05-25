@@ -27,6 +27,8 @@ public interface HoaDonCTRepository extends JpaRepository<HoaDonCT, Integer> {
             "WHERE hd.ngayTao BETWEEN :startDate AND :endDate")
     Integer findSoldQuantityByDateRange(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
+
+
     // Top sản phẩm bán chạy
     @Query(value = """
     SELECT spct.id, spct.don_gia, spct.hinh_anh, sp.ten_san_pham, SUM(hdct.so_luong)
@@ -34,7 +36,7 @@ public interface HoaDonCTRepository extends JpaRepository<HoaDonCT, Integer> {
     JOIN san_pham_chi_tiet spct ON hdct.id_san_pham_chi_tiet = spct.id
     JOIN san_pham sp ON spct.id_san_pham = sp.id
     JOIN hoa_don hd ON hdct.id_hoa_don = hd.id
-    WHERE hd.trang_thai_thanh_toan IN (N'Đã hoàn thành', N'Giao hàng thành công',N'Hoàn thành')
+    WHERE hd.trang_thai_thanh_toan IN (N'Đã hoàn thành',N'Đã thanh toán', N'Giao hàng thành công',N'Hoàn thành')
       AND MONTH(hd.ngay_tao) = MONTH(GETDATE())
       AND YEAR(hd.ngay_tao) = YEAR(GETDATE())
     GROUP BY spct.id, spct.don_gia, spct.hinh_anh, sp.ten_san_pham
