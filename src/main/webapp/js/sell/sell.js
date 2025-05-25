@@ -196,12 +196,25 @@ async function renderOrders() {
 }
 
 // Xóa sản phẩm trong đơn hàng
-function removeProduct(orderId, productId) {
+async function removeProduct(orderId,productId) {
     let order = orders.find(o => o.id === Number(orderId));
     if (!order) {
         console.error("❌ Không tìm thấy đơn hàng!");
         return;
     }
+    const product = order.product.find(p => Number(p.id) === Number(productId));
+    if(!product){
+        console.error("Không tìm thấy sản pham");
+        return;
+    }
+
+    const resp = await fetch(`/ban-hang-off/remove-sp/${Number(product.id)}/${Number(product.so_luong)}`,{
+        method : "PUT"
+    });
+    if(!resp.ok){
+        throw new Error("Lỗi" + resp.status);
+    }
+
     // Sửa logic lọc sản phẩm
     order.product = order.product.filter(p => Number(p.id) !== Number(productId));
     // Cập nhật localStorage và giao diện
@@ -271,7 +284,7 @@ function createElementOrder(order){
     tabContent.innerHTML = `
         <div class="justify-content-between mt-3">
             <h4>Sản phẩm</h4>
-            <button type="button" class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill" data-bs-toggle="modal" data-bs-target="#spModal">
+            <button type="button" class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill" onclick="reloadProductModal()" data-bs-toggle="modal" data-bs-target="#spModal">
                 + Thêm sản phẩm
             </button>
             <button id="scanQrBtn" onclick="openQrScanner()" class="btn btn-primary px-4 py-2 fw-bold text-white rounded-pill">
@@ -388,14 +401,21 @@ async function renderPaymentMethod(order){
 }
 
 // Hàm xóa đơn hàng
-function removeOrder(orderId){
+async function removeOrder(orderId){
+    const order = orders.find(o => o.id === orderId);
+    const resp = order.product.map(p =>{
+        return fetch(`/ban-hang-off/remove-sp/${Number(p.id)}/${Number(p.so_luong)}`,{
+            method : "PUT"
+        });
+    });
+    await Promise.all(resp);
     orders = orders.filter(order => order.id !== orderId)
     saveOrderToLocalStorage()
     renderOrders()
 }
 
 // Hàm cập nhật số lượng ngay tren giao diện
-function updateQuantity(orderId,productId,change){
+async function updateQuantity(orderId,productId,change){
     let order =orders.find(o=> o.id === orderId)
     if(!order){
         console.log("không tìm thấy order")
@@ -409,6 +429,10 @@ function updateQuantity(orderId,productId,change){
     product.so_luong = Math.max(1,Number(product.so_luong) + change)
     product.tong_tien = Number(product.so_luong) * product.don_gia;
     saveOrderToLocalStorage()
+    const resp = await fetch(`/ban-hang-off/update-sp/${Number(product.id)}/${change}`,{
+        method : "PUT"
+    })
+
     updateThanhTien(orderId)
     renderOrders()
 }
@@ -722,6 +746,46 @@ function printInvoice(orderId) {
     printWindow.document.close();
 }
 
+async function reloadProductModal(){
+    const resp = await fetch(`/ban-hang-off/reload-product-modal`,{
+        method : "PUT"
+    });
+    if(!resp.ok){
+        throw new Error (`Lỗi ${resp.status}`)
+    }
+
+    const data = await resp.json();
+
+    const tbody = document.getElementById('spModalBody');
+    tbody.innerHTML = '';
+    data.forEach(d => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+        <td>${d.id}</td>
+        <td>${d.sanPham.tenSanPham}</td>
+        <td>${d.mauSac.ten_mau_sac}</td>
+        <td>${d.kichThuoc.tenKichThuoc}</td>
+        <td>${d.chatLieu.tenChatLieu}</td>
+        <td>${d.soLuong}</td>
+        <td>${new Intl.NumberFormat('vi-VN').format(d.donGia)}</td>
+        <td>${d.moTa || ''}</td>
+        <td><img src="../../images/${d.anhSanPham}" width="100" height="100"  alt=""/></td>
+        <td>
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-id="${d.id}"
+            data-bs-toggle="modal"
+            data-bs-target="#quantityModal"
+            onclick="openModalQuantity(this)">
+            Chọn
+          </button>
+        </td>
+      `;
+        tbody.appendChild(tr);
+    });
+}
+
 // Lấy thông tin ở form nhập số lượng truyền vào order.product
 document.querySelector("#quantityModal .btn-primary").addEventListener("click",function (){
     let productId = document.getElementById("ctsp_id").value
@@ -774,6 +838,22 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
             tong_tien:tongTien
         })
     }
+    fetch(`/ban-hang-off/update-sp/${Number(productId)}/${Number(inpQuantity)}`,{
+        method : "PUT"
+    }).then(resp =>{
+        if(!resp.ok){
+            throw new Error("Lỗi"+resp.status)
+        }
+    }).then(()=>{
+        saveOrderToLocalStorage()
+        renderOrders()
+        bootstrap.Modal.getInstance(document.getElementById("quantityModal")).hide();
+        bootstrap.Modal.getInstance(document.getElementById("spModal")).hide();
+    }).catch(e => {
+        console.error(e);
+    });
+
+
     saveOrderToLocalStorage()
     renderOrders()
     let modal = bootstrap.Modal.getInstance(document.getElementById('quantityModal'));
@@ -788,4 +868,4 @@ document.getElementById("quantityModal").addEventListener("hidden.bs.modal", fun
     document.getElementById("so_luong").innerText = "";
     document.getElementById("errQuantityMes").innerText="";
 });
-renderOrders()
+renderOrders();

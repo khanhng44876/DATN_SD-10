@@ -1,4 +1,4 @@
-
+let selected_promo = JSON.parse(localStorage.getItem('selected_promo'||'{}'));
 window.stompClient = null;
 // Reload trang
 function renderOnlOrder(){
@@ -79,12 +79,20 @@ function updateQuantity(itemId,num){
     order.listhdct.forEach(c=>{
         order.total_amount += c.total;
     })
+    if(selected_promo.id){
+       const temp = order.total_amount * Number(selected_promo.discount) / 100;
+       if(temp > Number(selected_promo.max)){
+           order.total_amount -= Number(selected_promo.max);
+       }else{
+           order.total_amount -= temp;
+       }
+    }
     localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
     const payload = {
         orderId : order.id,
         itemId : item.id,
         totalAmount : order.total_amount,
-        quantity : item.quantity
+        quantity : item.quantity,
     }
     stompClient.send("/app/update-quantity",{},JSON.stringify(payload));
     renderOnlOrder()

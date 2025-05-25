@@ -84,6 +84,15 @@ public class BanHangController {
         return ResponseEntity.ok(Collections.emptyMap());
     }
 
+    @PutMapping("/reload-product-modal")
+    @ResponseBody
+    public List<SanPhamChiTiet> reloadProductModal() {
+        List<SanPhamChiTiet> listCt = ctRepository.findAll().stream()
+                .filter(c -> c.getTrangThai().equals("Còn hàng"))
+                .toList();
+        return listCt;
+    }
+
     @GetMapping("/generate-qr/{amount}")
     public ResponseEntity<Map<String,String>> genQr(@PathVariable long amount, HttpServletRequest req) {
         String orderInfo = "PREVIEW " + UUID.randomUUID();
@@ -139,14 +148,16 @@ public class BanHangController {
     @PutMapping("/update-sp/{id}/{so_luong}")
     public ResponseEntity<SanPhamChiTiet> updateSanPham(@PathVariable Integer id,@PathVariable Integer so_luong) {
         Optional<SanPhamChiTiet> optionalSanPham = ctRepository.findById(id);
-        if (!optionalSanPham.isPresent()) {
+
+        if (optionalSanPham.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
+
         SanPhamChiTiet ctSp = optionalSanPham.get();
-        if (ctSp.getSoLuong() < so_luong) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        ctSp.setSoLuong(ctSp.getSoLuong()-so_luong);
+        if(ctSp.getSoLuong() == 0){
+            ctSp.setTrangThai("Hết hàng");
         }
-        ctSp.setSoLuong(ctSp.getSoLuong() - so_luong);
         ctRepository.save(ctSp);
         return ResponseEntity.ok(ctSp);
     }
@@ -162,5 +173,17 @@ public class BanHangController {
         km.setSo_luong_sd(km.getSo_luong_sd()+1);
         kmRepository.save(km);
         return ResponseEntity.ok(km);
+    }
+
+    @PutMapping("/remove-sp/{id}/{soLuong}")
+    public ResponseEntity<?> removeSp(@PathVariable Integer id,@PathVariable Integer soLuong) {
+        Optional<SanPhamChiTiet> optionalSanPham = ctRepository.findById(id);
+        if (optionalSanPham.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        SanPhamChiTiet ctSp = optionalSanPham.get();
+        ctSp.setSoLuong(ctSp.getSoLuong()+soLuong);
+        ctRepository.save(ctSp);
+        return ResponseEntity.ok(ctSp);
     }
 }

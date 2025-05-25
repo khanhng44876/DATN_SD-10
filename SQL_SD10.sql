@@ -37,7 +37,6 @@ CREATE TABLE khuyen_mai (
                             ngay_ket_thuc DATE NOT NULL,
                             dieu_kien float NOT NULL,
                             giam_toi_da float NOT NULL,
-                            id_hoa_don int,
                             trang_thai NVARCHAR(50) not null,
                             so_luong_sd int
 );
