@@ -58,7 +58,7 @@ public class ChiTietSPOnlineController {
                 model.addAttribute("error", "Sản phẩm không có biến thể hoặc kích thước nào.");
                 return "ban_hang_online/error";
             }
-
+            System.out.println(allDetails);
             List<SanPhamChiTiet> uniqueVariants = getUniqueDetails(allDetails,
                     detail -> detail.getMauSac().getTen_mau_sac() + "-" + detail.getChatLieu().getTenChatLieu());
 
@@ -76,7 +76,7 @@ public class ChiTietSPOnlineController {
                                 return sizeData;
                             }, Collectors.toList())
                     ));
-
+            System.out.println(variantToSizesMap);
             model.addAttribute("product", ctsp);
             model.addAttribute("variants", uniqueVariants);
             model.addAttribute("variantToSizesMap", variantToSizesMap);

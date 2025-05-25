@@ -620,8 +620,6 @@ async function confirmOrder(orderId) {
             const req1 = fetch("/ban-hang-off/add-hoa-don-ct", {
                 method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(hdct)
             });
-            const req2 = fetch(`/ban-hang-off/update-sp/${p.id}/${p.so_luong}`, { method: "PUT" });
-            return Promise.all([req1, req2]);
         });
         if (order.discount.id !== null) {
             tasks.push(fetch(`/ban-hang-off/update-km/${order.discount.id}`, { method: "PUT" }));
