@@ -1,146 +1,164 @@
-function validateForm(action) {
-    // Clear error messages
+async function validateForm(action) {
+    // Xóa lỗi cũ
     document.getElementById("errorTenDanhMuc").innerText = "";
     document.getElementById("errorMoTa").innerText = "";
+    document.getElementById("errorTrangThai").innerText = "";
 
-
-
-    // Get values
-    const tenDanhMuc = document.getElementById("tenDanhMuc").value;
-    const moTa = document.getElementById("moTa").value;
+    // Lấy dữ liệu
+    const tenDanhMuc = document.getElementById("tenDanhMuc").value.trim();
+    const moTa = document.getElementById("moTa").value.trim();
+    const trangThai = document.getElementById("trangThai").value.trim();
+    const id = (action === 'update') ? (window.currentMsId || "") : null;
 
     let isValid = true;
 
-    // Validate fields
-    if (tenDanhMuc.trim() === "") {
-        document.getElementById("errorTenDanhMuc").innerText = "Danh mục không được để trống.";
-        isValid = false;
-    } else if (!isNaN(tenDanhMuc) && parseInt(tenDanhMuc, 10) < 0) {
-        document.getElementById("errorTenDanhMuc").innerText = "Không được là số âm.";
-        isValid = false;
-    }
-    if (moTa.trim() === "") {
-        document.getElementById("errorMoTa").innerText = "Không được để trống.";
+    if (!tenDanhMuc) {
+        document.getElementById("errorTenDanhMuc").innerText = "Tên danh mục không được để trống.";
         isValid = false;
     }
 
+    if (!moTa) {
+        document.getElementById("errorMoTa").innerText = "Ghi chú không được để trống.";
+        isValid = false;
+    }
 
+    if (!trangThai) {
+        document.getElementById("errorTrangThai").innerText = "Bạn phải chọn trạng thái.";
+        isValid = false;
+    }
 
-    // If all fields are valid, proceed with action
+    // Nếu dữ liệu đầu vào OK thì gọi API check trùng
     if (isValid) {
-        if (action === 'add') {
-            themMS();
-        } else if (action === 'update') {
-            capNhatS(window.currentMsId);
+        try {
+            const url = `/san-pham/kiem-tra-trung-danh-muc?tenDanhMuc=${encodeURIComponent(tenDanhMuc)}&moTa=${encodeURIComponent(moTa)}${id !== null ? `&id=${id}` : ''}`;
+            const response = await fetch(url);
+            const result = await response.json();
+
+            if (result.tenTrung) {
+                document.getElementById("errorTenDanhMuc").innerText = "Tên danh mục đã tồn tại.";
+                isValid = false;
+            }
+
+            if (result.moTaTrung) {
+                document.getElementById("errorMoTa").innerText = "Ghi chú đã tồn tại.";
+                isValid = false;
+            }
+
+            if (isValid) {
+                if (action === 'add') {
+                    themMS();
+                } else if (action === 'update') {
+                    capNhatS(id);
+                }
+            }
+
+        } catch (err) {
+            console.error("Lỗi khi kiểm tra trùng:", err);
+            alert("Lỗi kiểm tra trùng danh mục.");
         }
     }
 }
 
-async function loadDMData(iddm) {
-    console.log("ID Danh mục nhận được:", iddm);
-    try {
-        const id = parseInt(iddm, 10);
-        if (isNaN(id)) {
-            console.error("ID Danh mục không hợp lệ:", iddm);
-            alert("ID Danh mục không hợp lệ.");
-            return;
-        }
-        // Gửi yêu cầu GET đến server để lấy dữ liệu
-        const response = await fetch(`/san-pham/danh-sach-danh-muc/${id}`);
 
-        if (!response.ok) {
-            console.error("Lỗi khi tải dữ liệu danh mục:", response.statusText);
-            alert(`Không thể tải dữ liệu danh mục. Mã lỗi: ${response.status}`);
-            return;
+
+
+async function themMS() {
+    if (!confirm("Bạn có chắc chắn muốn thêm danh mục?")) return;
+
+    const payload = {
+        tenDanhMuc: document.getElementById("tenDanhMuc").value.trim(),
+        moTa: document.getElementById("moTa").value.trim(),
+        trangThai: document.getElementById("trangThai").value.trim()
+    };
+
+    try {
+        const response = await fetch("/san-pham/them-danh-muc", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            alert("Danh mục đã được thêm thành công!");
+            window.location.href = "/san-pham/danh-muc";
+        } else {
+            alert("Đã có lỗi xảy ra khi thêm danh mục.");
         }
+    } catch (err) {
+        console.error("Lỗi gửi yêu cầu:", err);
+        alert("Đã xảy ra lỗi kết nối.");
+    }
+}
+
+
+
+async function loadDMData(iddm) {
+    try {
+        const response = await fetch(`/san-pham/danh-sach-danh-muc/${iddm}`);
+        if (!response.ok) throw new Error("Không thể tải dữ liệu");
 
         const danhMuc = await response.json();
 
-        // Kiểm tra dữ liệu trả về
-        if (!danhMuc.tenDanhMuc || !danhMuc.moTa) {
-            console.error("Dữ liệu trả về không hợp lệ:", danhMuc);
-            alert("Không thể tải dữ liệu danh mục. Vui lòng kiểm tra lại.");
-            return;
-        }
+        document.getElementById("tenDanhMuc").value = danhMuc.tenDanhMuc || danhMuc.tendanhmuc || "";
+        document.getElementById("moTa").value = danhMuc.moTa || danhMuc.mota || "";
+        document.getElementById("trangThai").value = danhMuc.trangThai || danhMuc.trangthai || "Hoạt động";
 
-        // Điền dữ liệu vào form
-        document.getElementById("tenDanhMuc").value = danhMuc.tenDanhMuc;
-        document.getElementById("moTa").value = danhMuc.moTa;
-
-        window.currentMsId = iddm; // Lưu lại ID màu sắc hiện tại
-    } catch (error) {
-        console.error("Đã có lỗi xảy ra khi tải dữ liệu danh mục:", error);
-        // alert("Không thể tải dữ liệu danh mục.");
+        window.currentMsId = iddm;
+    } catch (err) {
+        console.error("Lỗi khi tải danh mục:", err);
+        alert("Không thể tải danh mục.");
     }
 }
 
-async function themMS() {
-    var con = window.confirm("Bạn có chắc chắn muốn thêm danh mục?");
-    if (con == false) {
-        return;
-    }
-
-    // Thu thập dữ liệu từ form
-    var payload = {
-        "tenDanhMuc": document.getElementById("tenDanhMuc").value,
-        "moTa": document.getElementById("moTa").value,
-
-    };
-
-    // Gửi dữ liệu đến server (POST request)
-    const response = await fetch("/san-pham/them-danh-muc", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload) // Chuyển dữ liệu thành JSON
-    });
-
-    // Kiểm tra phản hồi từ server
-    if (response.ok) {
-        alert("Danh mục đã được thêm thành công!");
-        // Chuyển hướng về trang hiển thị danh sách sản phẩm
-        window.location.href = "/san-pham/danh-muc";
-    } else {
-        alert("Đã có lỗi xảy ra khi thêm danh mục.");
-    }
-}
 
 async function capNhatS(iddm) {
-    var con = window.confirm("Bạn có chắc chắn muốn cập nhật danh mục?");
-    if (con == false) {
-        return;
-    }
+    if (!confirm("Bạn có chắc chắn muốn cập nhật danh mục?")) return;
 
-    // Thu thập dữ liệu từ form
-    var payload = {
-        "tenDanhMuc": document.getElementById("tenDanhMuc").value,
-        "moTa": document.getElementById("moTa").value,
-
+    const payload = {
+        tenDanhMuc: document.getElementById("tenDanhMuc").value.trim(),
+        moTa: document.getElementById("moTa").value.trim(),
+        trangThai: document.getElementById("trangThai").value.trim()
     };
 
-    // Gửi dữ liệu đến server (PUT request)
     const response = await fetch(`/san-pham/cap-nhat-danh-muc/${iddm}`, {
         method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload) // Chuyển dữ liệu thành JSON
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
     });
 
-    // Kiểm tra phản hồi từ server
     if (response.ok) {
-        alert("Danh mục đã được cập nhật thành công!");
-        // Chuyển hướng về trang hiển thị danh sách sản phẩm
+        alert("Cập nhật thành công!");
         window.location.href = "/san-pham/danh-muc";
     } else {
-        alert("Đã có lỗi xảy ra khi cập nhật danh mục.");
+        alert("Lỗi khi cập nhật.");
     }
 }
+
+// sắp xếp
+function sortTable(order) {
+    const table = document.getElementById("danhMucTableBody");
+    const rows = Array.from(table.rows);
+
+    rows.sort((a, b) => {
+        const nameA = a.cells[1].innerText.trim().toLowerCase(); // Cột "Tên màu"
+        const nameB = b.cells[1].innerText.trim().toLowerCase();
+
+        if (order === "az") {
+            return nameA.localeCompare(nameB);
+        } else if (order === "za") {
+            return nameB.localeCompare(nameA);
+        } else {
+            return 0;
+        }
+    });
+
+    table.innerHTML = '';
+    rows.forEach(row => table.appendChild(row));
+}
+
+
 document.addEventListener("DOMContentLoaded", function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id'); // Lấy ID từ URL
-    if (id) {
-        loadDMData(id); // Gọi hàm tải dữ liệu
-    }
+    const id = new URLSearchParams(window.location.search).get("id");
+    if (id) loadDMData(id);
 });
+

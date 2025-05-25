@@ -21,6 +21,6 @@ public class DanhMuc {
     @Column(name = "mo_ta")
     private String mota;
     @Column(name = "trang_thai")
-    private String trangthai;
+    private String trangThai;
 
 }

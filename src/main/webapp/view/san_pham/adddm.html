@@ -26,8 +26,15 @@
                         <input id="moTa" class="form-control" required>
                         <span id="errorMoTa" class="text-danger"></span>
                         <br>
+                        <label class="lb-form">Trạng thái</label>
+                        <select id="trangThai" class="form-control" required>
+                            <option value="Hoạt động">Hoạt động</option>
+                            <option value="Ngừng hoạt động">Ngừng hoạt động</option>
+                        </select>
+                        <span id="errorTrangThai" class="text-danger"></span>
+
+
                         <button onclick="validateForm('add')" class="btn btn-primary">Add</button>
-                        <button onclick="validateForm('update')" class="btn btn-warning">Update</button>
                         <br><br>
                     </div>
                 </div>

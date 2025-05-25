@@ -10,8 +10,13 @@ import java.util.Optional;
 
 @Repository
 public interface DanhMucRepository extends JpaRepository<DanhMuc,Integer> {
-    Optional<DanhMuc> findByTendanhmuc(String tendanhmuc);
+
 
     @Query("SELECT h FROM DanhMuc h WHERE h.id = :iddm")
     Optional<DanhMuc> findByIdDm(@Param("iddm") Integer iddm);
+
+    Optional<DanhMuc> findByTendanhmuc(String tendanhmuc);
+    Optional<DanhMuc> findByMota(String mota);
+
+
 }

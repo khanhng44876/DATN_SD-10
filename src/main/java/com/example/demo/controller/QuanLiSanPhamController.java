@@ -19,10 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @CrossOrigin(origins = "*")  // Hỗ trợ gọi API từ Frontend khác (React, Vue)
 @Controller
@@ -546,26 +543,57 @@ public class QuanLiSanPhamController {
         return result.map(danhMuc -> new ResponseEntity<>(danhMuc, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    // check trùng danh mục
+    @GetMapping("/kiem-tra-trung-danh-muc")
+    public ResponseEntity<Map<String, Boolean>> kiemTraTrungChiTiet(
+            @RequestParam String tenDanhMuc,
+            @RequestParam String moTa,
+            @RequestParam(required = false) Integer id
+    ) {
+        Map<String, Boolean> result = new HashMap<>();
+        boolean tenTrung = false;
+        boolean moTaTrung = false;
+
+        Optional<DanhMuc> tenDanhMucExist = danhMucRepository.findByTendanhmuc(tenDanhMuc);
+        if (tenDanhMucExist.isPresent() && (id == null || !tenDanhMucExist.get().getId().equals(id))) {
+            tenTrung = true;
+        }
+
+        Optional<DanhMuc> moTaExist = danhMucRepository.findByMota(moTa);
+        if (moTaExist.isPresent() && (id == null || !moTaExist.get().getId().equals(id))) {
+            moTaTrung = true;
+        }
+
+        result.put("tenTrung", tenTrung);
+        result.put("moTaTrung", moTaTrung);
+
+        return ResponseEntity.ok(result);
+    }
+
 
     @PostMapping("/them-danh-muc")
     public ResponseEntity<?> themdm(@RequestBody Map<String, Object> payload) {
         DanhMuc danhMuc = new DanhMuc();
         danhMuc.setTendanhmuc((String) payload.get("tenDanhMuc"));
         danhMuc.setMota((String) payload.get("moTa"));
+        danhMuc.setTrangThai((String) payload.get("trangThai"));
         danhMucRepository.save(danhMuc);
         return ResponseEntity.ok("Danh muc đã được thêm thành công!");
     }
 
     @PutMapping("/cap-nhat-danh-muc/{id}")
     public ResponseEntity<?> updateDM(@PathVariable Integer id, @RequestBody Map<String, Object> payload) {
-
         DanhMuc danhMuc = danhMucRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Danh muc không tồn tại"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy danh mục"));
+
         danhMuc.setTendanhmuc((String) payload.get("tenDanhMuc"));
         danhMuc.setMota((String) payload.get("moTa"));
+        danhMuc.setTrangThai((String) payload.get("trangThai"));
+
         danhMucRepository.save(danhMuc);
-        return ResponseEntity.ok("Danh muc đã được thêm thành công!");
+        return ResponseEntity.ok("Cập nhật thành công");
     }
+
 
     @GetMapping("/chinh-sua/{id}")
     public String hienThiFormChinhSua(@PathVariable Integer id, Model model) {

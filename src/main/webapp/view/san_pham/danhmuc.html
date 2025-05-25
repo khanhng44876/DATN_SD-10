@@ -14,23 +14,31 @@
             <div class="pt-3" style="width: calc(100% - 250px);">
                 <div class="container">
                     <h2 style="text-align: center;">Quản Lý Danh Mục</h2>
-
+                    <div class="col-md-4 mb-3">
+                        <label>Sắp xếp theo tên màu:</label>
+                        <select class="form-select" onchange="sortTable(this.value)">
+                            <option value="">-- Chọn --</option>
+                            <option value="az">A → Z</option>
+                            <option value="za">Z → A</option>
+                        </select>
+                    </div>
+                    <a th:href="@{/san-pham/danh-muc/adddm}" class="btn btn-success"> Thêm danh mục</a>
                     <table id="example" class="table table-bordered">
                         <thead>
                         <tr>
                             <th>ID</th>
                             <th>Tên danh mục</th>
                             <th>Mô tả</th>
-                            <th>Trang </th>
+                            <th>Trạng thái </th>
                             <th>Thao tác</th>
                         </tr>
                         </thead>
-                        <tbody>thái
+                        <tbody id="danhMucTableBody">
                         <tr th:each="d : ${listdm}">
                             <td th:text="${d.id}"></td>
                             <td th:text="${d.tendanhmuc}"></td>
                             <td th:text="${d.mota}"></td>
-                            <td th:text="${d.trangthai}"></td>
+                            <td th:text="${d.trangThai}"></td>
 
                             <td>
 <!--                                <button th:onclick="'loadDMData(' + ${d.id} + ')'" class="btn btn-warning">-->
@@ -42,7 +50,7 @@
                         </tr>
                         </tbody>
                     </table>
-                    <a th:href="@{/san-pham/danh-muc/adddm}" class="btn btn-success"> Thêm danh mục</a>
+
 
                 </div>
             </div>
