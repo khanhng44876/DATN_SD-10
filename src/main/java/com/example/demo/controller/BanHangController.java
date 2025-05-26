@@ -148,15 +148,20 @@ public class BanHangController {
     @PutMapping("/update-sp/{id}/{so_luong}")
     public ResponseEntity<SanPhamChiTiet> updateSanPham(@PathVariable Integer id,@PathVariable Integer so_luong) {
         Optional<SanPhamChiTiet> optionalSanPham = ctRepository.findById(id);
-
         if (optionalSanPham.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
         SanPhamChiTiet ctSp = optionalSanPham.get();
+        if(so_luong == 1 && ctSp.getTrangThai().equals("Hết hàng")){
+            return ResponseEntity.badRequest().body(ctSp);
+        }
         ctSp.setSoLuong(ctSp.getSoLuong()-so_luong);
         if(ctSp.getSoLuong() == 0){
             ctSp.setTrangThai("Hết hàng");
+        }
+        if(so_luong == -1 && ctSp.getTrangThai().equals("Hết hàng")){
+            ctSp.setTrangThai("Còn hàng");
         }
         ctRepository.save(ctSp);
         return ResponseEntity.ok(ctSp);
@@ -183,6 +188,9 @@ public class BanHangController {
         }
         SanPhamChiTiet ctSp = optionalSanPham.get();
         ctSp.setSoLuong(ctSp.getSoLuong()+soLuong);
+        if(ctSp.getTrangThai().equals("Hết hàng")){
+            ctSp.setTrangThai("Còn hàng");
+        }
         ctRepository.save(ctSp);
         return ResponseEntity.ok(ctSp);
     }

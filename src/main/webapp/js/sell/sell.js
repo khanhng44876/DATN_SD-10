@@ -9,7 +9,9 @@ function openQrScanner() {
         return;
     }
 
-    $('#qrScannerModal').modal('show');
+    const qrModalEl = document.getElementById('qrScannerModal');
+    const qrModal = new bootstrap.Modal(qrModalEl);
+    qrModal.show();
     document.getElementById('qrMessage').innerText = 'Đặt mã QR vào khung hình';
     document.getElementById('qrMessage').style.color = 'black';
 
@@ -51,7 +53,9 @@ function scanQrCode() {
                 const productId = extractProductId(code.data);
                 if (productId) {
                     addProductFromQr(productId);
-                    $('#qrScannerModal').modal('hide');
+                    bootstrap.Modal.getInstance(
+                        document.getElementById('qrScannerModal')
+                    ).hide();
                     stopQrScanner();
                     return;
                 } else {
@@ -131,68 +135,69 @@ async function addProductFromQr(productId) {
 
         // Lưu vào localStorage và làm mới giao diện
         saveOrderToLocalStorage();
-        await renderOrders();
+        await renderOrderDetails(orderId);
     } catch (err) {
         alert('Lỗi: ' + err.message);
     }
 }
 // Hàm load lại đơn hàng
 async function renderOrders() {
-    console.log(orders)
-    let activeTab = document.querySelector("#nav-tab .nav-link.active")
-    let activeId = activeTab ? activeTab.getAttribute("data-order-id") : null
-    document.getElementById("nav-tab").innerHTML = ""
-    document.getElementById("nav-tabContent").innerHTML=""
-    for(let order of orders){
-        updateThanhTien(order.id)
-        await updateDiscount(order)
-        createElementOrder(order)
-        if(order.product.length>0){
-            let productList = document.getElementById(`product-list-${order.id}`);
-            order.product.forEach(product => {
-                let productItem = document.createElement("div")
-                productItem.classList.add("d-flex", "justify-content-between", "align-items-center");
+    // Giữ tab active
+    const active = document.querySelector("#nav-tab .nav-link.active");
+    const activeId = active?.getAttribute("data-order-id");
 
-                productItem.innerHTML = `
-                    <div class="col-3">
-                        <img src="../../images/${product.anh_san_pham}" alt="${product.ten_san_pham}" style="width: 150px;height: 150px;" class="img-fluid">
-                    </div>
-                    <div class="col-5">
-                        <h5 class="mb-1">${product.ten_san_pham}</h5>
-                        <div class="text-danger fw-bold">
-                             <span class="price">${product.don_gia.toLocaleString("vi-VN")}</span> VND
-                        </div>
-                        <div>Size: ${product.kich_thuoc}</div>
-                    </div>
-                    <div class="col-1 text-center">
-                        <div class="input-group input-group-sm">
-                            <button class="btn btn-outline-secondary btn-sm" onclick="updateQuantity(${order.id}, ${product.id}, -1)">-</button>
-                            <span class="form-control text-center" >${product.so_luong}</span>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="updateQuantity(${order.id}, ${product.id}, +1)">+</button>
-                        </div>
-                    </div>
-                    <div class="col-2 text-end text-danger fw-bold">
-                        ${(product.tong_tien).toLocaleString("vi-VN")} VND
-                    </div>
-                    <div class="col-1 text-end">
-                        <button class="btn btn-danger btn-sm" onclick="removeProduct(${order.id}, ${product.id})">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                    <hr>
-                `;
-                productList.appendChild(productItem)
-            });
+    // Sắp xếp theo id tăng dần
+    orders.sort((a, b) => a.id - b.id);
 
-        }
+    // Xóa cũ
+    document.getElementById("nav-tab").innerHTML = "";
+    document.getElementById("nav-tabContent").innerHTML = "";
+
+    // Duyệt orders
+    for (const order of orders) {
+        updateThanhTien(order.id);
+        await updateDiscount(order);
+        createElementOrder(order);
+        renderOrderDetails(order.id);
     }
-    if(activeId){
+
+    // Restore tab active
+    if (activeId) {
         setTimeout(() => {
-            let activeTabElement = document.querySelector(`#li-${activeId} .nav-link`);
-            if (activeTabElement) activeTabElement.click();
-        }, 100);
+            document.querySelector(`#li-${activeId} .nav-link`)?.click();
+        }, 50);
     }
-
+}
+function renderOrderDetails(orderId) {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+    // Cập nhật tổng tiền hiển thị
+    document.getElementById(`amount-${orderId}`).innerText =
+        order.totalAmount.toLocaleString("vi-VN");
+    // Xóa & vẽ lại list sản phẩm
+    const list = document.getElementById(`product-list-${orderId}`);
+    list.innerHTML = "";
+    for (const p of order.product) {
+        const item = document.createElement("div");
+        item.className = "row align-items-center gx-2 gy-1 ";
+        item.innerHTML = `
+      <div class='col-2'><img src='../../images/${p.anh_san_pham}' style='width:90px;height:90px'></div>
+      <div class='col-4'>
+        <h6>${p.ten_san_pham}</h6>
+        <div class='text-danger fw-bold'>${p.don_gia.toLocaleString()} VND</div>
+        <div>Size: ${p.kich_thuoc}</div>
+      </div>
+      <div class='col-2 text-center'>
+        <button onclick='updateQuantity(${orderId},${p.id},-1)'>-</button>
+        <span>${p.so_luong}</span>
+        <button onclick='updateQuantity(${orderId},${p.id},+1)'>+</button>
+      </div>
+      <div class='col-3 text-end text-danger fw-bold'>${p.tong_tien.toLocaleString()} VND</div>
+      <div class='col-1'><button class='btn btn-sm btn-danger' onclick='removeProduct(${orderId},${p.id})'>🗑</button></div>
+      <hr>
+    `;
+        list.appendChild(item);
+    }
 }
 
 // Xóa sản phẩm trong đơn hàng
@@ -228,123 +233,91 @@ function saveOrderToLocalStorage(){
 }
 
 // Hàm tạo đơn hàng
-function createOrder(){
-    if(orders.length >= 5){
-        alert("Tối đa 5")
+function createOrder() {
+    if (orders.length >= 5) {
+        alert("Tối đa 5 đơn");
         return;
     }
-    let orderId = orders.length ? orders[orders.length - 1].id + 1 : 1;
-    let orderName = `Đơn hàng ${orderId}`
-    let order ={
+    const orderId = orders.length ? orders[orders.length - 1].id + 1 : 1;
+    const order = {
         id: orderId,
-        name:orderName,
-        product:[],
-        customer : {
-            id:1,
-            name:"Khách lẻ"
-        },
+        name: `Đơn hàng ${orderId}`,
+        product: [],
+        customer: { id: 1, name: "Khách lẻ" },
         totalAmount: 0,
-        discount:{
-            id:null,
-            ma:"",
-            phan_tram:0,
-            tien_giam:0
-        },
-        tien_phai_tra:0,
+        discount: { id: null, ma: "", phan_tram: 0, tien_giam: 0 },
+        tien_phai_tra: 0,
         hinh_thuc_thanh_toan: null
-
-    }
-    orders.push(order)
-    saveOrderToLocalStorage()
-    createElementOrder(order);
+    };
+    orders.push(order);
+    saveOrderToLocalStorage();
+    renderOrders();
 }
 
 // Hàm tạo các thành phần trong đơn hàng
-function createElementOrder(order){
-
-    let li = document.createElement("li");
-    li.classList.add("nav-item");
+function createElementOrder(order) {
+    if (document.getElementById(`li-${order.id}`)
+        || document.getElementById(`content-${order.id}`)) {
+        return;
+    }
+    // Tab item
+    const li = document.createElement("li");
+    li.className = "nav-item";
     li.id = `li-${order.id}`;
-
-    let tab = document.createElement("button");
-    tab.classList.add("nav-link");
+    const tab = document.createElement("button");
+    tab.className = "nav-link";
     tab.setAttribute("data-bs-toggle", "tab");
     tab.setAttribute("data-bs-target", `#content-${order.id}`);
     tab.setAttribute("data-order-id", order.id);
-    tab.innerHTML = `${order.name} 
-        <span class="text-danger" style="cursor:pointer;" onclick="removeOrder(${order.id})">❌</span>`;
-
+    tab.innerHTML = `${order.name} <span class='text-danger' onclick='removeOrder(${order.id})'>❌</span>`;
     li.appendChild(tab);
     document.getElementById("nav-tab").appendChild(li);
 
-    // 📌 Tạo nội dung đơn hàng
-    let tabContent = document.createElement("div");
-    tabContent.classList.add("tab-pane", "fade");
-    tabContent.id = `content-${order.id}`;
-    tabContent.innerHTML = `
-        <div class="justify-content-between mt-3">
-            <h4>Sản phẩm</h4>
-            <button type="button" class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill" onclick="reloadProductModal()" data-bs-toggle="modal" data-bs-target="#spModal">
-                + Thêm sản phẩm
-            </button>
-            <button id="scanQrBtn" onclick="openQrScanner()" class="btn btn-primary px-4 py-2 fw-bold text-white rounded-pill">
-                        <i class="fas fa-qrcode"></i> Quét QR
-            </button>
+    // Content pane
+    const content = document.createElement("div");
+    content.className = "tab-pane fade";
+    content.id = `content-${order.id}`;
+    content.innerHTML = `
+    <div class='d-flex justify-content-between align-items-center mt-3'>
+      <h4>Sản phẩm</h4>
+      <div>
+        <button class='btn btn-warning' onclick='reloadProductModal()' data-bs-toggle='modal' data-bs-target='#spModal'>+ Thêm SP</button>
+        <button class='btn btn-primary' onclick='openQrScanner()'><i class='fas fa-qrcode'></i> Quét QR</button>
+      </div>
+    </div>
+    <hr>
+    <div class='row'>
+      <div class='col-md-8'>
+        <div id='product-list-${order.id}' class='product-list'></div>
+        <p class='mt-2 text-danger'><strong>Thành tiền: </strong><span id='amount-${order.id}'>0</span> VND</p>
+      </div>
+      <div class='col-md-4'>
+        <!-- Thông tin đơn hàng bên phải -->
+        <h4>Thông tin đơn hàng</h4><hr>
+        <div class='d-flex justify-content-between align-items-center'>
+          <h5>Khách hàng</h5>
+          <button class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#khModal'>Chọn khách</button>
         </div>
-        <hr>
-        <div class="row">
-            <div class="col-md-8">
-                <div id="product-list-${order.id}" class="product-list"></div>
-                    <p style="color: red">
-                        <strong>Thành tiền : </strong>
-                        <span class="thanh_tien-${order.id}">${order.totalAmount}</span> VND
-                    </p>
-            </div>
-        
-            <div class="col-md-4">
-                <div>
-                    <h4>Thông tin đơn hàng</h4>
-                    <hr>
-                            <div class="d-flex justify-content-between">
-                                <h4>Khách hàng</h4>
-                                <button type="button" data-bs-toggle="modal" data-bs-target="#khModal" class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill">Chọn khách hàng</button>
-                            </div>
-                            <div class="kh-container d-flex justify-content-between">
-                                <strong>Tên khách hàng : </strong>
-                                <span class="ten-khach-hang">${order.customer.name}</span>
-                            </div>
-                            <hr>
-                            
-                            <input type="hidden" id="kh-id-${order.id}" value="${order.customer.id}">
-                        
-                            <p>
-                            <input type="text" id="ma-km-${order.id}" placeholder="Mã khuyến mãi" value="${order.discount.ma}" readonly>
-                            <input type="text" id="phan-tram-${order.id}" placeholder="Phần trăm giảm" value="${order.discount.phan_tram + '%'}" readonly>
-                            </p>
-                            <p>Tiền hàng: <span class="thanh_tien-${order.id}">${order.totalAmount}</span> VND</p>
-                            <p>Giảm giá: <span id="tien-giam-${order.id}">${order.discount.tien_giam}</span> VND</p>
-                            <hr>
-                            <h5 class="text-danger">Tổng số tiền: <span id="totalAmount-${order.id}">${order.tien_phai_tra}</span> VND</h5>
-                            <hr>
-                            <p>Hình thức thanh toán : 
-                                <input type="radio" value="Tiền mặt" name="hinhthuctt" onchange="paymentChange(this,${order.id})"> Tiền mặt
-                                <input type="radio" value="Chuyển khoản" name="hinhthuctt" onchange="paymentChange(this,${order.id})"> Chuyển khoản
-                            </p>
-                            <span style="color: red" id="error-httt-${order.id}"></span>
-                            <div id="httt-${order.id}">
-                            
-                            </div>
-                            <p>
-                                <input type="hidden" id="km-id-${order.id}">
-                                <button class="btn btn-warning px-4 py-2 fw-bold text-white rounded-pill" onclick="confirmOrder(${order.id})">Xác nhận</button>
-                            </p>    
-                </div>
-            </div>
-        </div>
-
-    `;
-    document.getElementById("nav-tabContent").appendChild(tabContent);
+        <p><strong>Tên:</strong> ${order.customer.name}</p>
+        <p><input id='ma-km-${order.id}' placeholder='Mã khuyến mãi' value='${order.discount.ma}' readonly>
+           <input id='phan-tram-${order.id}' value='${order.discount.phan_tram}% ' readonly></p>
+        <p>Tiền hàng: <span id='amount-${order.id}'>${order.totalAmount.toLocaleString("vi-VN")}</span> VND</p>
+        <p>Giảm giá: <span id='tien-giam-${order.id}'>${order.discount.tien_giam.toLocaleString("vi-VN")}</span> VND</p>
+        <h5 class='text-danger'>Tổng: <span id='totalAmount-${order.id}'>${order.tien_phai_tra.toLocaleString("vi-VN")}</span> VND</h5><hr>
+        <p>Thanh toán:
+          <input type='radio' name='httt-${order.id}' value='Tiền mặt' onchange='paymentChange(this,${order.id})'> Tiền mặt
+          <input type='radio' name='httt-${order.id}' value='Chuyển khoản' onchange='paymentChange(this,${order.id})'> Chuyển khoản
+          <span class="text-danger" id="error-httt-${order.id}"></span>
+        </p>
+        <div id='httt-${order.id}'></div>
+        <button class='btn btn-success' onclick='confirmOrder(${order.id})'>Xác nhận</button>
+      </div>
+      <!-- Thông tin đơn hàng bên phải giữ nguyên -->
+    </div>
+  `;
+    document.getElementById("nav-tabContent").appendChild(content);
 }
+
 
 function paymentChange(radio,orderId){
     let value = radio.value;
@@ -411,7 +384,7 @@ async function removeOrder(orderId){
     await Promise.all(resp);
     orders = orders.filter(order => order.id !== orderId)
     saveOrderToLocalStorage()
-    renderOrders()
+    renderOrderDetails(order.id)
 }
 
 // Hàm cập nhật số lượng ngay tren giao diện
@@ -426,15 +399,18 @@ async function updateQuantity(orderId,productId,change){
         console.log("không tìm thấy product")
         return;
     }
-    product.so_luong = Math.max(1,Number(product.so_luong) + change)
-    product.tong_tien = Number(product.so_luong) * product.don_gia;
-    saveOrderToLocalStorage()
     const resp = await fetch(`/ban-hang-off/update-sp/${Number(product.id)}/${change}`,{
         method : "PUT"
     })
-
+    if (!resp.ok) {
+        alert("Số lượng trong kho đã hết");
+        return;
+    }
+    product.so_luong = Math.max(1,Number(product.so_luong) + change)
+    product.tong_tien = Number(product.so_luong) * product.don_gia;
+    saveOrderToLocalStorage()
     updateThanhTien(orderId)
-    renderOrders()
+    renderOrderDetails(orderId)
 }
 
 // Hàm mở form Nhập số lượng
@@ -487,7 +463,7 @@ function selectKH(button){
     order.customer.id = Number(idKH)
     order.customer.name = tenKH
     saveOrderToLocalStorage()
-    renderOrders()
+    renderOrderDetails(orderId)
     let modal = bootstrap.Modal.getInstance(document.getElementById('khModal'));
     modal.hide()
 }
@@ -640,24 +616,25 @@ async function confirmOrder(orderId) {
 
 // Hàm validate
 function validateOrder(orderId) {
+    let order = orders.find(o => o.id === orderId);
+    if (!order) return false;
     let paymentMethods = document.querySelectorAll(`[name="hinhthuctt"]:checked`);
     let customerPayInput = document.getElementById(`customer-pay-${orderId}`);
     let errorHttt = document.getElementById(`error-httt-${orderId}`);
-    let errorTkd = document.getElementById(`error-tkd-${orderId}`);
-
     errorHttt.innerText = "";
-    errorTkd.innerText = "";
 
     // Kiểm tra hình thức thanh toán
-    if (paymentMethods.length === 0) {
+    if (order.hinh_thuc_thanh_toan !== "Tiền mặt" && order.hinh_thuc_thanh_toan !== "Chuyển khoản") {
         errorHttt.innerText = "Vui lòng chọn hình thức thanh toán!";
         return false;
+    }
+    if(order.hinh_thuc_thanh_toan === "Tiền mặt"){
+        let errorTkd = document.getElementById(`error-tkd-${orderId}`);
+        errorTkd.innerText = "";
     }
 
     // Kiểm tra tiền khách đưa
     let customerPay = parseFloat(customerPayInput.value.replace(/\D/g, "")) || 0;
-    let order = orders.find(o => o.id === orderId);
-    if (!order) return false;
 
     let finalTotal = order.tien_phai_tra;
     if (customerPay < finalTotal) {
@@ -851,9 +828,8 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
         console.error(e);
     });
 
-
     saveOrderToLocalStorage()
-    renderOrders()
+    renderOrderDetails(orderId)
     let modal = bootstrap.Modal.getInstance(document.getElementById('quantityModal'));
     modal.hide()
 })
@@ -866,4 +842,6 @@ document.getElementById("quantityModal").addEventListener("hidden.bs.modal", fun
     document.getElementById("so_luong").innerText = "";
     document.getElementById("errQuantityMes").innerText="";
 });
-renderOrders();
+document.addEventListener("DOMContentLoaded", () => {
+    renderOrders();
+});
