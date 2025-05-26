@@ -16,7 +16,7 @@
             <div class="container">
                 <h2 style="text-align: center;">Quản Lý Chi Tiết Sản Phẩm</h2>
                 <form id="formSuaCtsp" enctype="multipart/form-data" class="mt-4">
-                    <label>Tên sản phẩm(*)</label>
+                    <label>Tên sản phẩm</label>
                     <select id="idsanPham" class="form-control" disabled>
                         <option value="">Chọn sản phẩm</option>
                         <option th:each="sp : ${dataSP}" th:value="${sp.id}"
@@ -24,11 +24,11 @@
                                 th:selected="${sp.id == ctsp.sanPham.id}"></option>
                     </select>
 
-                    <label>Đơn giá(*)</label>
+                    <label>Đơn giá<span style="color: red;">*</span></label>
                     <input id="donGia" class="form-control" th:value="${ctsp.donGia}">
                     <span id="errorDonGia" class="text-danger"></span>
 
-                    <label>Số lượng(*)</label>
+                    <label>Số lượng<span style="color: red;">*</span></label>
                     <input id="soLuong" class="form-control" th:value="${ctsp.soLuong}">
                     <span id="errorSoLuong" class="text-danger"></span>
                     <br>
@@ -36,7 +36,7 @@
                     <label>Ghi chú</label>
                     <input id="moTa" class="form-control" th:value="${ctsp.moTa}">
 
-                    <label>Màu sắc(*)</label>
+                    <label>Màu sắc<span style="color: red;">*</span></label>
                     <select id="mauSac" class="form-control">
                         <option value="">Chọn màu sắc</option>
                         <option th:each="mau : ${dsMau}" th:value="${mau.id}"
@@ -46,7 +46,7 @@
                     <span id="errorMauSac" class="text-danger"></span>
                     <br>
 
-                    <label>Kích thước(*)</label>
+                    <label>Kích thước<span style="color: red;">*</span></label>
                     <select id="kichThuoc" class="form-control">
                         <option value="">Chọn kích thước</option>
                         <option th:each="size : ${dsKichThuoc}" th:value="${size.id}"
@@ -56,7 +56,7 @@
                     <span id="errorSize" class="text-danger"></span>
                     <br>
 
-                    <label>Chất liệu(*)</label>
+                    <label>Chất liệu<span style="color: red;">*</span></label>
                     <select id="chatLieu" class="form-control">
                         <option value="">Chọn chất liệu</option>
                         <option th:each="chatLieu : ${dsChatLieu}" th:value="${chatLieu.id}"
@@ -66,7 +66,7 @@
                     <span id="errorChatLieu" class="text-danger"></span>
                     <br>
 
-                    <label>Trạng Thái(*)</label>
+                    <label>Trạng Thái<span style="color: red;">*</span></label>
                     <select id="trangThai" class="form-control">
                         <option value="Còn hàng" th:selected="${ctsp.trangThai == 'Còn hàng'}">Còn Hàng</option>
                         <option value="Hết hàng" th:selected="${ctsp.trangThai == 'Hết hàng'}">Hết Hàng</option>

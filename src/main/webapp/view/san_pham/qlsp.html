@@ -60,7 +60,8 @@
                         </select>
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
-                        <button class="btn btn-primary w-100" onclick="filterSanPham()">Lọc</button>
+                        <button class="btn btn-primary me-2 w-50" onclick="filterSanPham()">Lọc</button>
+                        <button class="btn btn-warning w-50" onclick="resetFilters()">Làm mới</button>
                     </div>
                 </div>
                 <a href="/san-pham/addsp" class="btn btn-success">Thêm sản phẩm</a>
@@ -152,6 +153,19 @@
                         $.fn.dataTable.ext.search.pop();
                     }
                 });
+
+                window.resetFilters = function () {
+                    $('#filterMaSanPham').val('');
+                    $('#filterTenSanPham').val('');
+                    $('#filterNgayNhap').val('');
+                    $('#filterNgaySua').val('');
+                    $('#filterDanhMuc').val('');
+                    $('#filterHang').val('');
+                    $('#filterTrangThai').val('');
+
+                    $('#example').DataTable().search('').columns().search('').draw();
+                }
+
             </script>
 
 

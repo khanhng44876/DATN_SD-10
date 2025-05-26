@@ -15,7 +15,7 @@
             <div class="container">
                 <h2 style="text-align: center;">Quản Lý Chi Tiết Sản Phẩm</h2>
 
-                <label class="lb-form">Sản phẩm(*)</label>
+                <label class="lb-form">Sản phẩm</label>
                 <select id="idsanPham" class="form-control" disabled>
                     <option value="">Chọn sản phẩm</option>
                     <option th:each="sp : ${dataSP}" th:value="${sp.id}" th:text="${sp.tenSanPham}"></option>
@@ -25,12 +25,12 @@
                 <div class="row">
 
                     <div class="col-sm-6">
-                        <label class="lb-form">Đơn giá(*)</label>
+                        <label class="lb-form">Đơn giá<span style="color: red;">*</span></label>
                         <input id="donGia" class="form-control" required>
                         <span id="errorDonGia" class="text-danger"></span>
                         <br>
 
-                        <label class="lb-form">Số lượng(*)</label>
+                        <label class="lb-form">Số lượng<span style="color: red;">*</span></label>
                         <input id="soLuong" class="form-control" required>
                         <span id="errorSoLuong" class="text-danger"></span>
                         <br>
@@ -42,7 +42,7 @@
 
                     </div>
                     <div class="col-sm-6">
-                        <label class="lb-form">Màu sắc(*)</label>
+                        <label class="lb-form">Màu sắc<span style="color: red;">*</span></label>
                         <select id="mauSac" class="form-control">
                             <option value="">Chọn màu sắc</option>
                             <option th:each="mau : ${dsMau}" th:value="${mau.id}" th:text="${mau.ten_mau_sac}"></option>
@@ -52,7 +52,7 @@
                         <span id="errorMauSac" class="text-danger"></span>
                         <br>
 
-                        <label class="lb-form">Kích thước(*)</label>
+                        <label class="lb-form">Kích thước<span style="color: red;">*</span></label>
                         <select id="kichThuoc" class="form-control">
                             <option value="">Chọn kích thước</option>
                             <option th:each="size : ${dsKichThuoc}" th:value="${size.id}" th:text="${size.tenKichThuoc}"></option>
@@ -61,7 +61,7 @@
                         <a th:href="@{/san-pham/kich-thuoc}">Thêm kích thước</a>
                         <br>
 
-                        <label class="lb-form">Chất liệu(*)</label>
+                        <label class="lb-form">Chất liệu<span style="color: red;">*</span></label>
                         <select id="chatLieu" class="form-control">
                             <option value="">Chọn chất liệu</option>
                             <option th:each="chatLieu : ${dsChatLieu}" th:value="${chatLieu.id}" th:text="${chatLieu.tenChatLieu}"></option>
@@ -71,7 +71,7 @@
                     </div>
                     <br>
 
-                    <label class="lb-form">Trạng Thái(*)</label>
+                    <label class="lb-form">Trạng Thái<span style="color: red;">*</span></label>
                     <select id="trangThai" class="form-control">
                         <option value="">Chọn trạng thái</option>
                         <option value="Còn hàng">Còn Hàng</option>
