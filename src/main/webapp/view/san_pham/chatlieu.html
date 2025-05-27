@@ -14,7 +14,19 @@
         <div class="pt-3" style="width: calc(100% - 250px);">
             <div class="container">
                 <h2 style="text-align: center;">Quản Lý Chất Liệu</h2>
+                <div class="col-md-4 mb-3">
+                    <label>Sắp xếp theo tên chất liệu:</label>
+                    <select class="form-select" onchange="sortTable(this.value)">
+                        <option value="">-- Chọn --</option>
+                        <option value="az">A → Z</option>
+                        <option value="za">Z → A</option>
+                    </select>
+                </div>
                 <a th:href="@{/san-pham/chat-lieu/addcl}" class="btn btn-success"> Thêm chất liệu</a>
+
+
+
+
 
                 <table id="example" class="table table-bordered">
                     <thead>
@@ -25,7 +37,7 @@
                         <th>Thao tác</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="chatLieuTableBody">
                     <tr th:each="d : ${listct}">
                         <td th:text="${d.id}"></td>
                         <td th:text="${d.tenChatLieu}"></td>
@@ -42,6 +54,8 @@
                 </table>
 
             </div>
+
+
         </div>
     </div>
 </div>

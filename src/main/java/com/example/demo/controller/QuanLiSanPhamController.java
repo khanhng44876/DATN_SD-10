@@ -508,6 +508,31 @@ public class QuanLiSanPhamController {
         chatLieuRepository.save(chatLieu);
         return ResponseEntity.ok("Chất liệu đã được thêm thành công!");
     }
+    @GetMapping("/loc-chat-lieu")
+    @ResponseBody
+    public List<ChatLieu> locChatLieu(
+            @RequestParam(required = false) String tenChatLieu,
+            @RequestParam(required = false) String moTa) {
+
+        List<ChatLieu> ds = chatLieuRepository.findAll();
+
+        if (tenChatLieu != null && !tenChatLieu.isEmpty()) {
+            ds = ds.stream()
+                    .filter(cl -> cl.getTenChatLieu().toLowerCase().contains(tenChatLieu.toLowerCase()))
+                    .toList();
+        }
+
+        if (moTa != null && !moTa.isEmpty()) {
+            ds = ds.stream()
+                    .filter(cl -> cl.getMoTa().toLowerCase().contains(moTa.toLowerCase()))
+                    .toList();
+        }
+
+        return ds;
+    }
+
+
+
 
     @PutMapping("/cap-nhat-chat-lieu/{id}")
     public ResponseEntity<?> updateSaM(@PathVariable Integer id, @RequestBody Map<String, Object> payload) {
@@ -543,6 +568,37 @@ public class QuanLiSanPhamController {
         return result.map(danhMuc -> new ResponseEntity<>(danhMuc, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
+    @GetMapping("/loc-danh-muc")
+    @ResponseBody
+    public List<DanhMuc> locDanhMuc(
+            @RequestParam(required = false) String tendanhmuc,
+            @RequestParam(required = false) String mota,
+            @RequestParam(required = false) String trangthai) {
+
+        List<DanhMuc> ds = danhMucRepository.findAll();
+
+        if (tendanhmuc != null && !tendanhmuc.isEmpty()) {
+            ds = ds.stream()
+                    .filter(dm -> dm.getTendanhmuc().toLowerCase().contains(tendanhmuc.toLowerCase()))
+                    .toList();
+        }
+
+        if (mota != null && !mota.isEmpty()) {
+            ds = ds.stream()
+                    .filter(dm -> dm.getMota().toLowerCase().contains(mota.toLowerCase()))
+                    .toList();
+        }
+
+        if (trangthai != null && !trangthai.isEmpty()) {
+            ds = ds.stream()
+                    .filter(dm -> dm.getTrangThai().toLowerCase().contains(trangthai.toLowerCase()))
+                    .toList();
+        }
+
+        return ds;
+    }
+
     // check trùng danh mục
     @GetMapping("/kiem-tra-trung-danh-muc")
     public ResponseEntity<Map<String, Boolean>> kiemTraTrungChiTiet(
@@ -569,6 +625,7 @@ public class QuanLiSanPhamController {
 
         return ResponseEntity.ok(result);
     }
+
 
 
     @PostMapping("/them-danh-muc")

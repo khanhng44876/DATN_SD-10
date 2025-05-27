@@ -14,7 +14,14 @@
         <div class="pt-3" style="width: calc(100% - 250px);">
             <div class="container">
                 <h2 style="text-align: center;">Quản Lý Kích Thước</h2>
-
+                <div class="col-md-4 mb-3">
+                    <label>Sắp xếp theo tên kích thước:</label>
+                    <select class="form-select" onchange="sortTable(this.value)">
+                        <option value="">-- Chọn --</option>
+                        <option value="az">A → Z</option>
+                        <option value="za">Z → A</option>
+                    </select>
+                </div>
                 <div class="row">
                     <div class="col-sm-12" style="text-align: left;"> <!-- Sử dụng CSS inline để căn trái -->
                         <a href="/san-pham/kich-thuoc/save-kich-thuoc" class="btn btn-success">Thêm Kích thước</a>

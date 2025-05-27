@@ -176,6 +176,18 @@ async function capNhatKhachHang(idkh) {
 
 
 }
+function sortTableByName(order) {
+    var table = $('#example').DataTable();
+    // Cột tên NV là cột thứ 4 (index 3, 0-based)
+    var colIndex = 3;
+    if (order === 'az') {
+        table.order([colIndex, 'asc']).draw();
+    } else if (order === 'za') {
+        table.order([colIndex, 'desc']).draw();
+    } else {
+        table.order([]).draw(); // reset sắp xếp
+    }
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);

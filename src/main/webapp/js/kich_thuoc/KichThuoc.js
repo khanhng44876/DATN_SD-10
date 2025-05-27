@@ -137,6 +137,28 @@ async function capNhatS(idct) {
         alert("Tên kích thước đã bị trùng.");
     }
 }
+
+// sắp xếp
+function sortTable(order) {
+    const table = document.getElementById("tableBody");
+    const rows = Array.from(table.rows);
+
+    rows.sort((a, b) => {
+        const nameA = a.cells[1].innerText.trim().toLowerCase(); // Cột "Tên màu"
+        const nameB = b.cells[1].innerText.trim().toLowerCase();
+
+        if (order === "az") {
+            return nameA.localeCompare(nameB);
+        } else if (order === "za") {
+            return nameB.localeCompare(nameA);
+        } else {
+            return 0;
+        }
+    });
+
+    table.innerHTML = '';
+    rows.forEach(row => table.appendChild(row));
+}
 document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id'); // Lấy ID từ URL
