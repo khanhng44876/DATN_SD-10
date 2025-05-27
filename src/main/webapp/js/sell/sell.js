@@ -171,33 +171,91 @@ async function renderOrders() {
 function renderOrderDetails(orderId) {
     const order = orders.find(o => o.id === orderId);
     if (!order) return;
+    
     // Cập nhật tổng tiền hiển thị
     document.getElementById(`amount-${orderId}`).innerText =
         order.totalAmount.toLocaleString("vi-VN");
+    
     // Xóa & vẽ lại list sản phẩm
     const list = document.getElementById(`product-list-${orderId}`);
     list.innerHTML = "";
-    for (const p of order.product) {
+
+    // Tính toán phân trang
+    const itemsPerPage = 3;
+    const totalPages = Math.ceil(order.product.length / itemsPerPage);
+    const currentPage = order.currentPage || 1;
+
+    // Lấy sản phẩm cho trang hiện tại
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentProducts = order.product.slice(startIndex, endIndex);
+
+    // Hiển thị sản phẩm
+    for (const p of currentProducts) {
         const item = document.createElement("div");
         item.className = "row align-items-center gx-2 gy-1 ";
         item.innerHTML = `
-      <div class='col-2'><img src='../../images/${p.anh_san_pham}' style='width:90px;height:90px'></div>
-      <div class='col-4'>
-        <h6>${p.ten_san_pham}</h6>
-        <div class='text-danger fw-bold'>${p.don_gia.toLocaleString()} VND</div>
-        <div>Size: ${p.kich_thuoc}</div>
-      </div>
-      <div class='col-2 text-center'>
-        <button onclick='updateQuantity(${orderId},${p.id},-1)'>-</button>
-        <span>${p.so_luong}</span>
-        <button onclick='updateQuantity(${orderId},${p.id},+1)'>+</button>
-      </div>
-      <div class='col-3 text-end text-danger fw-bold'>${p.tong_tien.toLocaleString()} VND</div>
-      <div class='col-1'><button class='btn btn-sm btn-danger' onclick='removeProduct(${orderId},${p.id})'>🗑</button></div>
-      <hr>
-    `;
+            <div class='col-2'><img src='../../images/${p.anh_san_pham}' style='width:90px;height:90px'></div>
+            <div class='col-4'>
+                <h6>${p.ten_san_pham}</h6>
+                <div class='text-danger fw-bold'>${p.don_gia.toLocaleString()} VND</div>
+                <div>Size: ${p.kich_thuoc}</div>
+            </div>
+            <div class='col-2 text-center'>
+                <button onclick='updateQuantity(${orderId},${p.id},-1)'>-</button>
+                <span>${p.so_luong}</span>
+                <button onclick='updateQuantity(${orderId},${p.id},+1)'>+</button>
+            </div>
+            <div class='col-3 text-end text-danger fw-bold'>${p.tong_tien.toLocaleString()} VND</div>
+            <div class='col-1'><button class='btn btn-sm btn-danger' onclick='removeProduct(${orderId},${p.id})'>🗑</button></div>
+            <hr>
+        `;
         list.appendChild(item);
     }
+
+    // Thêm phân trang
+    if (totalPages > 1) {
+        const paginationDiv = document.createElement("div");
+        paginationDiv.className = "d-flex justify-content-center mt-3";
+        paginationDiv.innerHTML = `
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="changePage(${orderId}, ${currentPage - 1})" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+        `;
+
+        for (let i = 1; i <= totalPages; i++) {
+            paginationDiv.querySelector('.pagination').innerHTML += `
+                <li class="page-item ${currentPage === i ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${orderId}, ${i})">${i}</a>
+                </li>
+            `;
+        }
+
+        paginationDiv.querySelector('.pagination').innerHTML += `
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="changePage(${orderId}, ${currentPage + 1})" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        `;
+        list.appendChild(paginationDiv);
+    }
+}
+
+// Thêm hàm changePage để xử lý việc chuyển trang
+function changePage(orderId, page) {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+    
+    order.currentPage = page;
+    saveOrderToLocalStorage();
+    renderOrderDetails(orderId);
 }
 
 // Xóa sản phẩm trong đơn hàng
@@ -298,7 +356,7 @@ function createElementOrder(order) {
           <h5>Khách hàng</h5>
           <button class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#khModal'>Chọn khách</button>
         </div>
-        <p><strong>Tên:</strong> ${order.customer.name}</p>
+        <p id="customer-name"><strong>Tên khách hàng : </strong> ${order.customer.name}</p>
         <p><input id='ma-km-${order.id}' placeholder='Mã khuyến mãi' value='${order.discount.ma}' readonly>
            <input id='phan-tram-${order.id}' value='${order.discount.phan_tram}% ' readonly></p>
         <p>Tiền hàng: <span id='amount-${order.id}'>${order.totalAmount.toLocaleString("vi-VN")}</span> VND</p>
@@ -376,15 +434,17 @@ async function renderPaymentMethod(order){
 // Hàm xóa đơn hàng
 async function removeOrder(orderId){
     const order = orders.find(o => o.id === orderId);
-    const resp = order.product.map(p =>{
-        return fetch(`/ban-hang-off/remove-sp/${Number(p.id)}/${Number(p.so_luong)}`,{
-            method : "PUT"
-        });
-    });
-    await Promise.all(resp);
+    if (Array.isArray(order.product) && order.product.length > 0) {
+        const resp = order.product.map(p =>
+            fetch(`/ban-hang-off/remove-sp/${+p.id}/${+p.so_luong}`, {
+                method: "PUT"
+            })
+        );
+        await Promise.all(resp);
+    }
     orders = orders.filter(order => order.id !== orderId)
     saveOrderToLocalStorage()
-    renderOrderDetails(order.id)
+    renderOrders()
 }
 
 // Hàm cập nhật số lượng ngay tren giao diện
@@ -449,6 +509,8 @@ function updateThanhTien(orderId){
 function selectKH(button){
     let idKH = button.getAttribute("data-id");
     let tenKH = button.getAttribute("data-name");
+    const customerName = document.getElementById("customer-name");
+    customerName.innerHTML = "";
     let activeTab = document.querySelector("#nav-tab .nav-link.active")
     if(!activeTab){
         alert("Vui lòng chọn một đơn hàng trước!");
@@ -462,6 +524,9 @@ function selectKH(button){
     }
     order.customer.id = Number(idKH)
     order.customer.name = tenKH
+    customerName.innerHTML = `
+        <strong>Tên khách hàng : </strong> ${order.customer.name}
+    `
     saveOrderToLocalStorage()
     renderOrderDetails(orderId)
     let modal = bootstrap.Modal.getInstance(document.getElementById('khModal'));
@@ -631,15 +696,18 @@ function validateOrder(orderId) {
     if(order.hinh_thuc_thanh_toan === "Tiền mặt"){
         let errorTkd = document.getElementById(`error-tkd-${orderId}`);
         errorTkd.innerText = "";
-    }
 
-    // Kiểm tra tiền khách đưa
-    let customerPay = parseFloat(customerPayInput.value.replace(/\D/g, "")) || 0;
-
-    let finalTotal = order.tien_phai_tra;
-    if (customerPay < finalTotal) {
-        errorTkd.innerText = "Số tiền khách đưa không đủ!";
-        return false;
+        // Kiểm tra tiền khách đưa
+        let customerPay = parseFloat(customerPayInput.value.replace(/\D/g, "")) || 0;
+        if (customerPayInput.value.trim() === "") {
+            errorTkd.innerText = "Vui lòng nhập số tiền khách đưa!";
+            return false;
+        }
+        let finalTotal = order.tien_phai_tra;
+        if (customerPay < finalTotal) {
+            errorTkd.innerText = "Số tiền khách đưa không đủ!";
+            return false;
+        }
     }
 
     return true;
@@ -789,11 +857,15 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
         document.getElementById("errQuantityMes").innerText = "Không được để trống trường này!"
         return;
     }
-    if(inpQuantity <= 0){
-        document.getElementById("errQuantityMes").innerText = "Vui lòng nhập số lớn hơn 0"
+    if(isNaN(inpQuantity) || !Number.isInteger(Number(inpQuantity))){
+        document.getElementById("errQuantityMes").innerText = "Vui lòng nhập số nguyên hợp lệ"
         return;
     }
-    if(inpQuantity > soLuong){
+    if(Number(inpQuantity) <= 0){
+        document.getElementById("errQuantityMes").innerText = "Vui lòng nhập số nguyên lớn hơn 0"
+        return;
+    }
+    if(Number(inpQuantity) > soLuong){
         document.getElementById("errQuantityMes").innerText = "Vượt quá số lượng trong kho"
         return;
     }
@@ -827,7 +899,6 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
     }).catch(e => {
         console.error(e);
     });
-
     saveOrderToLocalStorage()
     renderOrderDetails(orderId)
     let modal = bootstrap.Modal.getInstance(document.getElementById('quantityModal'));
@@ -835,6 +906,7 @@ document.querySelector("#quantityModal .btn-primary").addEventListener("click",f
 })
 document.getElementById("quantityModal").addEventListener("hidden.bs.modal", function () {
     console.log("đóng rồi")
+    document.getElementById("inp_so_luong").innerText = "";
     document.getElementById("ten_sp").innerText = "";
     document.getElementById("mau_sac").innerText = "";
     document.getElementById("kich_thuoc").innerText = "";
