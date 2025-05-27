@@ -14,7 +14,24 @@
         <div class="pt-3" style="width: calc(100% - 250px);">
             <div class="container">
                 <h2 style="text-align: center;">Quản Lý Nhân Viên</h2>
+                <div>
+                    <label>Sắp xếp theo tên NV:</label>
+                    <select id="sortName" onchange="sortTableByName(this.value)">
+                        <option value="">-- Chọn --</option>
+                        <option value="az">A → Z</option>
+                        <option value="za">Z → A</option>
+                    </select>
+                </div>
+                <br>
+                <label>Sắp xếp theo chức vụ:</label>
+                <select id="sortChucVu" onchange="sortTableByChucVu(this.value)">
+                    <option value="">-- Chọn --</option>
+                    <option value="asc">NHAN_VIEN</option>
+                    <option value="desc">QUAN_LY</option>
+                </select>
+                <br>
                 <a href="/nhan-vien/add" class="btn btn-success">Thêm nhân viên</a>
+                <br>
                 <table id="example" class="table table-bordered">
                     <thead>
                     <tr>

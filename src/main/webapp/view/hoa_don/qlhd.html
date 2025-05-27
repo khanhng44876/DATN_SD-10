@@ -14,6 +14,16 @@
         <div class="pt-3" style="width: calc(100% - 250px);">
             <div class="container">
                 <h2 style="text-align: center;">Quản Lý Hóa Đơn</h2>
+                <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
+                    <label for="sortName">Sắp xếp theo tên nhân viên:</label>
+                    <select id="sortName" class="form-select" style="width: 150px;">
+                        <option value="">-- Chọn --</option>
+                        <option value="asc">A → Z</option>
+                        <option value="desc">Z → A</option>
+                    </select>
+
+<!--                    <button id="btnReset" class="btn btn-secondary">Làm mới</button>-->
+                </div>
 
                 <table id="example" class="table table-bordered">
                     <thead>
@@ -61,6 +71,32 @@
 </body>
 <script>
     $('#example').DataTable();
+    $(document).ready(function () {
+        var table = $('#example').DataTable();
+
+        // Khi chọn combobox sắp xếp
+        $('#sortName').on('change', function () {
+            var val = $(this).val();
+            if (val === 'asc') {
+                // Cột tên nhân viên là cột thứ 3 (index 2, tính từ 0)
+                table.order([2, 'asc']).draw();
+            } else if (val === 'desc') {
+                table.order([2, 'desc']).draw();
+            } else {
+                // Không chọn gì, reset sắp xếp
+                table.order([]).draw();
+            }
+        });
+
+        // Nút làm mới: reset combobox và sắp xếp, có thể reset thêm các filter khác nếu có
+        $('#btnReset').on('click', function () {
+            $('#sortName').val('');    // reset combobox
+            table.order([]).draw();    // reset sắp xếp
+            table.search('').draw();   // reset tìm kiếm
+            // Nếu có filter khác, reset ở đây
+        });
+    });
+
 </script>
 <script th:inline="javascript">
     let listHoaDon = /*[[${listHoaDon}]]*/ [];

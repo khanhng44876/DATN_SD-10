@@ -210,3 +210,29 @@
             loadNVData(id); // Gọi hàm tải dữ liệu
         }
     });
+
+    function sortTableByName(order) {
+        var table = $('#example').DataTable();
+        // Cột tên NV là cột thứ 4 (index 3, 0-based)
+        var colIndex = 3;
+        if (order === 'az') {
+            table.order([colIndex, 'asc']).draw();
+        } else if (order === 'za') {
+            table.order([colIndex, 'desc']).draw();
+        } else {
+            table.order([]).draw(); // reset sắp xếp
+        }
+    }
+
+    function sortTableByChucVu(order) {
+        var table = $('#example').DataTable();
+        // Cột Chức vụ là cột thứ 5 (0-based index = 4)
+        var colIndex = 4;
+        if (order === 'asc') {
+            table.order([colIndex, 'asc']).draw();
+        } else if (order === 'desc') {
+            table.order([colIndex, 'desc']).draw();
+        } else {
+            table.order([]).draw(); // reset sắp xếp
+        }
+    }
