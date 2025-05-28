@@ -301,8 +301,8 @@ values (N'Khách lẻ',null,null,null,null,null,null,null,1),
     ('Nguyen Gia Khanh', 'khanhngph44876@fpt.edu.vn','0345760481','Dai Mo, HN','1998-02-12','Nam','khanh123', '123456',1),
     ('Nguyen Quach Vu', 'vunqph45621@fpt.edu.vn','0396311217','Nhon, HN','1995-12-22','Nam','vu123', '123456',1),
     ('Vi Cong Minh', 'minhvcph45103@fpt.edu.vn','0702202307','Huu Lung, LS','2004-05-09','Nam','minh123', '123456',1),
-    ('Nguyen Van Sao', 'saonvph45620@fpt.edu.vn','0879913025','n, BN','2003-05-09','Nam','sao123', '123456',1),
-    ('Tran Thi Thu phuong', 'phuongtttph45219@fpt.edu.vn','0947052726','n, LS','2003-05-09',N'Nữ','phuong123', '123456',1)
+    ('Nguyen Van Sao', 'saonvph45620@fpt.edu.vn','0879913025','Bac Ninh','2003-05-09','Nam','sao123', '123456',1),
+    ('Tran Thi Thu phuong', 'phuongtttph45219@fpt.edu.vn','0947052726','Nam Dinh, LS','2003-05-09','Nu','phuong123', '123456',1)
 
 
 
@@ -313,10 +313,10 @@ values ('khanhok123','khanh','SA12342','NHAN_VIEN','jdk1234@gmail.com','09876543
 
 
 
-insert into khuyen_mai(so_luong,ten_khuyen_mai, mo_ta, ma_khuyen_mai, muc_giam, ngay_bat_dau,ngay_ket_thuc,dieu_kien,giam_toi_da,id_hoa_don,trang_thai,so_luong_sd)
-values(10,'Monday','abc','SP012345',10,'2025-02-14','2025-03-01',100,30,1,'Đang kích hoạt',0),
-    (20,'friday','abc','SP015645',10,'2025-02-14','2025-03-01',200,50,1,'Đang kích hoạt',0),
-    (30,'sunday','abc','SP23415',15,'2025-02-14','2025-03-01',150,40,1,'Đang kích hoạt',0)
+insert into khuyen_mai(so_luong,ten_khuyen_mai, mo_ta, ma_khuyen_mai, muc_giam, ngay_bat_dau,ngay_ket_thuc,dieu_kien,giam_toi_da,trang_thai,so_luong_sd)
+values(10,'Monday','abc','SP012345',10,'2025-02-14','2025-03-01',100,30,'Đang kích hoạt',0),
+    (20,'friday','abc','SP015645',10,'2025-02-14','2025-03-01',200,50,'Đang kích hoạt',0),
+    (30,'sunday','abc','SP23415',15,'2025-02-14','2025-03-01',150,40,'Đang kích hoạt',0)
 
 insert into hoa_don(id_khuyen_mai,id_nhan_vien, id_khach_hang, ngay_tao,ngay_sua, tong_tien, trang_thai_thanh_toan, hinh_thuc_thanh_toan)
 values (1,3,1,'2025-02-14','2025-02-14',22222222,'Da thanh toan','Chuyen Khoan'),
