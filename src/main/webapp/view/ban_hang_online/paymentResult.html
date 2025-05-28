@@ -45,14 +45,17 @@
 </div>
 <div th:replace="giao_dien_chinh/footer :: footer"></div>
 <script th:inline="javascript">
+    let paymentStatus = /*[[${paymentStatus}]]*/ null;
     document.addEventListener('DOMContentLoaded',(event)=>{
-        let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        let total_price = JSON.parse(localStorage.getItem('total_price')) || 0;
-        if(cart !== [] && total_price !== 0){
-            cart = cart.filter(c => !c.active);
-            total_price = 0;
-            localStorage.setItem('total_price',JSON.stringify(total_price));
-            localStorage.setItem('cart',JSON.stringify(cart));
+        if(paymentStatus !== null && paymentStatus === "Thành công"){
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            let total_price = JSON.parse(localStorage.getItem('total_price')) || 0;
+            if(cart !== [] && total_price !== 0){
+                cart = cart.filter(c => !c.active);
+                total_price = 0;
+                localStorage.setItem('total_price',JSON.stringify(total_price));
+                localStorage.setItem('cart',JSON.stringify(cart));
+            }
         }
     })
 </script>

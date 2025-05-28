@@ -65,7 +65,7 @@ function renderCart(){
     }
     updatePromoListByTotal()
 }
-// Hàm này tạo các thành phần trong giỏ hàng
+
 function createElementCart(){
     let productList = document.getElementById("product")
     cart.forEach(p=>{
@@ -112,7 +112,7 @@ function createElementCart(){
         productList.appendChild(hr)
     })
 }
-// Hàm cập nhật số lượng
+
 function updateQuantity(itemId,num){
     let item = cart.find(c=>c.id===itemId)
     console.log(item)
@@ -126,7 +126,7 @@ function updateQuantity(itemId,num){
     renderQuantity(item.id);
 
 }
-// Chỉ load so lượng và giá không reload ảnh
+
 function renderQuantity(itemId){
     let item = cart.find(c=>c.id===itemId)
     document.getElementById(`quantity-${item.id}`).innerText = item.quantity
@@ -138,13 +138,13 @@ function renderQuantity(itemId){
 
     handleCheckboxChange({ target: checkbox });
 }
-// Xóa item khỏi giỏ
+
 function removeItem(cartId){
     cart = cart.filter(c => c.id !== cartId)
     saveToLocalStorage();
     renderCart();
 }
-// Theo dõi những thay đổi của checkbox
+
 async function handleCheckboxChange(event) {
     applied_promo.innerHTML=""
     if (event.target.classList.contains("checkbox-item")) {
@@ -215,7 +215,15 @@ async function handleCheckboxChange(event) {
 }
 
 function buying(){
+    if (!cart.some(item => item.active)) {
+        alert("Vui lòng chọn ít nhất một sản phẩm để đặt hàng!");
+        return;
+    }
     let activeElement = document.querySelector('.payment-option.active');
+    if (!activeElement) {
+        alert("Vui lòng chọn hình thức thanh toán!");
+        return;
+    }
     let httt = activeElement.querySelector('input[type="hidden"]').value;
     if(httt === "Online"){
         confirmOrder_Vnpay();
@@ -224,7 +232,7 @@ function buying(){
     }
 }
 
- async function confirmOrder_Vnpay(){
+async function confirmOrder_Vnpay(){
      let idkh = Number(document.getElementById("idkh").value);
      let today = new Date().toISOString().split("T")[0];
      let total = total_price;
@@ -263,7 +271,6 @@ function buying(){
          });
 
          if (!resp.ok) {
-             // đọc thêm message từ server nếu cần
              const error = await resp.json();
              throw new Error(error.error || "Lỗi khi tạo đơn Online");
          }
@@ -283,7 +290,6 @@ function buying(){
                  ngay_sua: null,
                  trang_thai: "Chưa thanh toán"
              };
-             // **Tạo request POST thêm hóa đơn chi tiết**
              return fetch("/ban-hang-online/create-order-ct", {
                  method: "POST",
                  headers: { "Content-Type": "application/json" },
@@ -306,7 +312,6 @@ function buying(){
      }
 }
 
-// Hàm này sẽ confirm hóa đơn gửi về DB
 async function confirmOrder() {
     let idkh = Number(document.getElementById("idkh").value);
     let today = new Date().toISOString().split("T")[0];
@@ -315,10 +320,9 @@ async function confirmOrder() {
     let httt = activeElement.querySelector('input[type="hidden"]').value;
     let location = document.getElementById("locationKh").innerText;
     let ghichu = document.getElementById("ghiChu").value;
-
+    
     // Lấy hình thức thanh toán từ input hidden
     let hiddenInput = document.querySelector('input[name="paymentMethod"][type="hidden"]');
-
     // Kiểm tra input hidden
     if (!hiddenInput) {
         alert("Không tìm thấy thông tin hình thức thanh toán!");
@@ -403,10 +407,9 @@ async function confirmOrder() {
         alert("Đã xảy ra lỗi khi xác nhận đơn hàng: " + error.message);
     }
 }
-// Gán sự kiện thayddooiri cho checkbox
+
 document.addEventListener("change", handleCheckboxChange);
 
-// Hàm thay đổi địa chỉ
 function changeLocation(){
     let newLocation = document.getElementById("newLocation").value
     if(newLocation === ""){
@@ -470,7 +473,6 @@ function selectPromo(el) {
     localStorage.setItem('selected_promo', JSON.stringify(selected_promo));
 }
 
-// Gán sự kiện cho 2 nút Hình thức thanh toán
 document.addEventListener("DOMContentLoaded", function () {
     const paymentOptions = document.querySelectorAll(".payment-option");
 
@@ -484,4 +486,5 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
 renderCart();

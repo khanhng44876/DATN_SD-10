@@ -339,7 +339,7 @@ function createElementOrder(order) {
     <div class='d-flex justify-content-between align-items-center mt-3'>
       <h4>Sản phẩm</h4>
       <div>
-        <button class='btn btn-warning' onclick='reloadProductModal()' data-bs-toggle='modal' data-bs-target='#spModal'>+ Thêm SP</button>
+        <button class='btn btn-warning rounded-pill' onclick='reloadProductModal()' data-bs-toggle='modal' data-bs-target='#spModal'><strong style="color: white">+ Thêm sản phẩm</strong></button>
         <button class='btn btn-primary' onclick='openQrScanner()'><i class='fas fa-qrcode'></i> Quét QR</button>
       </div>
     </div>
@@ -354,7 +354,7 @@ function createElementOrder(order) {
         <h4>Thông tin đơn hàng</h4><hr>
         <div class='d-flex justify-content-between align-items-center'>
           <h5>Khách hàng</h5>
-          <button class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#khModal'>Chọn khách</button>
+          <button class='btn btn-warning rounded-pill' data-bs-toggle='modal' data-bs-target='#khModal'><strong style="color: white">Chọn khách</strong></button>
         </div>
         <p id="customer-name"><strong>Tên khách hàng : </strong> ${order.customer.name}</p>
         <p><input id='ma-km-${order.id}' placeholder='Mã khuyến mãi' value='${order.discount.ma}' readonly>
@@ -364,11 +364,11 @@ function createElementOrder(order) {
         <h5 class='text-danger'>Tổng: <span id='totalAmount-${order.id}'>${order.tien_phai_tra.toLocaleString("vi-VN")}</span> VND</h5><hr>
         <p>Thanh toán:
           <input type='radio' name='httt-${order.id}' value='Tiền mặt' onchange='paymentChange(this,${order.id})'> Tiền mặt
-          <input type='radio' name='httt-${order.id}' value='Chuyển khoản' onchange='paymentChange(this,${order.id})'> Chuyển khoản
+          <input type='radio' name='httt-${order.id}' value='Chuyển khoản' onchange='paymentChange(this,${order.id})'> Chuyển khoản <br>
           <span class="text-danger" id="error-httt-${order.id}"></span>
         </p>
         <div id='httt-${order.id}'></div>
-        <button class='btn btn-success' onclick='confirmOrder(${order.id})'>Xác nhận</button>
+        <button class='btn btn-warning rounded-pill' onclick='confirmOrder(${order.id})'><strong style="color: white">Xác nhận</strong></button>
       </div>
       <!-- Thông tin đơn hàng bên phải giữ nguyên -->
     </div>

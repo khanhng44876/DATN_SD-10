@@ -191,6 +191,15 @@ go
 
 ALTER TABLE hoa_don ALTER COLUMN id_khuyen_mai INT NULL;
 
+ALTER TABLE dbo.hoa_don_chi_tiet
+DROP CONSTRAINT fk_hoa_don_hoa_don_chi_tiet;
+
+ALTER TABLE dbo.hoa_don_chi_tiet
+    ADD CONSTRAINT fk_hoa_don_hoa_don_chi_tiet
+        FOREIGN KEY (id_hoa_don)
+            REFERENCES dbo.hoa_don(id)
+            ON DELETE CASCADE;
+
 --------------------------------------------------------------------
 insert into danh_muc(ten_danh_muc, mo_ta, trang_thai)
 values (N'Bộ áo đấu Câu Lạc Bộ',N'CLB', N'Hoạt động'),
