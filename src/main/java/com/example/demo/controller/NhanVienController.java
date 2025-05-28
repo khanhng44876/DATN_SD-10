@@ -48,6 +48,7 @@ public String iii(){
         try {
             String tenDangNhap = (String) payload.get("tenDangNhap");
             String email = (String) payload.get("email");
+            String sdt = (String) payload.get("sdt");
 
             // Kiểm tra xem tên đăng nhập và email đã tồn tại chưa
                 if (nhanVienRepository.findByTaiKhoan(tenDangNhap).isPresent()) {
@@ -55,6 +56,9 @@ public String iii(){
             }
             if (nhanVienRepository.findByEmail(email).isPresent()) {
                 return ResponseEntity.badRequest().body("Email đã tồn tại: " + email);
+            }
+            if (nhanVienRepository.findBySdt(sdt).isPresent()) {
+                return ResponseEntity.badRequest().body("Số điện thoại đã tồn tại: " + sdt);
             }
 
             NhanVien taiKhoan = new NhanVien();
@@ -94,6 +98,7 @@ public String iii(){
 
             String tenDangNhap = (String) payload.get("tenDangNhap");
             String email = (String) payload.get("email");
+            String sdt = (String) payload.get("sdt");
 
             // Kiểm tra xem tên đăng nhập và email đã tồn tại chưa
             if (!taiKhoan.getTaiKhoan().equals(tenDangNhap) && nhanVienRepository.findByTaiKhoan(tenDangNhap).isPresent()) {
@@ -101,6 +106,9 @@ public String iii(){
             }
             if (!taiKhoan.getEmail().equals(email) && nhanVienRepository.findByEmail(email).isPresent()) {
                 return ResponseEntity.badRequest().body("Email đã tồn tại: " + email);
+            }
+            if (!taiKhoan.getSdt().equals(sdt) && nhanVienRepository.findBySdt(sdt).isPresent()) {
+                return ResponseEntity.badRequest().body("Số điện thoại đã tồn tại: " + sdt);
             }
 
 
