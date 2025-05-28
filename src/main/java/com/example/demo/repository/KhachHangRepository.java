@@ -35,4 +35,8 @@ Optional<KhachHang> findByEmail(String email);
             message = "Số điện thoại không hợp lệ") String soDienThoai, Integer id);
 
     boolean existsByNgaySinhAndIdNot(@Past(message = "Ngày sinh phải là ngày trong quá khứ") LocalDate ngaySinh, Integer id);
+
+    boolean existsByTaiKhoan(String taiKhoan);
+
+    boolean existsByTaiKhoanAndIdNot(String taiKhoan, Integer id);
 }

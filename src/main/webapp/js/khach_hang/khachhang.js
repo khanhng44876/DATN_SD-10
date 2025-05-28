@@ -40,13 +40,17 @@ function validateForm(action) {
         isValid = false;
     }
     if (taiKhoan === "") {
-        document.getElementById("errorTaiKhoan").innerText = "Tài  không được để trống.";
+        document.getElementById("errorTaiKhoan").innerText = "Tài khoản  không được để trống.";
         isValid = false;
     }
     if (matKhau === "") {
         document.getElementById("errorMatKhau").innerText = "Mật khẩu không được để trống.";
         isValid = false;
+    } else if (matKhau.length < 6 || !/[!@#$%^&*(),.?":{}|<>]/.test(matKhau)) {
+        document.getElementById("errorMatKhau").innerText = "Mật khẩu phải có ít nhất 6 ký tự và chứa ký tự đặc biệt.";
+        isValid = false;
     }
+
     if (gioiTinh === "") {
         document.getElementById("errorGioiTinh").innerText = "Giới tính không được để trống.";
         isValid = false;
@@ -133,8 +137,9 @@ async function themKhachHang() {
         // Chuyển hướng về trang hiển thị danh sách sản phẩm
         window.location.href = "/khach-hang/hien-thi";
     } else {
-        alert("Đã có lỗi xảy ra khi thêm khách hàng." +
-            "Dữ liệu khách hàng không được trùng.");
+        const message = await response.text();
+        alert("Lỗi: " + message);
+
     }
 }
 
@@ -171,7 +176,9 @@ async function capNhatKhachHang(idkh) {
         // Chuyển hướng về trang hiển thị danh sách sản phẩm
         window.location.href = "/khach-hang/hien-thi";
     } else {
-        alert("Đã có lỗi xảy ra khi cập nhật khách hàng.");
+        const message = await response.text();
+        alert("Lỗi: " + message);
+
     }
 
 

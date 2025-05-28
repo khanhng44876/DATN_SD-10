@@ -43,6 +43,7 @@ public class KhachHangController {
         String tenKhachHang = (String) payload.get("tenKhachHang");
         String email = (String) payload.get("email");
         String soDienThoai = (String) payload.get("soDienThoai");
+        String taiKhoan = (String) payload.get("taiKhoan");
         LocalDate ngaySinh = LocalDate.parse((String) payload.get("ngaySinh"));
 
         if (khachHangRepository.existsByTenKhachHang(tenKhachHang)) {
@@ -57,8 +58,8 @@ public class KhachHangController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Số điện thoại đã tồn tại!");
         }
 
-        if (khachHangRepository.existsByNgaySinh(ngaySinh)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Ngày sinh đã tồn tại!");
+        if (khachHangRepository.existsByTaiKhoan(taiKhoan)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Tài khoản đã tồn tại!");
         }
 
         KhachHang khachHang = new KhachHang();
@@ -67,13 +68,14 @@ public class KhachHangController {
         khachHang.setSoDienThoai(soDienThoai);
         khachHang.setDiaChi((String) payload.get("diaChi"));
         khachHang.setNgaySinh(ngaySinh);
-        khachHang.setTaiKhoan((String) payload.get("taiKhoan"));
+        khachHang.setTaiKhoan(taiKhoan);
         khachHang.setMatKhau((String) payload.get("matKhau"));
         khachHang.setGioiTinh((String) payload.get("gioiTinh"));
 
         khachHangRepository.save(khachHang);
         return ResponseEntity.ok("Khách hàng đã được thêm thành công!");
     }
+
 
 
 
@@ -86,6 +88,7 @@ public class KhachHangController {
         String tenKhachHang = (String) payload.get("tenKhachHang");
         String email = (String) payload.get("email");
         String soDienThoai = (String) payload.get("soDienThoai");
+        String taiKhoan = (String) payload.get("taiKhoan");
         LocalDate ngaySinh = LocalDate.parse((String) payload.get("ngaySinh"));
 
         if (khachHangRepository.existsByTenKhachHangAndIdNot(tenKhachHang, id)) {
@@ -100,8 +103,8 @@ public class KhachHangController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Số điện thoại đã tồn tại!");
         }
 
-        if (khachHangRepository.existsByNgaySinhAndIdNot(ngaySinh, id)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Ngày sinh đã tồn tại!");
+        if (khachHangRepository.existsByTaiKhoanAndIdNot(taiKhoan, id)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Tài khoản đã tồn tại!");
         }
 
         KhachHang khachHang = khachHangRepository.findById(id)
@@ -112,13 +115,14 @@ public class KhachHangController {
         khachHang.setSoDienThoai(soDienThoai);
         khachHang.setDiaChi((String) payload.get("diaChi"));
         khachHang.setNgaySinh(ngaySinh);
-        khachHang.setTaiKhoan((String) payload.get("taiKhoan"));
+        khachHang.setTaiKhoan(taiKhoan);
         khachHang.setMatKhau((String) payload.get("matKhau"));
         khachHang.setGioiTinh((String) payload.get("gioiTinh"));
 
         khachHangRepository.save(khachHang);
         return ResponseEntity.ok("Khách hàng đã được cập nhật thành công!");
     }
+
 
 
 
