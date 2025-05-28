@@ -58,6 +58,12 @@ public class KichThuocController {
     }
 
     // Sửa chức năng Cập nhật
+
+    @GetMapping("/kich-thuoc/update-kich-thuoc")
+    public String update() {
+        return "/san_pham/updateKichThuoc.html";
+    }
+
     @PutMapping("/cap-nhat-kich-thuoc/{id}")
     @ResponseBody
     public ResponseEntity<String> capNhatKichThuoc(@PathVariable("id") Integer id, @RequestBody KichThuoc kichThuoc) {

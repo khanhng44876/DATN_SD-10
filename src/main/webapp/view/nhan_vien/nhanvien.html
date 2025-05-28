@@ -59,7 +59,7 @@
                         <td th:text="${#dates.format(d.ngayTao, 'yyyy-MM-dd')}"></td>
                         <td th:text="${d.trangThai}? 'Hoạt động' : 'Không hoạt động'"></td>
                         <td>
-                            <a th:href="@{/nhan-vien/add(id=${d.id})}" class="btn btn-success">
+                            <a th:href="@{/nhan-vien/update(id=${d.id})}" class="btn btn-success">
                                 <i class="fa fa-pencil-alt"></i>
                             </a>
                         </td>
@@ -121,6 +121,7 @@
         </div>
     </div>
 </div>
+
 <script src="/js/nhan_vien/nhanVien.js" defer></script>
 </body>
 </html>

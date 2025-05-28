@@ -58,6 +58,10 @@ public class HangController {
     }
 
     // Sửa chức năng Cập nhật
+    @GetMapping("/hang/update-hang")
+    public String update() {
+        return "/san_pham/updateHang.html";
+    }
     @PutMapping("/cap-nhat-hang/{id}")
     @ResponseBody
     public ResponseEntity<String> capNhatHang(@PathVariable("id") Integer id, @RequestBody Hang hang) {

@@ -13,14 +13,14 @@ function validateForm(action) {
 
     // Validate fields
     if (tenHang.trim() === "") {
-        document.getElementById("errorTenHang").innerText = "Hãng không được để trống.";
+        document.getElementById("errorTenHang").innerText = "Tên hãng không được để trống.";
         isValid = false;
     } else if (!isNaN(tenHang) && parseInt(tenHang, 10) < 0) {
         document.getElementById("errorTenHang").innerText = "Không được là số âm.";
         isValid = false;
     }
     if (trangThai.trim() === "") {
-        document.getElementById("errorTrangThai").innerText = "Không được để trống.";
+        document.getElementById("errorTrangThai").innerText = "Trạng thái không được để trống.";
         isValid = false;
     }
 

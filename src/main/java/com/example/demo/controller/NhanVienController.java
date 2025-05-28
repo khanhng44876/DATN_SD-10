@@ -28,6 +28,7 @@ public String iii(){
     return "/nhan_vien/addNhanVien.html";
 }
 
+
     @GetMapping("hien-thi")
     public String hienThiNhanVien(Model model) {
         List<NhanVien> ds = this.nhanVienRepository.findAll();
@@ -89,7 +90,10 @@ public String iii(){
                     .body("Lỗi server: " + e.getMessage());
         }
     }
-
+    @GetMapping("update")
+    public String update(){
+        return "/nhan_vien/updateNhanVien.html";
+    }
     @PutMapping("/cap-nhat-nhan-vien/{id}")
     public ResponseEntity<?> updateNV(@PathVariable Integer id, @RequestBody Map<String, Object> payload) {
         try {

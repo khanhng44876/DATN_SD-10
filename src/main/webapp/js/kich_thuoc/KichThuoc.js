@@ -20,7 +20,7 @@ function validateForm(action) {
         isValid = false;
     }
     if (moTa.trim() === "") {
-        document.getElementById("errorMoTa").innerText = "Không được để trống.";
+        document.getElementById("errorMoTa").innerText = "Mô tả không được để trống.";
         isValid = false;
     }
 

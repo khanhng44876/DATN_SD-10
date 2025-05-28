@@ -18,7 +18,7 @@ async function validateForm(action) {
     }
 
     if (!moTa) {
-        document.getElementById("errorMoTa").innerText = "Ghi chú không được để trống.";
+        document.getElementById("errorMoTa").innerText = "Mô tả không được để trống.";
         isValid = false;
     }
 

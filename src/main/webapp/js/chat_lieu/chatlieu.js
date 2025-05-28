@@ -16,11 +16,11 @@ function validateForm(action) {
         document.getElementById("errorChatLieu").innerText = "Chất liệu không được để trống.";
         isValid = false;
     } else if (!isNaN(tenChatLieu) && parseInt(tenChatLieu, 10) < 0) {
-        document.getElementById("errorChatLieu").innerText = "Không được là số âm.";
+        document.getElementById("errorChatLieu").innerText = "Chất liệu không được là số âm.";
         isValid = false;
     }
     if (moTa.trim() === "") {
-        document.getElementById("errorMoTa").innerText = "Không được để trống.";
+        document.getElementById("errorMoTa").innerText = "Mô tả không được để trống.";
         isValid = false;
     }
 
