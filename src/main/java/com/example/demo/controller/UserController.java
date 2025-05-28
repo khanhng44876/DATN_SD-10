@@ -42,4 +42,12 @@ public class UserController {
 
         return ResponseEntity.ok(response); // Luôn trả về 200 OK
     }
+    @GetMapping("/ban-hang-online/gioi-thieu")
+    public String htGioiThieu(){
+        return "ban_hang_online/gioithieu";
+    }
+    @GetMapping("/ban-hang-online/tin-tuc")
+    public String htTinTuc(){
+        return "ban_hang_online/tintuc";
+    }
 }

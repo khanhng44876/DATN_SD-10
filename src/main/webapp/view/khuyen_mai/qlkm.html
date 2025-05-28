@@ -14,6 +14,42 @@
     <div class="container">
       <h2 style="text-align: center;">Quản Lý Khuyến Mãi</h2>
       <hr>
+      <!-- Filter Section -->
+      <div class="mb-3">
+        <div class="row">
+          <div class="col-md-3">
+            <label for="filterCode">Mã khuyến mãi</label>
+            <input type="text" id="filterCode" class="form-control" placeholder="Nhập mã khuyến mãi">
+          </div>
+          <div class="col-md-3">
+            <label for="filterName">Tên khuyến mãi</label>
+            <input type="text" id="filterName" class="form-control" placeholder="Nhập tên khuyến mãi">
+          </div>
+          <div class="col-md-3">
+            <label for="filterStatus">Trạng thái</label>
+            <select id="filterStatus" class="form-control">
+              <option value="">Tất cả</option>
+              <option value="Đang diễn ra">Đang diễn ra</option>
+              <option value="Sắp diễn ra">Sắp diễn ra</option>
+              <option value="Đã kết thúc">Đã kết thúc</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="filterDateStart">Ngày bắt đầu</label>
+            <input type="date" id="filterDateStart" class="form-control">
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-3">
+            <label for="filterDateEnd">Ngày kết thúc</label>
+            <input type="date" id="filterDateEnd" class="form-control">
+          </div>
+          <div class="col-md-3 mt-4">
+            <button id="applyFilter" class="btn btn-primary">Áp dụng bộ lọc</button>
+            <button id="clearFilter" class="btn btn-secondary">Xóa bộ lọc</button>
+          </div>
+        </div>
+      </div>
 <!--      Bảng khuyến mãi-->
       <table class="table table-bordered" id="kmTable">
         <thead>
@@ -125,7 +161,79 @@
         </div>
       </table>
       <script>
-        $('#kmTable').DataTable();
+        $(document).ready(function () {
+          // Khởi tạo DataTable
+          var table = $('#kmTable').DataTable({
+            "language": {
+              "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/vi.json" // Ngôn ngữ tiếng Việt
+            },
+            "columnDefs": [
+              { "orderable": false, "targets": 11 } // Tắt sắp xếp cột "Hành động"
+            ]
+          });
+
+          // Áp dụng bộ lọc
+          $('#applyFilter').click(function () {
+            table.draw();
+          });
+
+          // Xóa bộ lọc
+          $('#clearFilter').click(function () {
+            $('#filterCode').val('');
+            $('#filterName').val('');
+            $('#filterStatus').val('');
+            $('#filterDateStart').val('');
+            $('#filterDateEnd').val('');
+            table.search('').columns().search('').draw();
+          });
+
+          // Hàm lọc tùy chỉnh
+          $.fn.dataTable.ext.search.push(
+                  function (settings, data, dataIndex) {
+                    var code = $('#filterCode').val().toLowerCase();
+                    var name = $('#filterName').val().toLowerCase();
+                    var status = $('#filterStatus').val();
+                    var dateStart = $('#filterDateStart').val();
+                    var dateEnd = $('#filterDateEnd').val();
+
+                    var rowCode = data[0].toLowerCase(); // Mã khuyến mãi
+                    var rowName = data[1].toLowerCase(); // Tên khuyến mãi
+                    var rowStatus = data[9]; // Trạng thái
+                    var rowDateStart = data[7]; // Ngày bắt đầu
+                    var rowDateEnd = data[8]; // Ngày kết thúc
+
+                    // Lọc theo mã
+                    if (code && !rowCode.includes(code)) {
+                      return false;
+                    }
+
+                    // Lọc theo tên
+                    if (name && !rowName.includes(name)) {
+                      return false;
+                    }
+
+                    // Lọc theo trạng thái
+                    if (status && rowStatus !== status) {
+                      return false;
+                    }
+
+                    // Lọc theo khoảng thời gian
+                    if (dateStart && rowDateStart < dateStart) {
+                      return false;
+                    }
+                    if (dateEnd && rowDateEnd > dateEnd) {
+                      return false;
+                    }
+
+                    return true;
+                  }
+          );
+
+          // Lọc thời gian thực khi nhập liệu
+          $('#filterCode, #filterName, #filterStatus, #filterDateStart, #filterDateEnd').on('keyup change', function () {
+            table.draw();
+          });
+        });
       </script>
       <script src="/js/khuyen_mai/kmJs.js"></script>
     </div>

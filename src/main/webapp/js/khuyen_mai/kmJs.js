@@ -135,7 +135,7 @@ function validateForm(input){
     let value = input.value.trim()
     let id = input.id
     if(value === "" && id!=="mo_ta" && id !== "searchInput"){
-        showErr(input,"Không đucợ để trống trường này")
+        showErr(input,"Không đuợc để trống trường này")
         return false
     }
     if(id === "so_luong" || id === "dieu_kien" || id === "giam_toi_da"){
@@ -239,10 +239,10 @@ document.getElementById("muc_giam").addEventListener("focus",function (){
     this.value = ""
 
 })
-// thêm id cho input search
-$(document).ready(function () {
-    var table = $('#kmTable').DataTable();
-
-    $('.dataTables_filter input').attr('id', 'searchInput');
-});
+// // thêm id cho input search
+// $(document).ready(function () {
+//     var table = $('#kmTable').DataTable();
+//
+//     $('.dataTables_filter input').attr('id', 'searchInput');
+// });
 
