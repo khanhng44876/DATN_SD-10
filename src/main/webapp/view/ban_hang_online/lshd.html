@@ -93,10 +93,17 @@
                     <button
                             type="button"
                             class="btn btn-warning rounded-pill"
-                            th:if="${hdNCommit.trangThaiThanhToan} != 'Hoàn thành'"
-                            th:onclick="'updateOrder()'"
+                            onclick="updateOrder()"
                     >
                         Xác nhận
+                    </button>
+                    <button
+                            type="button"
+                            class="btn btn-danger rounded-pill"
+                            th:if="${hdNCommit.trangThaiThanhToan ne 'Chờ xác nhận'}"
+                            onclick="backOrder()"
+                    >
+                        Quay về
                     </button>
                 </div>
                 <div>
@@ -165,7 +172,8 @@
                 size: ct.sanPhamChiTiet.kichThuoc.tenKichThuoc,
                 color: ct.sanPhamChiTiet.mauSac.ten_mau_sac,
                 total: ct.tongTien,
-                image: ct.sanPhamChiTiet.anhSanPham
+                image: ct.sanPhamChiTiet.anhSanPham,
+                id_product: ct.sanPhamChiTiet.id
             }
         }),
         customer: window.hoaDonData.khachHang,
