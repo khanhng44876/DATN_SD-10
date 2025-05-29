@@ -63,40 +63,61 @@ function renderOnlOrder(){
     updateStatusBar(status,order.id);
 }
 
-function updateQuantity(itemId,num){
+function updateQuantity(itemId, num) {
     let orderId = Number(document.getElementById("orderId").value);
-    let order = ordersOnl.find(o => o.id === orderId)
-    console.log(order)
-    let item = order.listhdct.find(c=>c.id===itemId)
-    order.total_amount = 0;
-    console.log(item)
-    if(!item){
-        alert("không tìm thấy item")
+    let order = ordersOnl.find(o => o.id === orderId);
+    
+    if (!order) {
+        alert("Không tìm thấy đơn hàng!");
         return;
     }
-    item.quantity = Math.max(1,item.quantity+num)
-    item.total = item.quantity * item.price
-    order.listhdct.forEach(c=>{
-        order.total_amount += c.total;
-    })
-    if(selected_promo.id){
-       const temp = order.total_amount * Number(selected_promo.discount) / 100;
-       if(temp > Number(selected_promo.max)){
-           order.total_amount -= Number(selected_promo.max);
-       }else{
-           order.total_amount -= temp;
-       }
-    }
-    localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
-    const payload = {
-        orderId : order.id,
-        itemId : item.id,
-        totalAmount : order.total_amount,
-        quantity : item.quantity,
-    }
-    stompClient.send("/app/update-quantity",{},JSON.stringify(payload));
-    renderOnlOrder()
 
+    let item = order.listhdct.find(c => c.id === itemId);
+    if (!item) {
+        alert("Không tìm thấy sản phẩm!");
+        return;
+    }
+
+    // Tính toán số lượng mới
+    const newQuantity = Math.max(1, item.quantity + num);
+    
+    // Cập nhật số lượng và tổng tiền
+    item.quantity = newQuantity;
+    item.total = item.quantity * item.price;
+    
+    // Tính lại tổng tiền đơn hàng
+    order.total_amount = order.listhdct.reduce((sum, c) => sum + c.total, 0);
+    
+    // Áp dụng khuyến mãi nếu có
+    if (selected_promo && selected_promo.id) {
+        const temp = order.total_amount * Number(selected_promo.discount) / 100;
+        if (temp > Number(selected_promo.max)) {
+            order.total_amount -= Number(selected_promo.max);
+        } else {
+            order.total_amount -= temp;
+        }
+    }
+
+    // Lưu vào localStorage
+    localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
+
+    // Gửi cập nhật lên server
+    const payload = {
+        orderId: order.id,
+        itemId: item.id,
+        totalAmount: order.total_amount,
+        quantity: item.quantity
+    };
+
+    // Gửi qua WebSocket
+    if (stompClient && stompClient.connected) {
+        stompClient.send("/app/update-quantity", {}, JSON.stringify(payload));
+    } else {
+        console.error("WebSocket không kết nối!");
+    }
+
+    // Cập nhật giao diện
+    renderOnlOrder();
 }
 
 function connectSocket() {
@@ -131,14 +152,31 @@ function connectSocket() {
                 const oldStatus = order.status;
                 if (order) {
                     order.status = newStatus.status;
-
                     // Nếu trạng thái mới chưa có trong steps thì thêm vào
-                    if(newStatus.status === "Đã hủy") {
+                    if (newStatus.status === "Đã hủy") {
                         if (!order.steps.some(s => s.label === newStatus.status)) {
                             let currentStep = order.steps.findIndex(step => step.label === oldStatus);
                             order.steps.splice(currentStep + 1, 0, {
                                 label: "Đã hủy",
                                 icon: "fas fa-times-circle"
+                            });
+                        }
+                    }
+                    if (newStatus.status === "Chờ hoàn tiền") {
+                        if (!order.steps.some(s => s.label === newStatus.status)) {
+                            let currentStep = order.steps.findIndex(step => step.label === oldStatus);
+                            order.steps.splice(currentStep + 1, 0, {
+                                label: "Chờ hoàn tiền",
+                                icon: "fa-solid fa-money-bill-transfer"
+                            });
+                        }
+                    }
+                    if (newStatus.status === "Đã hoàn tiền") {
+                        if (!order.steps.some(s => s.label === newStatus.status)) {
+                            let currentStep = order.steps.findIndex(step => step.label === oldStatus);
+                            order.steps.splice(currentStep + 1, 0, {
+                                label: "Đã hoàn tiền",
+                                icon: "fas fa-circle-check"
                             });
                         }
                     }
@@ -152,32 +190,54 @@ function connectSocket() {
 
 function cancelOrder() {
     let orderId = Number(document.getElementById("orderId").value);
-    let order = ordersOnl.find(o => o.id === orderId)
-
-    const currentStep = order.steps.findIndex(step => step.label === order.status);
-
-    order.status = "Đã hủy";
-    localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
-    fetch(`/ban-hang-online/cancel-order/${order.id}`,{
-        method:"PUT"
-    }).then(res => {
-        if (!res.ok) throw new Error("Không thể hủy đơn hàng");
-        return res.json();
-    }).then(data => {
-    if (order) {
-        order.status = "Đã hủy";
-
-        if (!order.steps.some(step => step.label === "Đã hủy")) {
-            order.steps.splice(currentStep+1, 0, {
-                label: "Đã hủy",
-                icon: "fas fa-times-circle"
-            });
-        }
-
-        localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
-        renderOnlOrder();
+    let order = ordersOnl.find(o => o.id === orderId);
+    
+    if (!order) {
+        alert("Không tìm thấy đơn hàng!");
+        return;
     }
-    }).catch(err => alert(err.message));
+
+    if (!confirm("Bạn có chắc muốn hủy đơn hàng này?")) {
+        return;
+    }
+
+    fetch(`/ban-hang-online/cancel-order/${orderId}`, {
+        method: "PUT"
+    })
+    .then(res => {
+        if (!res.ok) {
+            if (res.status === 404) {
+                throw new Error("Không tìm thấy đơn hàng");
+            } else if (res.status === 400) {
+                throw new Error("Không thể hủy đơn hàng ở trạng thái này");
+            } else {
+                throw new Error("Lỗi server: " + res.status);
+            }
+        }
+        return res.json();
+    })
+    .then(data => {
+        if (order) {
+            order.status = "Đã hủy";
+            
+            // Cập nhật steps
+            const currentStep = order.steps.findIndex(step => step.label === order.status);
+            if (!order.steps.some(step => step.label === "Đã hủy")) {
+                order.steps.splice(currentStep + 1, 0, {
+                    label: "Đã hủy",
+                    icon: "fas fa-times-circle"
+                });
+            }
+
+            localStorage.setItem("ordersOnl", JSON.stringify(ordersOnl));
+            renderOnlOrder();
+            alert("Hủy đơn hàng thành công!");
+        }
+    })
+    .catch(err => {
+        console.error("Lỗi khi hủy đơn hàng:", err);
+        alert(err.message);
+    });
 }
 // Hàm này sẽ update thanh trạng thái
 function updateStatusBar(status, orderId) {
@@ -201,11 +261,10 @@ function updateStatusBar(status, orderId) {
         } else if (index === currentIndex) {
             stepDiv.classList.add("current");
         }
-
-        const iconAttrs = step.label === "Đã hủy"
-            ? "style='background-color:red;color:white;'"
-            : "";
-
+        let iconAttrs = ""
+        if(step.label === "Đã hủy"){
+             iconAttrs = "style='background-color:red;color:white;'";
+        }
         stepDiv.innerHTML = `
             <div class="icon" ${iconAttrs}>
                 <i class="${step.icon}"></i>

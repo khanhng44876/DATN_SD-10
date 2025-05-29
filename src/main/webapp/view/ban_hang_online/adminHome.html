@@ -37,6 +37,9 @@
                     <li class="nav-item">
                         <a class="nav-link" data-tab="da-huy" onclick="showTab(this)">Đã hủy</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-tab="da-huy" onclick="showTab(this)">Chờ hoàn tiền</a>
+                    </li>
                 </ul>
                 <div id="cho-xac-nhan" class="tab-content">
                     <table class="table table-bordered">
@@ -206,6 +209,34 @@
                         </tr>
                     </table>
                 </div>
+                <div id="cho-hoan-tien" class="tab-content">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên khách hàng</th>
+                            <th>Ngày lập</th>
+                            <th>Hình thức thanh toán</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Action</th>
+                        </tr>
+                        <tr th:each="z:${listRefund}">
+                            <td th:text="${z.id}"></td>
+                            <td th:text="${z.khachHang.tenKhachHang}"></td>
+                            <td th:text="${z.ngayTao}"></td>
+                            <td th:text="${z.hinhThucThanhToan}"></td>
+                            <td th:text="${z.tongTien}"></td>
+                            <td th:text="${z.trangThaiThanhToan}"></td>
+                            <td>
+                                <a th:href="@{/ban-hang-online/lshd/{id}(id=${z.id})}"
+                                   class="btn btn-primary"
+                                   th:onclick="|return confirm('Bạn có chắc chắn muốn xác nhận đơn hàng #${z.id} không?');|">
+                                    Xác nhận
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -227,5 +258,6 @@
         document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
         element.classList.add("active");
     }
+
 </script>
 </html>

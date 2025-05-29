@@ -40,7 +40,7 @@ public class VNPAYController {
     @Autowired
     private KhuyenMaiRepository khuyenMaiRepository;
 
-    @GetMapping("/ban-hang-off/payment-return")
+@GetMapping("/ban-hang-off/payment-return")
     public String offlineReturn(HttpServletRequest request, Model model) {
         String vnp_TxnRef       = request.getParameter("vnp_TxnRef");
         String vnp_ResponseCode = request.getParameter("vnp_ResponseCode");

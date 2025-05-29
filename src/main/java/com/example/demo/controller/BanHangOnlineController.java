@@ -53,6 +53,8 @@ public class BanHangOnlineController {
     private VNPAYService vnPayService;
     @Autowired
     private ThongBaoRepository thongBaoRepository;
+    @Autowired
+    private SanPhamCTRepository sanPhamCTRepository;
 
     // Bán hàng online cua admin
     @RequestMapping("/ban-hang-online/admin")
@@ -75,12 +77,17 @@ public class BanHangOnlineController {
         List<HoaDon> listhd6 = hoaDonrepo.findAll().stream()
                 .filter(hd -> hd.getTrangThaiThanhToan().equals("Đã hủy"))
                 .toList();
+        List<HoaDon> listRefund = hoaDonrepo.findAll().stream()
+                .filter(h -> h.getTrangThaiThanhToan().equals("Chờ hoàn tiền"))
+                .sorted(Comparator.comparing(HoaDon::getNgayTao).reversed())
+                .toList();
         model.addAttribute("listhd", listhd);
         model.addAttribute("listhd2", listhd2);
         model.addAttribute("listhd3", listhd3);
         model.addAttribute("listhd4", listhd4);
         model.addAttribute("listhd5", listhd5);
         model.addAttribute("listhd6", listhd6);
+        model.addAttribute("listRefund", listRefund);
         return "ban_hang_online/adminHome.html";
     }
 
@@ -182,17 +189,48 @@ public class BanHangOnlineController {
     }
 
     // Hủy hóa đơn
+    @Transactional
     @PutMapping("/ban-hang-online/cancel-order/{id}")
     public ResponseEntity<HoaDon> cancelOrder(@PathVariable Integer id, Principal principal) {
-        CustomUserDetails userDetails =
-                (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        HoaDon hd = hoaDonrepo.findById(id).get();
-        if (hd == null) return ResponseEntity.notFound().build();
-        if ("Chờ xác nhận".equals(hd.getTrangThaiThanhToan())) {
+        try {
+            CustomUserDetails userDetails = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+            Optional<HoaDon> optionalHoaDon = hoaDonrepo.findById(id);
+            
+            if (!optionalHoaDon.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            HoaDon hd = optionalHoaDon.get();
+            if (!"Chờ xác nhận".equals(hd.getTrangThaiThanhToan())) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            List<HoaDonCT> listhdct = hoaDonCTRepository.findByHoaDonId(hd.getId());
+
+            // Cập nhật trạng thái
             hd.setTrangThaiThanhToan("Đã hủy");
             hoaDonrepo.save(hd);
 
-            // Gửi thông báo cho client qua WebSocket
+            for(HoaDonCT hoaDonCT : listhdct) {
+                SanPhamChiTiet spct = hoaDonCT.getSanPhamChiTiet();
+                if(spct.getTrangThai().equals("Hết hàng")){
+                    spct.setTrangThai("Còn hàng");
+                }
+                spct.setSoLuong(spct.getSoLuong() + hoaDonCT.getSoLuong());
+                ctsp_repository.save(spct);
+                hoaDonCT.setTrangThai("Đã hủy");
+                hdctRepository.save(hoaDonCT);
+            }
+
+            // Xử lý khuyến mãi nếu có
+            if (hd.getKhuyenMai() != null) {
+                KhuyenMai km = hd.getKhuyenMai();
+                km.setSo_luong(km.getSo_luong() + 1);
+                km.setSo_luong_sd(km.getSo_luong_sd() - 1);
+                khuyenMaiRepository.save(km);
+            }
+
+            // Gửi thông báo qua WebSocket
             boolean isKhachHang = userDetails.getAuthorities().stream()
                     .anyMatch(auth -> auth.getAuthority().equals("KHACH_HANG"));
 
@@ -203,10 +241,7 @@ public class BanHangOnlineController {
                     "type", "status-cancel",
                     "status", "Đã hủy"
             );
-            KhuyenMai km = hd.getKhuyenMai();
-            km.setSo_luong(km.getSo_luong() + 1);
-            km.setSo_luong_sd(km.getSo_luong_sd() - 1);
-            khuyenMaiRepository.save(km);
+
             // Gửi socket đến người còn lại
             if (isNhanVienOrQL && hd.getKhachHang() != null) {
                 simpMessagingTemplate.convertAndSendToUser(
@@ -225,8 +260,8 @@ public class BanHangOnlineController {
             }
 
             return ResponseEntity.ok(hd);
-        } else {
-            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -251,11 +286,31 @@ public class BanHangOnlineController {
         HoaDonCT ct = hdctRepository.findById(itemId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid itemId: " + itemId));
 
+        // Kiểm tra số lượng tồn kho
+        SanPhamChiTiet spct = ct.getSanPhamChiTiet();
+        int soLuongCu = ct.getSoLuong();
+        int soLuongMoi = quantity;
+        int soLuongThayDoi = soLuongMoi - soLuongCu;
+
+        // Kiểm tra số lượng tồn kho có đủ không
+        if (spct.getSoLuong() < soLuongThayDoi) {
+            throw new IllegalArgumentException("Số lượng trong kho không đủ!");
+        }
+
+        // Cập nhật số lượng tồn kho
+        spct.setSoLuong(spct.getSoLuong() - soLuongThayDoi);
+        if (spct.getSoLuong() == 0) {
+            spct.setTrangThai("Hết hàng");
+        }
+        sanPhamCTRepository.save(spct);
+
+        // Cập nhật chi tiết hóa đơn
         ct.setSoLuong(quantity);
         ct.setThanhTien(ct.getSoLuong() * ct.getDonGia());
         ct.setTongTien(ct.getThanhTien());
         hdctRepository.save(ct);
 
+        // Cập nhật tổng tiền hóa đơn
         hd.setTongTien(totalAmount.floatValue());
         hoaDonrepo.save(hd);
 
@@ -421,6 +476,9 @@ public class BanHangOnlineController {
         if(status.equals("Hoàn thành")){
             hd.setTrangThaiThanhToan("Đã hoàn thành");
         }
+        if(status.equals("Chờ hoàn tiền")){
+            hd.setTrangThaiThanhToan("Đã hoàn tiền");
+        }
         String newStatus = hd.getTrangThaiThanhToan();
         hoaDonrepo.save(hd);
         ThongBao thongBao = new ThongBao();
@@ -447,6 +505,76 @@ public class BanHangOnlineController {
         return ResponseEntity.ok(hd);
     }
 
+    @Transactional
+    @PutMapping("/ban-hang-online/back-order-status/{id}")
+    public ResponseEntity<HoaDon> backToStatus(@PathVariable Integer id) {
+        try {
+            Optional<HoaDon> optionalHoaDon = hoaDonrepo.findById(id);
+            String newStatus = "";
+            if (!optionalHoaDon.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            HoaDon hd = optionalHoaDon.get();
+
+            List<HoaDonCT> listhdct = hoaDonCTRepository.findByHoaDonId(hd.getId());
+
+            if(hd.getHinhThucThanhToan().equals("Online")){
+                hd.setTrangThaiThanhToan("Chờ hoàn tiền");
+                newStatus = hd.getTrangThaiThanhToan();
+            }else{
+                hd.setTrangThaiThanhToan("Đã hủy");
+                newStatus = hd.getTrangThaiThanhToan();
+            }
+            hoaDonrepo.save(hd);
+            for(HoaDonCT hoaDonCT : listhdct) {
+                SanPhamChiTiet spct = hoaDonCT.getSanPhamChiTiet();
+                if(spct.getTrangThai().equals("Hết hàng")){
+                    spct.setTrangThai("Còn hàng");
+                }
+                spct.setSoLuong(spct.getSoLuong() + hoaDonCT.getSoLuong());
+                ctsp_repository.save(spct);
+                hoaDonCT.setTrangThai("Đã hủy");
+                hdctRepository.save(hoaDonCT);
+            }
+
+            // Xử lý khuyến mãi nếu có
+            if (hd.getKhuyenMai() != null) {
+                KhuyenMai km = hd.getKhuyenMai();
+                if(km.getTrang_thai().equals("Đã kết thúc")){
+                    km.setTrang_thai("Đang diễn ra");
+                }
+                km.setSo_luong(km.getSo_luong() + 1);
+                km.setSo_luong_sd(km.getSo_luong_sd() - 1);
+                khuyenMaiRepository.save(km);
+            }
+            ThongBao thongBao = new ThongBao();
+            thongBao.setNgayTao(new Date());
+            thongBao.setLink("/ban-hang-online/follow-order/"+hd.getId());
+            thongBao.setNoi_dung("Đơn hàng HD"+hd.getId()+"của bạn đang trong trạng thái: "+hd.getTrangThaiThanhToan());
+            thongBao.setKhachHang(hd.getKhachHang());
+            thongBaoRepository.save(thongBao);
+            Map<String, Object> payload = Map.of(
+                    "type", "status-cancel",
+                    "status", newStatus
+            );
+            simpMessagingTemplate.convertAndSendToUser(
+                        hd.getKhachHang().getTaiKhoan(),
+                        "/topic/order/" + id,
+                        payload
+            );
+            simpMessagingTemplate.convertAndSendToUser(
+                    hd.getKhachHang().getTaiKhoan(),
+                    "/topic/notification",
+                    thongBaoRepository.findByKhachHang_IdOrderByReadAscNgayTaoDesc(hd.getKhachHang().getId())
+            );
+
+            return ResponseEntity.ok(hd);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PutMapping("/ban-hang-online/updateCT/{id}/{status}")
     public ResponseEntity<HoaDonCT> updateCT(@PathVariable Integer id, @PathVariable String status) {
         HoaDonCT ct = hdctRepository.findById(id).get();
@@ -468,10 +596,26 @@ public class BanHangOnlineController {
 
     @PutMapping("/ban-hang-online/update-sp/{id}/{so_luong}")
     public ResponseEntity<SanPhamChiTiet> updateSP(@PathVariable Integer id, @PathVariable Integer so_luong) {
-        SanPhamChiTiet ct = ctsp_repository.findById(id).get();
-        ct.setSoLuong(ct.getSoLuong() - so_luong);
-        ctsp_repository.save(ct);
-        return ResponseEntity.ok(ct);
+        try {
+            Optional<SanPhamChiTiet> optionalSP = ctsp_repository.findById(id);
+            if (!optionalSP.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            SanPhamChiTiet ct = optionalSP.get();
+            if (ct.getSoLuong() < so_luong) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            ct.setSoLuong(ct.getSoLuong() - so_luong);
+            if (ct.getSoLuong() == 0) {
+                ct.setTrangThai("Hết hàng");
+            }
+            ctsp_repository.save(ct);
+            return ResponseEntity.ok(ct);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     //Khi Tổng tiền hàng thay đôi thì gọi cái này
@@ -503,5 +647,13 @@ public class BanHangOnlineController {
         tb.setRead(true);
         thongBaoRepository.save(tb);
         return ResponseEntity.ok(tb);
+    }
+
+    @PutMapping("/ban-hang-online/refund/{id}")
+    public ResponseEntity<?> refundOrder(@PathVariable Integer id) {
+        HoaDon hd = hoaDonrepo.findById(id).get();
+        hd.setTrangThaiThanhToan("Đã hoàn thành");
+        hoaDonrepo.save(hd);
+        return ResponseEntity.ok(hd);
     }
 }
